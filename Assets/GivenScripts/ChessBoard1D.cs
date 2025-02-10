@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ChessEngine1D
 {
-    public class ChessBoard
+    public class ChessBoard1D
     {
         public const int BOARD_SIZE = 64;
         public const int MAX_PLY = 512;  // Maximum number of plies expected in a game

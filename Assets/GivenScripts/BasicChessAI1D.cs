@@ -31,3 +31,5 @@ namespace ChessEngine
         }
     }
 }
+
+enum PieceColor { Black, White }
