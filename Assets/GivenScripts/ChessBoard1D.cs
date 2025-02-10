@@ -83,9 +83,9 @@ namespace ChessEngine1D
         /// <summary>
         /// Creates a deep copy of the current board state.
         /// </summary>
-        public ChessBoard Clone()
+        public ChessBoard1D Clone()
         {
-            ChessBoard clone = new ChessBoard
+            ChessBoard1D clone = new ChessBoard1D
             {
                 Turn = this.Turn
             };
