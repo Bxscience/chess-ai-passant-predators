@@ -3,7 +3,12 @@ guid: 81b1cf9858fa31443b02f501d267c494
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MAT_BlackWoodenChessPiece
+    second: {fileID: 2100000, guid: 8e1fbc0ef916a5e4a9c94867ac8e2dfa, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
