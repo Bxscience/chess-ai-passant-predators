@@ -123,63 +123,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1001 &279194701
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: -8679921383154817045, guid: 771d60e756261724fae83e7035e0d816, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0.098840594
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 771d60e756261724fae83e7035e0d816, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 771d60e756261724fae83e7035e0d816, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -0.052098453
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 771d60e756261724fae83e7035e0d816, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.7071067
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 771d60e756261724fae83e7035e0d816, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 771d60e756261724fae83e7035e0d816, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 771d60e756261724fae83e7035e0d816, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 771d60e756261724fae83e7035e0d816, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 771d60e756261724fae83e7035e0d816, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 771d60e756261724fae83e7035e0d816, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 919132149155446097, guid: 771d60e756261724fae83e7035e0d816, type: 3}
-      propertyPath: m_Name
-      value: GEO_ChessBoard
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 771d60e756261724fae83e7035e0d816, type: 3}
 --- !u!1 &793564418
 GameObject:
   m_ObjectHideFlags: 0
@@ -359,17 +302,74 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1199594209}
   serializedVersion: 2
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+--- !u!1 &1410207833
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1410207834}
+  - component: {fileID: 1410207835}
+  m_Layer: 0
+  m_Name: SpawnPieces
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1410207834
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1410207833}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalPosition: {x: 0.03409497, y: 0.11911887, z: 0.30977154}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1410207835
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1410207833}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 096610c3e79d41d40aa3abae8cd4f021, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Board: {fileID: 919132149155446097, guid: 771d60e756261724fae83e7035e0d816, type: 3}
+  WhitePawn: {fileID: 919132149155446097, guid: dcfcd7dec426390479577702ca0c8df7, type: 3}
+  WhiteBishop: {fileID: 919132149155446097, guid: 2eecf5db77b460640872c6d67117b45f, type: 3}
+  WhiteKnight: {fileID: 919132149155446097, guid: af847ef267aaf8546afeafaf79bea464, type: 3}
+  WhiteRook: {fileID: 919132149155446097, guid: 8b29d7459880d7f4a9a667930b2ea6a2, type: 3}
+  WhiteQueen: {fileID: 919132149155446097, guid: b307b8d465448c544a6b4117b6bef3bb, type: 3}
+  WhiteKing: {fileID: 919132149155446097, guid: ce7175687e3aea7438755bfa6cede2e8, type: 3}
+  BlackPawn: {fileID: 919132149155446097, guid: ec3c660af8dacf541918f325cd50f388, type: 3}
+  BlackBishop: {fileID: 919132149155446097, guid: b9a3d8e6046103a4cbef01e518e97c7d, type: 3}
+  BlackKnight: {fileID: 919132149155446097, guid: 3e59f5d5432831c49b294b549c7b32d5, type: 3}
+  BlackRook: {fileID: 919132149155446097, guid: 81b1cf9858fa31443b02f501d267c494, type: 3}
+  BlackQueen: {fileID: 919132149155446097, guid: ae29147681f8d2941af746d6187483bc, type: 3}
+  BlackKing: {fileID: 919132149155446097, guid: 46258a5c55e6b9742a83bb8f4abaa780, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 1199594212}
   - {fileID: 793564420}
-  - {fileID: 279194701}
+  - {fileID: 1410207834}
