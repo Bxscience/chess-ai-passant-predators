@@ -37,7 +37,7 @@ public class Board
             char c = fen_parts[0][i];
             if(Char.IsLetter(c)) {
                 Piece p = FromAlgebraic(c);
-                boards[(int)p] |= 1<<idx;
+                boards[(int)p] |= 1ul<<(63-idx);
                 idx++;
             } else {
                 if(Char.IsNumber(c)) {
