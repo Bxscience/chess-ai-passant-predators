@@ -11,7 +11,7 @@ public class Board
     public enum Piece {
         WPawn = 0, WBishop = 1, WKnight = 2, WRook = 3, WQueen = 4, WKing = 5,
 
-        BPawn = 0, BBishop = 1, BKnight = 2, BRook = 3, BQueen = 4, BKing = 5
+        BPawn = 6, BBishop = 7, BKnight = 8, BRook = 9, BQueen = 10, BKing = 11
     }
 
     private Piece FromAlgebraic(char c) => (c) switch {
@@ -45,8 +45,8 @@ public class Board
                 }
             }
         }
-        // for(int i = 0; i < 12; i++) {
-            
-        // }
     }
+
+    public ulong WhitePieces => boards[0] | boards[1] | boards[2] | boards[3] | boards[4] | boards[5];
+    public ulong BlackPieces => boards[6] | boards[7] | boards[8] | boards[9] | boards[10] | boards[11];
 }
