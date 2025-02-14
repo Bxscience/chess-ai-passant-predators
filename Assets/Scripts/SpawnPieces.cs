@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting.FullSerializer;
@@ -34,6 +35,9 @@ public class SpawnPieces : MonoBehaviour
         //board is 38.5 x 38.5, centered at 0,0
         int loopruns = 0;
         GameObject.Instantiate(Board, new Vector3(0,0,0), Quaternion.Euler(-90,0,0));
+        
+        GameObject[] PiecesArray = new GameObject[] { WhitePawn, BlackPawn, WhiteRook, BlackRook, WhiteKnight, BlackKnight, WhiteBishop, BlackBishop, WhiteQueen, BlackQueen, WhiteKing, BlackKing };
+        
         for (float i = 0; i < 44; i+=5.5f)
         {
             WhitePawns[loopruns]= GameObject.Instantiate(WhitePawn, new Vector3(i-19.25f, 2, -13.75f), Quaternion.Euler(-90, 0, 0));
@@ -42,7 +46,33 @@ public class SpawnPieces : MonoBehaviour
             BlackPieces[loopruns] = BlackPawns[loopruns];
             loopruns++;
         }
-        
+        loopruns = 0;
+        int p = 2;
+        int x = 0;
+        for (float i = 0; i < 16.5f; i += 5.5f)
+        {
+            if (p == 6)
+            {
+                x = 180;
+            }
+            GameObject.Instantiate(PiecesArray[p], new Vector3(i - 19.25f, 2, -19.75f), Quaternion.Euler(-90, x+-180, 0));
+            GameObject.Instantiate(PiecesArray[p], new Vector3(19.25f-i, 2, -19.75f), Quaternion.Euler(-90, x+-180, 0));
+            GameObject.Instantiate(PiecesArray[p+1], new Vector3(i-19.25f, 2, 19.75f), Quaternion.Euler(-90, x, 0));
+            GameObject.Instantiate(PiecesArray[p + 1], new Vector3(19.25f - i, 2, 19.75f), Quaternion.Euler(-90, x, 0));
+            p += 2;
+            if (p == 6)
+            {
+                x = 0;
+            }
+    
+            
+        }
+        GameObject.Instantiate(PiecesArray[p], new Vector3(-2.75f, 2, -19.75f), Quaternion.Euler(-90, 0, 0));
+        GameObject.Instantiate(PiecesArray[p+1], new Vector3(-2.75f, 2, 19.75f), Quaternion.Euler(-90, 0, 0));
+        p += 2;
+        GameObject.Instantiate(PiecesArray[p], new Vector3(2.75f, 2, -19.75f), Quaternion.Euler(-90, 0, 0));
+        GameObject.Instantiate(PiecesArray[p + 1], new Vector3(2.75f, 2, 19.75f), Quaternion.Euler(-90, 0, 0));
+
     }
 
     // Update is called once per frame
