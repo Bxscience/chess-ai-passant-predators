@@ -1,6 +1,7 @@
 using System.Collections;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class Board
 {
@@ -37,7 +38,7 @@ public class Board
             char c = fen_parts[0][i];
             if(Char.IsLetter(c)) {
                 Piece p = FromAlgebraic(c);
-                boards[(int)p] |= 1ul<<(63-idx);
+                boards[(int)p] |= 1ul<<(idx);
                 idx++;
             } else {
                 if(Char.IsNumber(c)) {
@@ -49,4 +50,13 @@ public class Board
 
     public ulong WhitePieces => boards[0] | boards[1] | boards[2] | boards[3] | boards[4] | boards[5];
     public ulong BlackPieces => boards[6] | boards[7] | boards[8] | boards[9] | boards[10] | boards[11];
+    public ulong Pieces => boards[0] | boards[1] | boards[2] | boards[3] | boards[4] | boards[5] | boards[6] | boards[7] | boards[8] | boards[9] | boards[10] | boards[11];
+
+    public Vector3 IdxToPos(int x, int y) {
+        float min = -19.25f;
+        float max = 19.25f;
+        float x_pos = (x) * (max - min) / (7) + min;
+        float y_pos = (y) * (max - min) / (7) + min;
+        return new Vector3(x_pos, 2, y_pos);
+    }
 }

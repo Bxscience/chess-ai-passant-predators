@@ -11,9 +11,10 @@ public class BoardTest : MonoBehaviour
         for(int i = 0; i < b.boards.Length; i++) {
             finalB |= b.boards[i];
         }
-        Debug.Log(finalB);
-        Debug.Log(b.WhitePieces);
-        Debug.Log(b.BlackPieces);
+        // Debug.Log(finalB);
+        Debug.Log(b.boards[(int)Board.Piece.BQueen]);
+        // Debug.Log(b.BlackPieces);
+        // Debug.Log(b.IdxToPos(1,2));
     }
 
     void Update()
