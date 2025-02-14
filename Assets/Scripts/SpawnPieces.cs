@@ -40,13 +40,12 @@ public class SpawnPieces : MonoBehaviour
         
         for (float i = 0; i < 44; i+=5.5f)
         {
-            WhitePawns[loopruns]= GameObject.Instantiate(WhitePawn, new Vector3(i-19.25f, 2, -13.75f), Quaternion.Euler(-90, 0, 0));
+            WhitePawns[loopruns] = GameObject.Instantiate(WhitePawn, new Vector3(i-19.25f, 2, -13.75f), Quaternion.Euler(-90, 0, 0));
             WhitePieces[loopruns] = WhitePawns[loopruns];
             BlackPawns[loopruns] = GameObject.Instantiate(BlackPawn, new Vector3(i - 19.25f, 2, 13.75f), Quaternion.Euler(-90, 0, 0));
             BlackPieces[loopruns] = BlackPawns[loopruns];
             loopruns++;
         }
-        loopruns = 0;
         int p = 2;
         int x = 0;
         for (float i = 0; i < 16.5f; i += 5.5f)
@@ -55,10 +54,15 @@ public class SpawnPieces : MonoBehaviour
             {
                 x = 180;
             }
-            GameObject.Instantiate(PiecesArray[p], new Vector3(i - 19.25f, 2, -19.75f), Quaternion.Euler(-90, x+-180, 0));
-            GameObject.Instantiate(PiecesArray[p], new Vector3(19.25f-i, 2, -19.75f), Quaternion.Euler(-90, x+-180, 0));
-            GameObject.Instantiate(PiecesArray[p+1], new Vector3(i-19.25f, 2, 19.75f), Quaternion.Euler(-90, x, 0));
-            GameObject.Instantiate(PiecesArray[p + 1], new Vector3(19.25f - i, 2, 19.75f), Quaternion.Euler(-90, x, 0));
+            WhitePieces[loopruns] = GameObject.Instantiate(PiecesArray[p], new Vector3(i - 19.25f, 2, -19.75f), Quaternion.Euler(-90, x+-180, 0));
+            loopruns++;
+            WhitePieces[loopruns] = GameObject.Instantiate(PiecesArray[p], new Vector3(19.25f-i, 2, -19.75f), Quaternion.Euler(-90, x+-180, 0));
+            loopruns++;
+            BlackPieces[loopruns] = GameObject.Instantiate(PiecesArray[p+1], new Vector3(i-19.25f, 2, 19.75f), Quaternion.Euler(-90, x, 0));
+            loopruns++;
+            BlackPieces[loopruns] = GameObject.Instantiate(PiecesArray[p + 1], new Vector3(19.25f - i, 2, 19.75f), Quaternion.Euler(-90, x, 0));
+            loopruns++;
+
             p += 2;
             if (p == 6)
             {
@@ -67,11 +71,14 @@ public class SpawnPieces : MonoBehaviour
     
             
         }
-        GameObject.Instantiate(PiecesArray[p], new Vector3(-2.75f, 2, -19.75f), Quaternion.Euler(-90, 0, 0));
-        GameObject.Instantiate(PiecesArray[p+1], new Vector3(-2.75f, 2, 19.75f), Quaternion.Euler(-90, 0, 0));
+        WhitePieces[loopruns] = GameObject.Instantiate(PiecesArray[p], new Vector3(-2.75f, 2, -19.75f), Quaternion.Euler(-90, 0, 0));
+        loopruns++;
+        BlackPieces[loopruns] = GameObject.Instantiate(PiecesArray[p+1], new Vector3(-2.75f, 2, 19.75f), Quaternion.Euler(-90, 0, 0));
+        loopruns++;
         p += 2;
-        GameObject.Instantiate(PiecesArray[p], new Vector3(2.75f, 2, -19.75f), Quaternion.Euler(-90, 0, 0));
-        GameObject.Instantiate(PiecesArray[p + 1], new Vector3(2.75f, 2, 19.75f), Quaternion.Euler(-90, 0, 0));
+        WhitePieces[loopruns] = GameObject.Instantiate(PiecesArray[p], new Vector3(2.75f, 2, -19.75f), Quaternion.Euler(-90, 0, 0));
+        loopruns++;
+        BlackPieces[loopruns] = GameObject.Instantiate(PiecesArray[p + 1], new Vector3(2.75f, 2, 19.75f), Quaternion.Euler(-90, 0, 0)); 
 
     }
 
