@@ -12,7 +12,7 @@ public class BoardTest : MonoBehaviour
             finalB |= b.boards[i];
         }
         // Debug.Log(finalB);
-        Debug.Log(b.boards[(int)Board.Piece.BQueen]);
+        Debug.Log(b.boards[(int)Piece.BQueen]);
         // Debug.Log(b.BlackPieces);
         // Debug.Log(b.IdxToPos(1,2));
     }
