@@ -11,6 +11,7 @@ public class BoardManager : MonoBehaviour
     ChessPiece currentlySelected;
     Stack<Ply> plies = new Stack<Ply>();
     Stack<ChessPiece> taken = new Stack<ChessPiece>();
+    Stack<ChessPiece> moved = new Stack<ChessPiece>();
 
     public static BoardManager instance;
     public event Action PlayedPly;
@@ -23,8 +24,10 @@ public class BoardManager : MonoBehaviour
 
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Backspace))
+        if(Input.GetKeyDown(KeyCode.Backspace)) {
+            Debug.Log("AAA");
             UndoPly();
+        }
         
         // Player
         if(Input.GetMouseButtonUp(0)) {
@@ -52,6 +55,10 @@ public class BoardManager : MonoBehaviour
                     }
                     currentlySelected.transform.position = Board.IdxToPos(newPly.End);
                     currentlySelected.idx = newPly.End;
+
+                    moved.Push(currentlySelected);
+                    currentlySelected = null;
+
                     board.PlayPly(newPly);
                     plies.Push(newPly);
                     isWhiteTurn = !isWhiteTurn;
@@ -66,6 +73,8 @@ public class BoardManager : MonoBehaviour
 
         Ply undoPly = plies.Pop();
         board.UndoPly(undoPly);
+        ChessPiece p = moved.Pop();
+        p.transform.position = Board.IdxToPos(undoPly.Start);
         if(undoPly.Captured != Piece.None) {
             ChessPiece realivePiece = taken.Pop();
             realivePiece.transform.position += Vector3.up*10;
