@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.4465878, g: 0.4964224, b: 0.57482475, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -310,6 +310,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+--- !u!114 &1199594213
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1199594209}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ec694f1dfd2c41d5822650175eab9a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1410207833
 GameObject:
   m_ObjectHideFlags: 0
@@ -354,19 +366,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 096610c3e79d41d40aa3abae8cd4f021, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Board: {fileID: 919132149155446097, guid: 771d60e756261724fae83e7035e0d816, type: 3}
-  WhitePawn: {fileID: 919132149155446097, guid: dcfcd7dec426390479577702ca0c8df7, type: 3}
-  WhiteBishop: {fileID: 919132149155446097, guid: 2eecf5db77b460640872c6d67117b45f, type: 3}
-  WhiteKnight: {fileID: 919132149155446097, guid: af847ef267aaf8546afeafaf79bea464, type: 3}
-  WhiteRook: {fileID: 919132149155446097, guid: 8b29d7459880d7f4a9a667930b2ea6a2, type: 3}
-  WhiteQueen: {fileID: 919132149155446097, guid: b307b8d465448c544a6b4117b6bef3bb, type: 3}
-  WhiteKing: {fileID: 919132149155446097, guid: ce7175687e3aea7438755bfa6cede2e8, type: 3}
-  BlackPawn: {fileID: 919132149155446097, guid: ec3c660af8dacf541918f325cd50f388, type: 3}
-  BlackBishop: {fileID: 919132149155446097, guid: b9a3d8e6046103a4cbef01e518e97c7d, type: 3}
-  BlackKnight: {fileID: 919132149155446097, guid: 3e59f5d5432831c49b294b549c7b32d5, type: 3}
-  BlackRook: {fileID: 919132149155446097, guid: 81b1cf9858fa31443b02f501d267c494, type: 3}
-  BlackQueen: {fileID: 919132149155446097, guid: ae29147681f8d2941af746d6187483bc, type: 3}
-  BlackKing: {fileID: 919132149155446097, guid: 46258a5c55e6b9742a83bb8f4abaa780, type: 3}
+  Board: {fileID: 6072795693516907351, guid: 20851e5d62eaf67a981aa2e88e84d8cf, type: 3}
+  WhitePawn: {fileID: 5232136468903833860, guid: f60a80998f99af52a9529e68c75a7e1c, type: 3}
+  WhiteBishop: {fileID: 8415571607850606794, guid: efa329acbd1e9dd7aafa52dc39847b9d, type: 3}
+  WhiteKnight: {fileID: 7043350734674337968, guid: 3c3c0fceb45288cf1be3c14a73195d31, type: 3}
+  WhiteRook: {fileID: 210143581439628086, guid: f1f23114c4d54ad0992c8effef4a6857, type: 3}
+  WhiteQueen: {fileID: 6836872604623246206, guid: 6a7146dd59a1927b79fb28697851297b, type: 3}
+  WhiteKing: {fileID: 6397163421191256838, guid: e11b16f76c17dee26ace6fa7950755cc, type: 3}
+  BlackPawn: {fileID: 2626958076941410344, guid: 33e88c322fac7b7298a442c69b0dbbcf, type: 3}
+  BlackBishop: {fileID: 5744594951160482779, guid: 110e1b7252ea6406ca215ba1c2e7bd62, type: 3}
+  BlackKnight: {fileID: 2481894052955490659, guid: 9abf4603028b9724a8c307525bd6ba5d, type: 3}
+  BlackRook: {fileID: 3283454688993143902, guid: 606c296584e9afc97b0885edcbf0112a, type: 3}
+  BlackQueen: {fileID: 4784529825658059094, guid: 3e561a1920bf92beeacfd207e526a210, type: 3}
+  BlackKing: {fileID: 5117897005374513054, guid: 6db8cabf4dcb528f5b650829cd587a9f, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

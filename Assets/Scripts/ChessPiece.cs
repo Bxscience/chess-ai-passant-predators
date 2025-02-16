@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class ChessPiece : MonoBehaviour
 {
-    Vector2Int idx;
-    Piece p;
+    public Vector2Int idx;
+    [SerializeField]
+    public Piece type;
+    
 }

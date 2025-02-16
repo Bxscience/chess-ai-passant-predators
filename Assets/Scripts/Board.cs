@@ -6,7 +6,8 @@ using UnityEngine;
 public enum Piece {
     WPawn = 0, WBishop = 1, WKnight = 2, WRook = 3, WQueen = 4, WKing = 5,
 
-    BPawn = 6, BBishop = 7, BKnight = 8, BRook = 9, BQueen = 10, BKing = 11
+    BPawn = 6, BBishop = 7, BKnight = 8, BRook = 9, BQueen = 10, BKing = 11,
+    None
 }
 
 public struct Board
@@ -55,7 +56,7 @@ public struct Board
         }
     }
     
-    public void MovePiece(Ply ply) {
+    public void PlayPly(Ply ply) {
         // the start coordinate, as an offset, starting from A1
         // If Start.y is 7, that should correlate with the 8th rank.   
         int start_idx = ply.Start.x + 8*(7-ply.Start.y); 
@@ -67,8 +68,25 @@ public struct Board
         // This is simpler, just make the bit it moved to a 1
         boards[(int)ply.Type] = boards[(int)ply.Type] | 1ul<<end_idx;
         
-        if(ply.Captured != null) {
+        if(ply.Captured != Piece.None) {
             boards[(int)ply.Captured] = ~(~boards[(int)ply.Captured] | 1ul<<end_idx);
+        }
+    }
+    
+    public void UndoPly(Ply ply) {
+        // the start coordinate, as an offset, starting from A1
+        // If Start.y is 7, that should correlate with the 8th rank.   
+        int start_idx = ply.Start.x + 8*(7-ply.Start.y); 
+        int end_idx = ply.End.x + 8*(7-ply.End.y); 
+        
+        // This sets the end pos to 0
+        boards[(int)ply.Type] = ~(~boards[(int)ply.Type] | 1ul<<end_idx);
+        // This sets the start pos to 1
+        boards[(int)ply.Type] = boards[(int)ply.Type] | 1ul<<start_idx;
+        
+        if(ply.Captured != Piece.None) {
+            // This sets the captured piece's index to 1
+            boards[(int)ply.Captured] = boards[(int)ply.Captured] | 1ul<<end_idx;
         }
     }
 
@@ -79,5 +97,9 @@ public struct Board
         float x_pos = (x) * (max - min) / (7) + min;
         float y_pos = (y) * (max - min) / (7) + min;
         return new Vector3(x_pos, 2, y_pos);
+    }
+
+    public static Vector3 IdxToPos(Vector2Int idx) {
+        return IdxToPos(idx.x, idx.y);
     }
 }
