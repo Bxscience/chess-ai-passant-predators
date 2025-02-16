@@ -366,7 +366,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 096610c3e79d41d40aa3abae8cd4f021, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Board: {fileID: 6072795693516907351, guid: 20851e5d62eaf67a981aa2e88e84d8cf, type: 3}
+  BoardPrefab: {fileID: 6072795693516907351, guid: 20851e5d62eaf67a981aa2e88e84d8cf, type: 3}
   WhitePawn: {fileID: 5232136468903833860, guid: f60a80998f99af52a9529e68c75a7e1c, type: 3}
   WhiteBishop: {fileID: 8415571607850606794, guid: efa329acbd1e9dd7aafa52dc39847b9d, type: 3}
   WhiteKnight: {fileID: 7043350734674337968, guid: 3c3c0fceb45288cf1be3c14a73195d31, type: 3}

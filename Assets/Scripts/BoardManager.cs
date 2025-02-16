@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class BoardManager : MonoBehaviour
 {
-    Board board;
+    public Board board;
     bool isWhiteTurn = true;
     bool isGrabbing;
     ChessPiece currentlySelected;
