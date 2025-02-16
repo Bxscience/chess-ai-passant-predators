@@ -13,6 +13,7 @@ public class BoardManager : MonoBehaviour
     Stack<ChessPiece> taken = new Stack<ChessPiece>();
 
     public static BoardManager instance;
+    public event Action PlayedPly;
 
     void Start()
     {
@@ -25,16 +26,21 @@ public class BoardManager : MonoBehaviour
         if(Input.GetMouseButtonUp(0)) {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
-            Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.position+ray.direction*100);
             if(Physics.Raycast(ray, out hit)) {
                 Debug.Log(hit.collider.GetComponent<ChessPiece>().type);
                 if(!isGrabbing) {
+                    if(hit.collider.GetComponent<ChessPiece>().type == Piece.None) {
+                        return;
+                    }
                     currentlySelected = hit.collider.GetComponent<ChessPiece>();
                     currentlySelected.transform.position += Vector3.up*2;
                     isGrabbing = true;
                 } else {
-                    isGrabbing = false;
                     ChessPiece pressed = hit.collider.GetComponent<ChessPiece>();
+                    if(pressed.side == currentlySelected.side) {
+                        return;
+                    }
+                    isGrabbing = false;
                     Ply newPly = new Ply(currentlySelected.idx, pressed.idx, currentlySelected.type);
                     if(pressed.type != Piece.None) {
                         newPly.Captured = pressed.type;
@@ -50,6 +56,9 @@ public class BoardManager : MonoBehaviour
     }
     
     public void UndoPly() {
+        if(plies.Count == 0)
+            return;
+
         Ply undoPly = plies.Pop();
         board.UndoPly(undoPly);
         if(undoPly.Captured != Piece.None) {
