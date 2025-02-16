@@ -79,5 +79,6 @@ public class BoardManager : MonoBehaviour
             ChessPiece realivePiece = taken.Pop();
             realivePiece.transform.position += Vector3.up*10;
         }
+        isWhiteTurn = !isWhiteTurn;
     }
 }
