@@ -23,13 +23,16 @@ public class BoardManager : MonoBehaviour
 
     void Update()
     {
+        if(Input.GetKeyDown(KeyCode.Backspace))
+            UndoPly();
+        
+        // Player
         if(Input.GetMouseButtonUp(0)) {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
             if(Physics.Raycast(ray, out hit)) {
-                Debug.Log(hit.collider.GetComponent<ChessPiece>().type);
                 if(!isGrabbing) {
-                    if(hit.collider.GetComponent<ChessPiece>().type == Piece.None) {
+                    if(hit.collider.GetComponent<ChessPiece>().side != (isWhiteTurn ? Side.White : Side.Black)) {
                         return;
                     }
                     currentlySelected = hit.collider.GetComponent<ChessPiece>();
@@ -48,8 +51,10 @@ public class BoardManager : MonoBehaviour
                         pressed.transform.position -= Vector3.up*10;
                     }
                     currentlySelected.transform.position = Board.IdxToPos(newPly.End);
+                    currentlySelected.idx = newPly.End;
                     board.PlayPly(newPly);
                     plies.Push(newPly);
+                    isWhiteTurn = !isWhiteTurn;
                 }
             }
         }
