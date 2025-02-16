@@ -38,11 +38,14 @@ public class SpawnPieces : MonoBehaviour
         
         GameObject[] PiecesArray = new GameObject[] { WhitePawn, BlackPawn, WhiteRook, BlackRook, WhiteKnight, BlackKnight, WhiteBishop, BlackBishop, WhiteQueen, BlackQueen, WhiteKing, BlackKing };
         
-        for (float i = 0; i < 44; i+=5.5f)
+        for (float i = 0; i < 8; i++)
         {
-            WhitePawns[loopruns] = GameObject.Instantiate(WhitePawn, new Vector3(i-19.25f, 2, -13.75f), Quaternion.Euler(-90, 0, 0));
+            WhitePawns[loopruns] = GameObject.Instantiate(WhitePawn, new Vector3(i*5.5f-19.25f, 2, -13.75f), Quaternion.Euler(-90, 0, 0));
+            WhitePawns[loopruns].GetComponent<ChessPiece>().idx = new Vector2Int((int)i, 1);
             WhitePieces[loopruns] = WhitePawns[loopruns];
-            BlackPawns[loopruns] = GameObject.Instantiate(BlackPawn, new Vector3(i - 19.25f, 2, 13.75f), Quaternion.Euler(-90, 0, 0));
+
+            BlackPawns[loopruns] = GameObject.Instantiate(BlackPawn, new Vector3(i*5.5f - 19.25f, 2, 13.75f), Quaternion.Euler(-90, 0, 0));
+            BlackPawns[loopruns].GetComponent<ChessPiece>().idx = new Vector2Int((int)i, 6);
             BlackPieces[loopruns] = BlackPawns[loopruns];
             loopruns++;
         }
