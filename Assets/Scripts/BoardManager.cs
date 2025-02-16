@@ -43,6 +43,11 @@ public class BoardManager : MonoBehaviour
                     isGrabbing = true;
                 } else {
                     ChessPiece pressed = hit.collider.GetComponent<ChessPiece>();
+                    if(pressed.Equals(currentlySelected)) {
+                        pressed.transform.position -= Vector3.up*2;
+                        isGrabbing = false;
+                        return;
+                    }
                     if(pressed.side == currentlySelected.side) {
                         return;
                     }
