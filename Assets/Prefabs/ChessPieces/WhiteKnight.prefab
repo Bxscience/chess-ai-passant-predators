@@ -81,7 +81,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   idx: {x: 0, y: 0}
-  type: 0
+  type: 2
+  moved: 0
 --- !u!65 &1585249395326391925
 BoxCollider:
   m_ObjectHideFlags: 0

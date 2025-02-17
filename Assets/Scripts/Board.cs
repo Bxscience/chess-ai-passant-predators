@@ -140,23 +140,28 @@ public struct Board
         // Same with the attacks on the right.
         ulong attacks = (((pos>>6)|(pos<<10)) & ~(fileG|fileH))
         | (((pos>>10)|(pos<<6)) & ~(fileA|fileB))
-        | (((pos>>15)|(pos<<17))&~fileH)
-        | (((pos>>17)|(pos<<15))&~fileA);
+        | (((pos>>15)|(pos<<17)) & ~fileH)
+        | (((pos>>17)|(pos<<15)) & ~fileA);
         return attacks & ~(side == Side.White ? WhitePieces : BlackPieces);
     }
     
     public ulong PawnMovesParalegal(ulong pos, Side side, bool moved) { 
-        ulong sameSide = side == Side.White ? WhitePieces : BlackPieces;
-        ulong theOps = side != Side.White ? WhitePieces : BlackPieces;
-
         // You can either move forward, or capture
         // The capture on the right can't be in file A, and the capture on the left can't be in file H
-        ulong attacks = pos >> 8
-            | (pos>>7 & theOps & ~fileA)
-            | (pos>>9 & theOps & ~fileH)
+        ulong attacksWhite = pos >> 8
+            | (pos>>7 & BlackPieces & ~fileA)
+            | (pos>>9 & BlackPieces & ~fileH)
             | (moved ? 0 : pos>>16);
 
-        return attacks & ~sameSide;
+        ulong attacksBlack = pos << 8
+            | (pos<<9 & WhitePieces & ~fileA)
+            | (pos<<7 & WhitePieces & ~fileH)
+            | (moved ? 0 : pos<<16);
+
+        if(side == Side.White) 
+            return attacksWhite & ~WhitePieces;
+        else
+            return attacksBlack & ~BlackPieces;
     }
 
     public ulong KingMovesParalegal(ulong pos, Side side, bool moved) { 

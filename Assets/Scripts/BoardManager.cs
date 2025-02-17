@@ -54,6 +54,8 @@ public class BoardManager : MonoBehaviour
                         currentlySelected.transform.position += Vector3.up*2;
                         return;
                     }
+                    if((1ul<<(pressed.idx.x + (7-pressed.idx.y)*8) & board.GetMoveParalegal(currentlySelected)) == 0)
+                        return;
                     isGrabbing = false;
                     Ply newPly = new Ply(currentlySelected.idx, pressed.idx, currentlySelected.type);
                     if(pressed.type != Piece.None) {
@@ -65,6 +67,7 @@ public class BoardManager : MonoBehaviour
                     currentlySelected.idx = newPly.End;
 
                     moved.Push(currentlySelected);
+                    currentlySelected.moved = true;
                     currentlySelected = null;
 
                     board.PlayPly(newPly);
