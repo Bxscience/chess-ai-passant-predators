@@ -49,6 +49,9 @@ public class BoardManager : MonoBehaviour
                         return;
                     }
                     if(pressed.side == currentlySelected.side) {
+                        currentlySelected.transform.position -= Vector3.up*2;
+                        currentlySelected = pressed;
+                        currentlySelected.transform.position += Vector3.up*2;
                         return;
                     }
                     isGrabbing = false;
