@@ -16,14 +16,16 @@ public struct Board
     // 6-11 is Black
     public ulong[] boards;
     
-    const ulong fileA = 0x1010101010101010;
-    const ulong fileB = 0x2020202020202020;
-    const ulong fileC = 0x4040404040404040;
-    const ulong fileD = 0x8080808080808080;
-    const ulong fileE = 0x0101010101010101;
-    const ulong fileF = 0x0202020202020202;
-    const ulong fileG = 0x0404040404040404;
-    const ulong fileH = 0x0808080808080808;
+    const ulong fileA = 0x0101010101010101;
+    const ulong fileB = 0x0202020202020202;
+    const ulong fileC = 0x0404040404040404;
+    const ulong fileD = 0x0808080808080808;
+    const ulong fileE = 0x1010101010101010;
+    const ulong fileF = 0x2020202020202020;
+    const ulong fileG = 0x4040404040404040;
+    const ulong fileH = 0x8080808080808080;
+    const ulong rank2 = 0x00FF000000000000;
+    const ulong rank7 = 0x000000000000FF00;
 
     public readonly ulong WhitePieces => boards[0] | boards[1] | boards[2] | boards[3] | boards[4] | boards[5];
     public readonly ulong BlackPieces => boards[6] | boards[7] | boards[8] | boards[9] | boards[10] | boards[11];
@@ -111,8 +113,64 @@ public struct Board
         return IdxToPos(idx.x, idx.y);
     }
     
-    public ulong KnightAttacks(ulong pos) => (((pos>>6)|(pos<<10)) & ~(fileG|fileH))
+    // These moves are paralegal
+    public ulong KnightAttacks(ulong pos, Side side, bool _) { 
+        // Explained well in the ameye.dev link Ms. Qiu gave us
+        // We are just bitshifting to the correct position
+        // The attacks a knight can do on the left side can never be in file G or H, otherwise it'd be a wrap around
+        // Same with the attacks on the right.
+        ulong attacks = (((pos>>6)|(pos<<10)) & ~(fileG|fileH))
         | (((pos>>10)|(pos<<6)) & ~(fileA|fileB))
         | (((pos>>15)|(pos<<17))&~fileH)
         | (((pos>>17)|(pos<<15))&~fileA);
+        return attacks & ~(side == Side.White ? WhitePieces : BlackPieces);
+    }
+    
+    // These moves are paralegal
+    public ulong PawnAttacks(ulong pos, Side side, bool moved) { 
+        ulong sameSide = side == Side.White ? WhitePieces : BlackPieces;
+        ulong theOps = side != Side.White ? WhitePieces : BlackPieces;
+
+        // You can either move forward, or capture
+        // The capture on the right can't be in file A, and the capture on the left can't be in file H
+        ulong attacks = pos >> 8
+            | (pos>>7 & theOps & ~fileA)
+            | (pos>>9 & theOps & ~fileH)
+            | (moved ? 0 : pos>>16);
+
+        return attacks & ~sameSide;
+    }
+
+    // These moves are paralegal
+    public ulong KingAttacks(ulong pos, Side side, bool moved) { 
+        ulong sameSide = side == Side.White ? WhitePieces : BlackPieces;
+        ulong theOps = side != Side.White ? WhitePieces : BlackPieces;
+        
+
+        // You can either move forward, or capture
+        // The capture on the right can't be in file A, and the capture on the left can't be in file H
+        ulong attacks = pos >> 7
+            | pos >> 8
+            | pos >> 9
+            // ▲ up the board
+            // ▼ Down the board
+            | pos << 9
+            | pos << 8
+            | pos << 7
+            // ▼ Left right movement
+            | pos >> 1
+            | pos << 1;
+        
+        if(moved)
+            return attacks & ~sameSide;
+        
+        // These are the squares that the king would move to castle
+        const ulong castle_spots = 0x4400000000000044;
+        // The king must slide through these lines
+        const ulong castle_line = 0xC6000000000000C6;
+        
+        // Idk how to implement castling well
+
+        return attacks & ~sameSide;
+    }
 }
