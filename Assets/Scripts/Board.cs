@@ -113,8 +113,27 @@ public struct Board
         return IdxToPos(idx.x, idx.y);
     }
     
-    // These moves are paralegal
-    public ulong KnightAttacks(ulong pos, Side side, bool _) { 
+    public ulong GetMoveParalegal(ChessPiece piece) {
+        // if idx.y == 7, then its in the first few bits, because we start fropm A8
+        ulong pos = 1ul << (piece.idx.x + (7-piece.idx.y)*8);
+        return piece.type switch
+        {
+            // Leaping
+            Piece.WPawn or Piece.BPawn => PawnMovesParalegal(pos, piece.side, piece.moved),
+            Piece.WKnight or Piece.BKnight => KnightMovesParalegal(pos, piece.side),
+            Piece.WKing or Piece.BKing => KingMovesParalegal(pos, piece.side, piece.moved),
+            
+            // Sliding (not yet implemented)
+            Piece.WBishop or Piece.BBishop => ~(piece.side == Side.White ? WhitePieces : BlackPieces),
+            Piece.WRook or Piece.BRook => ~(piece.side == Side.White ? WhitePieces : BlackPieces),
+            Piece.WQueen or Piece.BQueen => ~(piece.side == Side.White ? WhitePieces : BlackPieces),
+            
+            // Can't move nothing
+            _ => 0ul,
+        };
+    }
+
+    public ulong KnightMovesParalegal(ulong pos, Side side) { 
         // Explained well in the ameye.dev link Ms. Qiu gave us
         // We are just bitshifting to the correct position
         // The attacks a knight can do on the left side can never be in file G or H, otherwise it'd be a wrap around
@@ -126,8 +145,7 @@ public struct Board
         return attacks & ~(side == Side.White ? WhitePieces : BlackPieces);
     }
     
-    // These moves are paralegal
-    public ulong PawnAttacks(ulong pos, Side side, bool moved) { 
+    public ulong PawnMovesParalegal(ulong pos, Side side, bool moved) { 
         ulong sameSide = side == Side.White ? WhitePieces : BlackPieces;
         ulong theOps = side != Side.White ? WhitePieces : BlackPieces;
 
@@ -141,8 +159,7 @@ public struct Board
         return attacks & ~sameSide;
     }
 
-    // These moves are paralegal
-    public ulong KingAttacks(ulong pos, Side side, bool moved) { 
+    public ulong KingMovesParalegal(ulong pos, Side side, bool moved) { 
         ulong sameSide = side == Side.White ? WhitePieces : BlackPieces;
         ulong theOps = side != Side.White ? WhitePieces : BlackPieces;
         
