@@ -15,6 +15,15 @@ public struct Board
     // 0-5 is White
     // 6-11 is Black
     public ulong[] boards;
+    
+    const ulong fileA = 0x1010101010101010;
+    const ulong fileB = 0x2020202020202020;
+    const ulong fileC = 0x4040404040404040;
+    const ulong fileD = 0x8080808080808080;
+    const ulong fileE = 0x0101010101010101;
+    const ulong fileF = 0x0202020202020202;
+    const ulong fileG = 0x0404040404040404;
+    const ulong fileH = 0x0808080808080808;
 
     public readonly ulong WhitePieces => boards[0] | boards[1] | boards[2] | boards[3] | boards[4] | boards[5];
     public readonly ulong BlackPieces => boards[6] | boards[7] | boards[8] | boards[9] | boards[10] | boards[11];
@@ -90,7 +99,6 @@ public struct Board
         }
     }
 
-
     public static Vector3 IdxToPos(int x, int y) {
         float min = -19.25f;
         float max = 19.25f;
@@ -102,4 +110,9 @@ public struct Board
     public static Vector3 IdxToPos(Vector2Int idx) {
         return IdxToPos(idx.x, idx.y);
     }
+    
+    public ulong KnightAttacks(ulong pos) => (((pos>>6)|(pos<<10)) & ~(fileG|fileH))
+        | (((pos>>10)|(pos<<6)) & ~(fileA|fileB))
+        | (((pos>>15)|(pos<<17))&~fileH)
+        | (((pos>>17)|(pos<<15))&~fileA);
 }
