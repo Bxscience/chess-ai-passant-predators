@@ -151,12 +151,12 @@ public struct Board
         ulong attacksWhite = (pos >> 8 & ~Pieces)
             | (pos>>7 & BlackPieces & ~fileA)
             | (pos>>9 & BlackPieces & ~fileH)
-            | (moved ? 0 : pos>>16);
+            | (moved && (pos>>8 & Pieces) == 0 ? 0 : pos>>16);
 
         ulong attacksBlack = (pos << 8 & ~Pieces)
             | (pos<<9 & WhitePieces & ~fileA)
             | (pos<<7 & WhitePieces & ~fileH)
-            | (moved ? 0 : pos<<16);
+            | (moved && (pos<<8 & Pieces) == 0 ? 0 : pos<<16);
 
         if(side == Side.White) 
             return attacksWhite & ~WhitePieces;
