@@ -148,12 +148,12 @@ public struct Board
     public ulong PawnMovesParalegal(ulong pos, Side side, bool moved) { 
         // You can either move forward, or capture
         // The capture on the right can't be in file A, and the capture on the left can't be in file H
-        ulong attacksWhite = pos >> 8
+        ulong attacksWhite = (pos >> 8 & ~Pieces)
             | (pos>>7 & BlackPieces & ~fileA)
             | (pos>>9 & BlackPieces & ~fileH)
             | (moved ? 0 : pos>>16);
 
-        ulong attacksBlack = pos << 8
+        ulong attacksBlack = (pos << 8 & ~Pieces)
             | (pos<<9 & WhitePieces & ~fileA)
             | (pos<<7 & WhitePieces & ~fileH)
             | (moved ? 0 : pos<<16);
