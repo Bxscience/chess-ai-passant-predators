@@ -16,7 +16,7 @@ public class MagicBitboards {
         // Get position as an integer
         // Our position starts from rank 8, so y=0 (which is rank 1), should be a higher value of pos
         // ie a Vec2I of (0,0) which is A1, should be pos=56 
-        int square = piece.idx.x + (7-piece.idx.y)*8;
+        int square = pos.x + (7-pos.y)*8;
         ulong posBoard = 1ul << square;
         (ulong rank, ulong file) = RankFileMask(pos);
         
