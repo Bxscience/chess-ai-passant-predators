@@ -2,6 +2,7 @@ using System.Collections;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.VisualScripting;
 
 public enum Piece {
     WPawn = 0, WBishop = 1, WKnight = 2, WRook = 3, WQueen = 4, WKing = 5,
@@ -91,7 +92,19 @@ public struct Board
             boards[(int)ply.Captured] = ~(~boards[(int)ply.Captured] | 1ul<<end_idx);
         }
     }
-    
+    public void Promote(ulong pos, Side side)
+    {
+        if (side== Side.White)
+        {
+            boards[(int)Piece.WPawn] = boards[(int)Piece.WPawn] & ~pos;
+            boards[(int)Piece.WQueen] |= pos;
+        }
+        if (side == Side.Black)
+        {
+            boards[(int)Piece.BPawn] = boards[(int)Piece.BPawn] & ~pos;
+            boards[(int)Piece.BQueen] |= pos;
+        }
+    }
     public void UndoPly(Ply ply) {
         // the start coordinate, as an offset, starting from A1
         // If Start.y is 7, that should correlate with the 8th rank.   
@@ -160,6 +173,20 @@ public struct Board
             | (pos>>7 & BlackPieces & ~fileA)
             | (pos>>9 & BlackPieces & ~fileH)
             | ((moved || (pos>>8 & Pieces) != 0) ? 0 : pos>>16);
+       if (side == Side.White)
+        {
+            if ((pos & rank8) != 0)
+            {
+                //promote
+            }
+        }
+        else
+        {
+            if ((pos & rank1) != 0)
+            {
+                //promote
+            }
+        }
 
         ulong attacksBlack = (pos << 8 & ~Pieces)
             | (pos<<9 & WhitePieces & ~fileA)
@@ -171,6 +198,7 @@ public struct Board
         else
             return attacksBlack & ~BlackPieces;
     }
+
 
     public ulong KingMovesParalegal(ulong pos, Side side, bool moved) { 
         ulong sameSide = side == Side.White ? WhitePieces : BlackPieces;
