@@ -56,10 +56,11 @@ public class MagicBitboards {
             4 => Board.rank5,
             5 => Board.rank6,
             6 => Board.rank7,
-            7 => Board.rank8,
-        }
+            7 => Board.rank8
+        };
 
-        ulong file = x switch {
+        ulong file = x switch
+        {
             0 => Board.fileA,
             1 => Board.fileB,
             2 => Board.fileC,
@@ -68,12 +69,13 @@ public class MagicBitboards {
             5 => Board.fileF,
             6 => Board.fileG,
             7 => Board.fileH,
-        }
+        };
         return (rank, file);
     }
     
     public static (ulong, ulong) RankFileMask(Vector2Int pos) {
-        ulong rank = pos.y switch {
+        ulong rank = pos.y switch
+        {
             0 => Board.rank1,
             1 => Board.rank2,
             2 => Board.rank3,
@@ -82,7 +84,7 @@ public class MagicBitboards {
             5 => Board.rank6,
             6 => Board.rank7,
             7 => Board.rank8,
-        }
+        };
 
         ulong file = pos.x switch {
             0 => Board.fileA,
@@ -93,7 +95,7 @@ public class MagicBitboards {
             5 => Board.fileF,
             6 => Board.fileG,
             7 => Board.fileH,
-        }
+        };
         return (rank, file);
     }
 }

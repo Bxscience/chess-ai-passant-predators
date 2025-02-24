@@ -16,24 +16,24 @@ public struct Board
     // 6-11 is Black
     public ulong[] boards;
     
-    const ulong fileA = 0x0101010101010101;
-    const ulong fileB = 0x0202020202020202;
-    const ulong fileC = 0x0404040404040404;
-    const ulong fileD = 0x0808080808080808;
-    const ulong fileE = 0x1010101010101010;
-    const ulong fileF = 0x2020202020202020;
-    const ulong fileG = 0x4040404040404040;
-    const ulong fileH = 0x8080808080808080;
+    public const ulong fileA = 0x0101010101010101;
+    public const ulong fileB = 0x0202020202020202;
+    public const ulong fileC = 0x0404040404040404;
+    public const ulong fileD = 0x0808080808080808;
+    public const ulong fileE = 0x1010101010101010;
+    public const ulong fileF = 0x2020202020202020;
+    public const ulong fileG = 0x4040404040404040;
+    public const ulong fileH = 0x8080808080808080;
     // Every hex character maps to 4 bits. Two hex digits is 8 bits. Each row is 8 bits
     // If you notice, rank 1 is 0xFF00000000000000, which is a very large number. Since we start counting at rank 8, rank 8 is near the beginning of the number, and rank 1 is at the front.
-    const ulong rank1 = 0xFF00000000000000;
-    const ulong rank2 = 0x00FF000000000000;
-    const ulong rank3 = 0x0000FF0000000000;
-    const ulong rank4 = 0x000000FF00000000;
-    const ulong rank5 = 0x00000000FF000000;
-    const ulong rank6 = 0x0000000000FF0000;
-    const ulong rank7 = 0x000000000000FF00;
-    const ulong rank8 = 0x00000000000000FF;
+    public const ulong rank1 = 0xFF00000000000000;
+    public const ulong rank2 = 0x00FF000000000000;
+    public const ulong rank3 = 0x0000FF0000000000;
+    public const ulong rank4 = 0x000000FF00000000;
+    public const ulong rank5 = 0x00000000FF000000;
+    public const ulong rank6 = 0x0000000000FF0000;
+    public const ulong rank7 = 0x000000000000FF00;
+    public const ulong rank8 = 0x00000000000000FF;
 
     public readonly ulong WhitePieces => boards[0] | boards[1] | boards[2] | boards[3] | boards[4] | boards[5];
     public readonly ulong BlackPieces => boards[6] | boards[7] | boards[8] | boards[9] | boards[10] | boards[11];
