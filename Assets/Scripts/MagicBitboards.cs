@@ -32,6 +32,10 @@ public class MagicBitboards {
                 // Add the new move into the board
                 moves += 1ul << (square + i - pos.x);
             }
+            else
+            {
+                return moves;
+            }
         }
         
         // Along a file
@@ -42,6 +46,10 @@ public class MagicBitboards {
             if( ( (1ul << (pos.x + (7-pos.y)*8) ) & importantPieces) != 0) {
                 // Add the new move into the board
                 moves += 1ul << (pos.x + (7-pos.y)*8);
+            }
+            else
+            {
+                return moves;
             }
         }
         return moves;

@@ -146,10 +146,10 @@ public struct Board
         // We are just bitshifting to the correct position
         // The attacks a knight can do on the left side can never be in file G or H, otherwise it'd be a wrap around
         // Same with the attacks on the right.
-        ulong attacks = (((pos>>6)|(pos<<10)) & ~(fileG|fileH))
-        | (((pos>>10)|(pos<<6)) & ~(fileA|fileB))
-        | (((pos>>15)|(pos<<17)) & ~fileH)
-        | (((pos>>17)|(pos<<15)) & ~fileA);
+        ulong attacks = (((pos>>6)|(pos<<10)) & ~(fileA|fileB))
+        | (((pos>>10)|(pos<<6)) & ~(fileG|fileH))
+        | (((pos>>15)|(pos<<17) ) & ~fileA)
+        | (((pos>>17)|(pos<<15)) & ~fileH);
         return attacks & ~(side == Side.White ? WhitePieces : BlackPieces);
     }
     
