@@ -24,8 +24,16 @@ public struct Board
     const ulong fileF = 0x2020202020202020;
     const ulong fileG = 0x4040404040404040;
     const ulong fileH = 0x8080808080808080;
+    // Every hex character maps to 4 bits. Two hex digits is 8 bits. Each row is 8 bits
+    // If you notice, rank 1 is 0xFF00000000000000, which is a very large number. Since we start counting at rank 8, rank 8 is near the beginning of the number, and rank 1 is at the front.
+    const ulong rank1 = 0xFF00000000000000;
     const ulong rank2 = 0x00FF000000000000;
+    const ulong rank3 = 0x0000FF0000000000;
+    const ulong rank4 = 0x000000FF00000000;
+    const ulong rank5 = 0x00000000FF000000;
+    const ulong rank6 = 0x0000000000FF0000;
     const ulong rank7 = 0x000000000000FF00;
+    const ulong rank8 = 0x00000000000000FF;
 
     public readonly ulong WhitePieces => boards[0] | boards[1] | boards[2] | boards[3] | boards[4] | boards[5];
     public readonly ulong BlackPieces => boards[6] | boards[7] | boards[8] | boards[9] | boards[10] | boards[11];
