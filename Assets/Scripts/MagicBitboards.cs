@@ -28,7 +28,7 @@ public class MagicBitboards {
         // We'll filter later
         for(int i = 1; i < 7; i++) {
             if(i == pos.x) continue;
-            if( (1ul << (square + i - pos.x)) & importantPieces != 0) {
+            if( ((1ul << (square + i - pos.x)) & importantPieces) != 0) {
                 // Add the new move into the board
                 moves += 1ul << (square + i - pos.x);
             }
@@ -39,7 +39,7 @@ public class MagicBitboards {
         // We'll filter later
         for(int i = 1; i < 7; i++) {
             if(i == pos.y) continue;
-            if( ( 1ul << (pos.x + (7-pos.y)*8) ) & importantPieces != 0) {
+            if( ( (1ul << (pos.x + (7-pos.y)*8) ) & importantPieces) != 0) {
                 // Add the new move into the board
                 moves += 1ul << (pos.x + (7-pos.y)*8);
             }
