@@ -171,20 +171,21 @@ public struct Board
 
         // You can either move forward, or capture
         // The capture on the right can't be in file A, and the capture on the left can't be in file H
-        ulong attacks = pos >> 7
+        ulong attacks = ( pos >> 7 & ~fileA )
             | pos >> 8
-            | pos >> 9
+            | ( pos >> 9 & ~fileH )
             // ▲ up the board
             // ▼ Down the board
-            | pos << 9
+            | ( pos << 9 & ~fileA )
             | pos << 8
-            | pos << 7
+            | ( pos << 7 & ~fileH )
             // ▼ Left right movement
-            | pos >> 1
-            | pos << 1;
-        
-        if(moved)
+            | ( pos >> 1 & ~fileH )
+            | ( pos << 1 & ~fileA );
+
+        if (moved)
             return attacks & ~sameSide;
+
         
         // These are the squares that the king would move to castle
         const ulong castle_spots = 0x4400000000000044;

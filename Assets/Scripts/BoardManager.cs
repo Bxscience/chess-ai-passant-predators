@@ -19,7 +19,7 @@ public class BoardManager : MonoBehaviour
     void Start()
     {
         instance = this;
-        board = new Board("rnbqkbnr/pppppppp/P7/8/8/8/PPPPPPPP/RNBQKBNR");
+        board = new Board("rnbqkbnr/pppppppp/P7/1K6/8/8/PPPPPPPP/RNBQKBNR");
     }
 
     void Update()
