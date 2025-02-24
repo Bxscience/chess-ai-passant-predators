@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 public class MagicBitboards {
     public static int[] RookMagics = new int[64];
