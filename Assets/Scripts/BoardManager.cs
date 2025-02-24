@@ -12,9 +12,11 @@ public class BoardManager : MonoBehaviour
     Stack<Ply> plies = new Stack<Ply>();
     Stack<ChessPiece> taken = new Stack<ChessPiece>();
     Stack<ChessPiece> moved = new Stack<ChessPiece>();
-
+    
     public static BoardManager instance;
     public event Action PlayedPly;
+
+    public ChessPiece[] pieceBoard = new ChessPiece[64];
 
     void Start()
     {
