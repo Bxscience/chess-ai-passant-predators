@@ -9,12 +9,14 @@ public struct Ply
     public Piece Type;
     public Piece Captured;
     public Piece? PromoteType;
+    public bool IsCastling;
 
-    public Ply(Vector2Int start, Vector2Int end, Piece type, Piece captured = Piece.None, Piece? promoteType = null) {
+    public Ply(Vector2Int start, Vector2Int end, Piece type, bool isCastling = false, Piece captured = Piece.None, Piece? promoteType = null) {
         Start = start;
         End = end;
         Type = type;
         Captured = captured;
         PromoteType = promoteType;
+        IsCastling = isCastling;
     }
 }
