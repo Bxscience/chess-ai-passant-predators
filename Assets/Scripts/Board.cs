@@ -16,6 +16,7 @@ public struct Board
     // 6-11 is Black
     public ulong[] boards;
     public ulong passantTrack;
+    public ulong passantCaptured;
     public const ulong fileA = 0x0101010101010101;
     public const ulong fileB = 0x0202020202020202;
     public const ulong fileC = 0x0404040404040404;
@@ -60,6 +61,7 @@ public struct Board
     public Board(string fen) {
         boards = new ulong[12];
         passantTrack = 0;
+        passantCaptured = 0;
         string[] fen_parts = fen.Split(" ");
         int idx = 0;
         for(int i = 0; i < fen_parts[0].Length; i++) {
@@ -92,13 +94,16 @@ public struct Board
             boards[(int)ply.Captured] = ~(~boards[(int)ply.Captured] | 1ul<<end_idx);
         }
         passantTrack = 0;
+        passantCaptured = 0;
         if (ply.Type == Piece.WPawn && ((ply.End-ply.Start) == new Vector2Int(0,2)))
         {
             passantTrack = 1ul << end_idx << 8;
+            passantCaptured = 1ul << end_idx;
         }
         if (ply.Type == Piece.BPawn && ((ply.End - ply.Start) == new Vector2Int(0, -2)))
         {
             passantTrack = 1ul << end_idx >> 8;
+            passantCaptured = 1ul << end_idx;
         }
 
         
