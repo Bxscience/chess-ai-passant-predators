@@ -10,13 +10,12 @@ public enum Piece {
     BPawn = 6, BBishop = 7, BKnight = 8, BRook = 9, BQueen = 10, BKing = 11,
     None
 }
-
 public struct Board
 {
     // 0-5 is White
     // 6-11 is Black
     public ulong[] boards;
-    
+    public ulong passantTrack;
     public const ulong fileA = 0x0101010101010101;
     public const ulong fileB = 0x0202020202020202;
     public const ulong fileC = 0x0404040404040404;
@@ -59,7 +58,8 @@ public struct Board
     };
 
     public Board(string fen) {
-        boards = new ulong[12];  
+        boards = new ulong[12];
+        passantTrack = 0;
         string[] fen_parts = fen.Split(" ");
         int idx = 0;
         for(int i = 0; i < fen_parts[0].Length; i++) {
@@ -91,6 +91,17 @@ public struct Board
         if(ply.Captured != Piece.None) {
             boards[(int)ply.Captured] = ~(~boards[(int)ply.Captured] | 1ul<<end_idx);
         }
+        passantTrack = 0;
+        if (ply.Type == Piece.WPawn && ((ply.End-ply.Start) == new Vector2Int(0,2)))
+        {
+            passantTrack = 1ul << end_idx << 8;
+        }
+        if (ply.Type == Piece.BPawn && ((ply.End - ply.Start) == new Vector2Int(0, -2)))
+        {
+            passantTrack = 1ul << end_idx >> 8;
+        }
+
+        
 
         if (ply.Type == Piece.WPawn && ( (1ul<<end_idx) & rank8 ) != 0) {
             Promote(1ul<<end_idx, Side.White, (Piece)ply.PromoteType);
@@ -98,6 +109,7 @@ public struct Board
         else if(ply.Type == Piece.BPawn && ( (1ul<<end_idx) & rank1) != 0) {
             Promote(1ul<<end_idx, Side.Black, (Piece)ply.PromoteType);
         }
+        
     }
 
     public void Promote(ulong pos, Side side, Piece promoteType)
@@ -177,12 +189,12 @@ public struct Board
         // The capture on the right can't be in file A, and the capture on the left can't be in file H
         ulong attacksWhite = (pos >> 8 & ~Pieces)
             | (pos>>7 & BlackPieces & ~fileA)
-            | (pos>>9 & BlackPieces & ~fileH)
+            | (pos>>9 & BlackPieces & ~fileH) | (pos>>7 & (passantTrack) & ~fileA) | (pos>>9 & passantTrack & ~fileH)
             | ((moved || (pos>>8 & Pieces) != 0) ? 0 : pos>>16);
         
         ulong attacksBlack = (pos << 8 & ~Pieces)
             | (pos<<9 & WhitePieces & ~fileA)
-            | (pos<<7 & WhitePieces & ~fileH)
+            | (pos<<7 & WhitePieces & ~fileH) | (pos << 9 & (passantTrack) & ~fileA) | (pos << 7 & passantTrack & ~fileH)
             | ((moved || ((pos<<8 & Pieces) != 0)) ? 0 : pos<<16);
 
         if(side == Side.White) 
