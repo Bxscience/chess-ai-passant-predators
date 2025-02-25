@@ -26,32 +26,103 @@ public class MagicBitboards {
         // Along a rank
         // First/last file doesn't matter, we assume we can always capture
         // We'll filter later
-        for(int i = 1; i < 7; i++) {
-            if(i == pos.x) continue;
-            if( ((1ul << (square + i - pos.x)) & importantPieces) != 0) {
-                // Add the new move into the board
-                moves += 1ul << (square + i - pos.x);
+        for(int i = pos.x+1; i < 7; i++) {
+            //Add the new move into the board
+            moves += 1ul << (square + i - pos.x);
+
+            if( ((1ul << (square + i)) & importantPieces) == 0) {
+                break;
             }
-            else
-            {
-                return moves;
+        }
+        for(int i = pos.x-1; i > 1; i--) {
+            //Add the new move into the board
+            moves += 1ul << (square + i);
+
+            if( ((1ul << (square + i - pos.x)) & importantPieces) == 0) {
+                break;
             }
         }
         
         // Along a file
         // First/last rank doesn't matter, we assume we can always capture
         // We'll filter later
-        for(int i = 1; i < 7; i++) {
-            if(i == pos.y) continue;
-            if( ( (1ul << (pos.x + (7-pos.y)*8) ) & importantPieces) != 0) {
-                // Add the new move into the board
-                moves += 1ul << (pos.x + (7-pos.y)*8);
-            }
-            else
-            {
-                return moves;
+        for(int i = pos.y+1; i < 7; i++) {
+            // Add the new move into the board
+            moves += 1ul << (pos.x + (7-i)*8);
+
+            if( (moves & importantPieces) == 0) {
+                break;
             }
         }
+
+        for(int i = pos.y-1; i > 1; i--) {
+            // Add the new move into the board
+            moves += 1ul << (pos.x + (7-i)*8);
+
+            if( (moves & importantPieces) == 0) {
+                break;
+            }
+        }
+        return moves;
+    }
+        
+    public static ulong FindMovesBishop(Vector2Int pos, ulong allPieces) {
+        ulong moves = 0ul;
+        Vector2Int negSlope = new(-1,1);
+
+        // Get position as an integer
+        // Our position starts from rank 8, so y=0 (which is rank 1), should be a higher value of pos
+        // ie a Vec2I of (0,0) which is A1, should be pos=56 
+        int square = pos.x + (7-pos.y)*8;
+        
+        Vector2Int rayPos = pos + Vector2Int.one;
+        while(
+            rayPos.x > 1 && rayPos.x < 7
+            && rayPos.y > 1 && rayPos.y < 7
+        ) {
+            moves += 1ul << (rayPos.x + (7-rayPos.y)*8);
+            if((allPieces & moves) == 0) {
+                break;
+            }
+            rayPos += Vector2Int.one;
+        }
+
+        rayPos = pos - Vector2Int.one;
+        while(
+            rayPos.x > 1 && rayPos.x < 7
+            && rayPos.y > 1 && rayPos.y < 7
+        ) {
+            moves += 1ul << (rayPos.x + (7-rayPos.y)*8);
+            if((allPieces & moves) == 0) {
+                break;
+            }
+            rayPos -= Vector2Int.one;
+        }
+
+        rayPos = pos + negSlope;
+        while(
+            rayPos.x > 1 && rayPos.x < 7
+            && rayPos.y > 1 && rayPos.y < 7
+        ) {
+            moves += 1ul << (rayPos.x + (7-rayPos.y)*8);
+            if((allPieces & moves) == 0) {
+                break;
+            }
+            rayPos += negSlope;
+        }
+
+        rayPos = pos - negSlope;
+        while(
+            rayPos.x > 1 && rayPos.x < 7
+            && rayPos.y > 1 && rayPos.y < 7
+        ) {
+            moves += 1ul << (rayPos.x + (7-rayPos.y)*8);
+            if((allPieces & moves) == 0) {
+                break;
+            }
+            rayPos -= negSlope;
+        }
+
         return moves;
     }
 
