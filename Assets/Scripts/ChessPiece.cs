@@ -24,6 +24,7 @@ public class ChessPiece : MonoBehaviour
     };
     
     public void Promote(Piece promoteType) {
+        type = promoteType;
         meshFilter.mesh = promoteType switch {
             Piece.WKnight => WKnightMesh,
             Piece.BKnight => BKnightMesh,

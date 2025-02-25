@@ -70,13 +70,11 @@ public class BoardManager : MonoBehaviour
 
                     if(currentlySelected.type == Piece.WPawn && currentlySelected.idx.y == 7) {
                         newPly.PromoteType = Piece.WQueen;
-                        currentlySelected.type = Piece.WQueen;
                         currentlySelected.Promote((Piece)newPly.PromoteType);
                     }
 
                     if(currentlySelected.type == Piece.BPawn && currentlySelected.idx.y == 0) {
                         newPly.PromoteType = Piece.BQueen;
-                        currentlySelected.type = Piece.BQueen;
                         currentlySelected.Promote((Piece)newPly.PromoteType);
                     }
 
