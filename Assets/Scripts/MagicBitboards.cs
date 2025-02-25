@@ -1,14 +1,18 @@
 using System;
 using UnityEngine;
 
-public class MagicBitboards {
+public static class MagicBitboards {
     public static int[] RookMagics = new int[64];
     public static int[] BishopMagics = new int[64];
     // Queen magics/moves are just a lookup into both rook and bishop. Just | the two moves together
     
     // We need to fill this
-    public static int[] RookMoves;
-    public static int[] BishopMoves;
+    public static ulong[,] RookMoves = new ulong[64,4096];
+    public static ulong[,] BishopMoves = new ulong[64,4096];
+
+    public static void GenerateMagicNumbers() {
+
+    }
     
     public static ulong FindMovesRook(Vector2Int pos, ulong allPieces) {
         ulong moves = 0ul;
