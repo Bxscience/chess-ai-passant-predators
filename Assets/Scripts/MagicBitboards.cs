@@ -1,17 +1,31 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public static class MagicBitboards {
-    public static int[] RookMagics = new int[64];
-    public static int[] BishopMagics = new int[64];
+    public struct Magics {
+        public ulong[] moves;
+        public ulong magic;
+        public ulong movementMask;
+    }
+    public static Magics[] RookMagics = new Magics[64];
+    public static Magics[] BishopMagics = new Magics[64];
     // Queen magics/moves are just a lookup into both rook and bishop. Just | the two moves together
-    
-    // We need to fill this
-    public static ulong[,] RookMoves = new ulong[64,4096];
-    public static ulong[,] BishopMoves = new ulong[64,4096];
 
     public static void GenerateMagicNumbers() {
-
+        for(int i = 0; i < 64; i++) {
+            // Rook magics
+            RookMagics[i] = new Magics();
+            (ulong rank, ulong file) = RankFileMask(i/8, i%8);
+            RookMagics[i].movementMask = (rank | file) & 1ul<<i;
+            Dictionary<ulong, ulong> testBoard = new Dictionary<ulong, ulong>();
+            ulong test_magic = RandU64()&RandU64()&RandU64();
+        }
+    }
+    
+    public static ulong RandU64() {
+        System.Random random = new System.Random();
+        return ((ulong)random.Next())<<32 | ((ulong)random.Next());
     }
     
     public static ulong FindMovesRook(Vector2Int pos, ulong allPieces) {
