@@ -135,7 +135,9 @@ public class MagicBitboards {
             4 => Board.rank5,
             5 => Board.rank6,
             6 => Board.rank7,
-            7 => Board.rank8
+            7 => Board.rank8,
+
+            _ => Board.rank1,
         };
 
         ulong file = x switch
@@ -148,6 +150,8 @@ public class MagicBitboards {
             5 => Board.fileF,
             6 => Board.fileG,
             7 => Board.fileH,
+
+            _ => Board.fileA,
         };
         return (rank, file);
     }
@@ -163,6 +167,8 @@ public class MagicBitboards {
             5 => Board.rank6,
             6 => Board.rank7,
             7 => Board.rank8,
+
+            _ => Board.rank1,
         };
 
         ulong file = pos.x switch {
@@ -174,6 +180,8 @@ public class MagicBitboards {
             5 => Board.fileF,
             6 => Board.fileG,
             7 => Board.fileH,
+
+            _ => Board.fileA,
         };
         return (rank, file);
     }

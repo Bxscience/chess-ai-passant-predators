@@ -131,8 +131,8 @@ public struct Board
     public static Vector3 IdxToPos(int x, int y) {
         float min = -19.25f;
         float max = 19.25f;
-        float x_pos = (x) * (max - min) / (7) + min;
-        float y_pos = (y) * (max - min) / (7) + min;
+        float x_pos = x * (max - min) / 7 + min;
+        float y_pos = y * (max - min) / 7 + min;
         return new Vector3(x_pos, 2, y_pos);
     }
 
@@ -216,9 +216,10 @@ public struct Board
 
         
         // These are the squares that the king would move to castle
-        const ulong castle_spots = 0x4400000000000044;
+        // const ulong castleSpots = 0x4400000000000044;
+        
         // The king must slide through these lines
-        const ulong castle_line = 0xC6000000000000C6;
+        // const ulong castleLine = 0xC6000000000000C6;
         
         // Idk how to implement castling well
 

@@ -34,6 +34,7 @@ public class ChessPiece : MonoBehaviour
             Piece.BRook => BRookMesh,
             Piece.WQueen => WQueenMesh,
             Piece.BQueen => BQueenMesh,
+            _ => WQueenMesh
         };
     }
 }
