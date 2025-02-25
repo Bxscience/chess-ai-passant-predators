@@ -91,18 +91,28 @@ public struct Board
         if(ply.Captured != Piece.None) {
             boards[(int)ply.Captured] = ~(~boards[(int)ply.Captured] | 1ul<<end_idx);
         }
-    }
-    public void Promote(ulong pos, Side side)
-    {
-        if (side== Side.White)
-        {
-            boards[(int)Piece.WPawn] = boards[(int)Piece.WPawn] & ~pos;
-            boards[(int)Piece.WQueen] |= pos;
+
+        if (ply.Type == Piece.WPawn) {
+            if (( (1ul<<end_idx) & rank8 ) != 0) {
+                Promote(1ul<<end_idx, Side.White, Piece.WQueen);
+            }
         }
-        if (side == Side.Black)
-        {
+        else if(ply.Type == Piece.BPawn) {
+            if (( (1ul<<end_idx) & rank1) != 0) {
+                Promote(1ul<<end_idx, Side.Black, Piece.BQueen);
+            }
+        }
+    }
+
+    public void Promote(ulong pos, Side side, Piece promoteType)
+    {
+        if (side== Side.White) {
+            boards[(int)Piece.WPawn] = boards[(int)Piece.WPawn] & ~pos;
+            boards[(int)promoteType] |= pos;
+        }
+        if (side == Side.Black) {
             boards[(int)Piece.BPawn] = boards[(int)Piece.BPawn] & ~pos;
-            boards[(int)Piece.BQueen] |= pos;
+            boards[(int)promoteType] |= pos;
         }
     }
     public void UndoPly(Ply ply) {
@@ -173,21 +183,7 @@ public struct Board
             | (pos>>7 & BlackPieces & ~fileA)
             | (pos>>9 & BlackPieces & ~fileH)
             | ((moved || (pos>>8 & Pieces) != 0) ? 0 : pos>>16);
-       if (side == Side.White)
-        {
-            if ((pos & rank8) != 0)
-            {
-                //promote
-            }
-        }
-        else
-        {
-            if ((pos & rank1) != 0)
-            {
-                //promote
-            }
-        }
-
+        
         ulong attacksBlack = (pos << 8 & ~Pieces)
             | (pos<<9 & WhitePieces & ~fileA)
             | (pos<<7 & WhitePieces & ~fileH)
