@@ -92,15 +92,11 @@ public struct Board
             boards[(int)ply.Captured] = ~(~boards[(int)ply.Captured] | 1ul<<end_idx);
         }
 
-        if (ply.Type == Piece.WPawn) {
-            if (( (1ul<<end_idx) & rank8 ) != 0) {
-                Promote(1ul<<end_idx, Side.White, Piece.WQueen);
-            }
+        if (ply.Type == Piece.WPawn && ( (1ul<<end_idx) & rank8 ) != 0) {
+            Promote(1ul<<end_idx, Side.White, (Piece)ply.PromoteType);
         }
-        else if(ply.Type == Piece.BPawn) {
-            if (( (1ul<<end_idx) & rank1) != 0) {
-                Promote(1ul<<end_idx, Side.Black, Piece.BQueen);
-            }
+        else if(ply.Type == Piece.BPawn && ( (1ul<<end_idx) & rank1) != 0) {
+            Promote(1ul<<end_idx, Side.Black, (Piece)ply.PromoteType);
         }
     }
 

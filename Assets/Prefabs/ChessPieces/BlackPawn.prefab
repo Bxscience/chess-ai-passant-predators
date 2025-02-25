@@ -63,6 +63,11 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1382091576799174455}
   m_SourcePrefab: {fileID: 100100000, guid: ec3c660af8dacf541918f325cd50f388, type: 3}
+--- !u!33 &1770160163472340279 stripped
+MeshFilter:
+  m_CorrespondingSourceObject: {fileID: -5754084199372789682, guid: ec3c660af8dacf541918f325cd50f388, type: 3}
+  m_PrefabInstance: {fileID: 2933459235849280889}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2626958076941410344 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: ec3c660af8dacf541918f325cd50f388, type: 3}
@@ -82,6 +87,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   idx: {x: 0, y: 0}
   type: 6
+  moved: 0
+  meshFilter: {fileID: 1770160163472340279}
+  WKnightMesh: {fileID: -2548827113733898766, guid: af847ef267aaf8546afeafaf79bea464, type: 3}
+  BKnightMesh: {fileID: -4446832430150502201, guid: 3e59f5d5432831c49b294b549c7b32d5, type: 3}
+  WBishopMesh: {fileID: 179077862375536153, guid: 2eecf5db77b460640872c6d67117b45f, type: 3}
+  BBishopMesh: {fileID: -8128712963130434725, guid: b9a3d8e6046103a4cbef01e518e97c7d, type: 3}
+  WRookMesh: {fileID: 6730794796122157056, guid: 8b29d7459880d7f4a9a667930b2ea6a2, type: 3}
+  BRookMesh: {fileID: -5193785951196007752, guid: 81b1cf9858fa31443b02f501d267c494, type: 3}
+  WQueenMesh: {fileID: 7201455234926429472, guid: b307b8d465448c544a6b4117b6bef3bb, type: 3}
+  BQueenMesh: {fileID: -1529095754846676313, guid: ae29147681f8d2941af746d6187483bc, type: 3}
 --- !u!65 &1382091576799174455
 BoxCollider:
   m_ObjectHideFlags: 0

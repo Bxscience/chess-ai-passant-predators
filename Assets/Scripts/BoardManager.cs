@@ -68,6 +68,18 @@ public class BoardManager : MonoBehaviour
                     currentlySelected.transform.position = Board.IdxToPos(newPly.End);
                     currentlySelected.idx = newPly.End;
 
+                    if(currentlySelected.type == Piece.WPawn && currentlySelected.idx.y == 7) {
+                        newPly.PromoteType = Piece.WQueen;
+                        currentlySelected.type = Piece.WQueen;
+                        currentlySelected.Promote((Piece)newPly.PromoteType);
+                    }
+
+                    if(currentlySelected.type == Piece.BPawn && currentlySelected.idx.y == 0) {
+                        newPly.PromoteType = Piece.BQueen;
+                        currentlySelected.type = Piece.BQueen;
+                        currentlySelected.Promote((Piece)newPly.PromoteType);
+                    }
+
                     moved.Push(currentlySelected);
                     currentlySelected.moved = true;
                     currentlySelected = null;
