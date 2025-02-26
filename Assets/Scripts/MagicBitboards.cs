@@ -4,11 +4,6 @@ using System.Linq;
 using UnityEngine;
 
 public static class MagicBitboards {
-    public struct Magics {
-        public ulong[] moves;
-        public ulong magic;
-        public ulong movementMask;
-    }
     public static Magics[] RookMagics = new Magics[64];
     public static Magics[] BishopMagics = new Magics[64];
     // Queen magics/moves are just a lookup into both rook and bishop. Just | the two moves together
@@ -24,25 +19,68 @@ public static class MagicBitboards {
                 & (i/8 == 7 ? 0xFFFFFFFFFFFFFFFF : ~Board.fileH)
                 & (i%8 == 0 ? 0xFFFFFFFFFFFFFFFF : ~Board.rank7) // These last two may be flipped around
                 & (i%8 == 7 ? 0xFFFFFFFFFFFFFFFF : ~Board.rank1);
-            FillTable(ref RookMagics[i]);
+            // while(!FillTable(ref RookMagics[i])) {}
+            for(int j = 0; j < 12; j++) {
+                if(FillTable(ref RookMagics[i])) {
+                    break;
+                }
+            }
         }
     }
     
-    public static void FillTable(ref Magics magic) {
+    public static bool FillTable(ref Magics magic) {
         ulong test_magic = RandU64()&RandU64()&RandU64();
 
         Dictionary<ulong, ulong> testBoard = new Dictionary<ulong, ulong>();
         ulong mask = magic.movementMask;
-        // This code is right now very unreasonable
-        // for(ulong i = 0; i < 0xFFFFFFFFFFFFFFFF; i++) {
-        //     // Add code here to iterate through board configs
-        //     ulong blockers = mask & ~i;
+        for (int i = 0; i < 0xFFFF; i++) {
+            // Add code here to iterate through board configs
+            // This is hard to read
+            // blockers is where blockers can be
+            ulong blockers = 0;
+            // This exists so that i isn't touched, blocker number
+            uint b = (uint)i;
+            // This is how many digits through i are we
+            int digit = 1;
+            
+            // This loop adds bits to blockers where there are blockers
+            while (b > 0) {
+                // Is it a 1 or a 0
+                uint stuff = b & 0b1u;
+                int pos = 0;
+                // Find where the nth 1 is, corresponding to the nth digit of b
+                for(int j = 0; j<digit; j++) {
+                    // max number of moves in a movement mask should be 14 I think, so if its more than 16, we break
+                    if(pos > 16) break;
+                    pos++;
+                    if((mask & 1ul<<pos) == 0) {
+                        j--; // We increment back until we find a 1
+                    }
+                }
+                // add the bit. If there is something in this digit.
+                blockers |= stuff;
+                b >>= 1;
+                digit++;
+            }
+            // We now finally have blockers
 
-        // }
+            // the shift should be by some number, i'm just doing last 14 bits for now
+            ulong magicIdx = (blockers * test_magic) >> (64-14);
+            ulong moves = FindMovesRook(new Vector2Int(i/8, i%8), blockers);
+            // If the testboard contains this magic index AND the moves for this set of blockers is different from whats saved, this magic number is bad
+            if(!testBoard.ContainsKey(magicIdx)) {
+                testBoard.Add(magicIdx, moves);
+            } else if(moves != testBoard[magicIdx]) {
+                // We try with a magic
+                return false;
+            } 
+        }
+        magic.magic = test_magic;
         magic.moves = new ulong[testBoard.Keys.Max()];
         foreach(ulong key in testBoard.Keys) {
             magic.moves[key] = testBoard[key];
         }
+        return true;
     }
     
     public static ulong RandU64() {
@@ -227,4 +265,10 @@ public static class MagicBitboards {
         };
         return (rank, file);
     }
+}
+
+public struct Magics {
+    public ulong[] moves;
+    public ulong magic;
+    public ulong movementMask;
 }
