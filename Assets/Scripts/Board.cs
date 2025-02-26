@@ -121,6 +121,11 @@ public struct Board
         }
         
     }
+    
+    public bool IsEnPassant(Vector2Int endPos) {
+        int sq = endPos.x + (7-endPos.y)*8;
+        return (1ul<<sq & passantTrack) != 0;
+    }
 
     public void Promote(ulong pos, Side side, Piece promoteType)
     {

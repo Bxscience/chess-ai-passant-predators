@@ -9,6 +9,7 @@ public class BoardManager : MonoBehaviour
     bool isWhiteTurn = true;
     bool isGrabbing;
     ChessPiece currentlySelected;
+    ChessPiece enPassantable;
     Stack<Ply> plies = new Stack<Ply>();
     Stack<ChessPiece> taken = new Stack<ChessPiece>();
     Stack<ChessPiece> moved = new Stack<ChessPiece>();
@@ -65,8 +66,14 @@ public class BoardManager : MonoBehaviour
                         taken.Push(pressed);
                         pressed.transform.position -= Vector3.up*10;
                     }
+                    if(board.IsEnPassant(pressed.idx)) {
+                        newPly.Captured = isWhiteTurn ? Piece.BPawn : Piece.WPawn;
+                        taken.Push(enPassantable);
+                        enPassantable.transform.position -= Vector3.up*10;
+                    }
                     currentlySelected.transform.position = Board.IdxToPos(newPly.End);
                     currentlySelected.idx = newPly.End;
+                    enPassantable = null;
 
                     if(currentlySelected.type == Piece.WPawn && currentlySelected.idx.y == 7) {
                         newPly.PromoteType = Piece.WQueen;
@@ -76,6 +83,10 @@ public class BoardManager : MonoBehaviour
                     if(currentlySelected.type == Piece.BPawn && currentlySelected.idx.y == 0) {
                         newPly.PromoteType = Piece.BQueen;
                         currentlySelected.Promote((Piece)newPly.PromoteType);
+                    }
+                    
+                    if((newPly.Type == Piece.WPawn || newPly.Type == Piece.BPawn) && Vector2Int.Distance(newPly.End, newPly.Start) == 2) {
+                        enPassantable = currentlySelected;
                     }
 
                     moved.Push(currentlySelected);
