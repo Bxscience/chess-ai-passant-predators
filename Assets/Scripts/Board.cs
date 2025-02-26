@@ -91,8 +91,13 @@ public struct Board
         boards[(int)ply.Type] = boards[(int)ply.Type] | 1ul<<end_idx;
         
         if(ply.Captured != Piece.None) {
-            boards[(int)ply.Captured] = ~(~boards[(int)ply.Captured] | 1ul<<end_idx);
+            if((1ul<<end_idx & passantTrack) != 0) {
+                boards[(int)ply.Captured] = boards[(int)Piece.BPawn] & ~passantCaptured;
+            } else {
+                boards[(int)ply.Captured] = ~(~boards[(int)ply.Captured] | 1ul<<end_idx);
+            }
         }
+
         passantTrack = 0;
         passantCaptured = 0;
         if (ply.Type == Piece.WPawn && ((ply.End-ply.Start) == new Vector2Int(0,2)))
