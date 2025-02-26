@@ -65,7 +65,7 @@ public static class MagicBitboards {
             // We now finally have blockers
 
             // the shift should be by some number, i'm just doing last 14 bits for now
-            ulong magicIdx = (blockers * test_magic) >> (64-14);
+            ulong magicIdx = (blockers * test_magic) >> (64-16);
             ulong moves = FindMovesRook(new Vector2Int(i/8, i%8), blockers);
             // If the testboard contains this magic index AND the moves for this set of blockers is different from whats saved, this magic number is bad
             if(!testBoard.ContainsKey(magicIdx)) {
