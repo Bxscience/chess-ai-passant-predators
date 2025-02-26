@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public static class MagicBitboards {
@@ -13,19 +14,42 @@ public static class MagicBitboards {
     // Queen magics/moves are just a lookup into both rook and bishop. Just | the two moves together
 
     public static void GenerateMagicNumbers() {
+        // I am pretty sure that this i is 
         for(int i = 0; i < 64; i++) {
             // Rook magics
             RookMagics[i] = new Magics();
             (ulong rank, ulong file) = RankFileMask(i/8, i%8);
-            RookMagics[i].movementMask = (rank | file) & 1ul<<i;
-            Dictionary<ulong, ulong> testBoard = new Dictionary<ulong, ulong>();
-            ulong test_magic = RandU64()&RandU64()&RandU64();
+            RookMagics[i].movementMask = (rank | file) & 1ul<<i
+                & (i/8 == 0 ? 0xFFFFFFFFFFFFFFFF : ~Board.fileA)
+                & (i/8 == 7 ? 0xFFFFFFFFFFFFFFFF : ~Board.fileH)
+                & (i%8 == 0 ? 0xFFFFFFFFFFFFFFFF : ~Board.rank7) // These last two may be flipped around
+                & (i%8 == 7 ? 0xFFFFFFFFFFFFFFFF : ~Board.rank1);
+            FillTable(ref RookMagics[i]);
+        }
+    }
+    
+    public static void FillTable(ref Magics magic) {
+        ulong test_magic = RandU64()&RandU64()&RandU64();
+
+        Dictionary<ulong, ulong> testBoard = new Dictionary<ulong, ulong>();
+        ulong mask = magic.movementMask;
+        // This code is right now very unreasonable
+        // for(ulong i = 0; i < 0xFFFFFFFFFFFFFFFF; i++) {
+        //     // Add code here to iterate through board configs
+        //     ulong blockers = mask & ~i;
+
+        // }
+        magic.moves = new ulong[testBoard.Keys.Max()];
+        foreach(ulong key in testBoard.Keys) {
+            magic.moves[key] = testBoard[key];
         }
     }
     
     public static ulong RandU64() {
         System.Random random = new System.Random();
-        return ((ulong)random.Next())<<32 | ((ulong)random.Next());
+        byte[] bytes = new byte[8];
+        random.NextBytes(bytes);
+        return BitConverter.ToUInt64(bytes);
     }
     
     public static ulong FindMovesRook(Vector2Int pos, ulong allPieces) {
