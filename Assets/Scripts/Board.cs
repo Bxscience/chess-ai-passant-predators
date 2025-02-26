@@ -3,12 +3,22 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.VisualScripting;
+using System.Drawing;
 
 public enum Piece {
     WPawn = 0, WBishop = 1, WKnight = 2, WRook = 3, WQueen = 4, WKing = 5,
 
     BPawn = 6, BBishop = 7, BKnight = 8, BRook = 9, BQueen = 10, BKing = 11,
     None
+}
+
+[Flags]
+public enum castleTrack
+{
+    wKing = 0b1000,
+    wQueen = 0b0100,
+    bKing = 0b0010,
+    bQueen = 0b0001,
 }
 public struct Board
 {
@@ -17,6 +27,7 @@ public struct Board
     public ulong[] boards;
     public ulong passantTrack;
     public ulong passantCaptured;
+    public int castleTracker;
     public const ulong fileA = 0x0101010101010101;
     public const ulong fileB = 0x0202020202020202;
     public const ulong fileC = 0x0404040404040404;
@@ -59,6 +70,8 @@ public struct Board
     };
 
     public Board(string fen) {
+        castleTracker = 0b1111;
+        //castleTracker = castleTracker & ~castleTrack.wQueen for example
         boards = new ulong[12];
         passantTrack = 0;
         passantCaptured = 0;
@@ -100,6 +113,41 @@ public struct Board
 
         passantTrack = 0;
         passantCaptured = 0;
+
+        //king move -> no more castle on that color
+        if (ply.Type == Piece.WKing)
+        {
+            castleTracker = castleTracker & ~(int)(castleTrack.wKing) & ~(int)(castleTrack.wQueen);
+        }
+        else if (ply.Type == Piece.BKing)
+        {
+            castleTracker = castleTracker & ~(int)(castleTrack.bKing) & ~(int)(castleTrack.bQueen);
+        }
+
+        if (ply.Type == Piece.WRook)
+        {
+            if (ply.Start == new Vector2Int(7, 0)) //king side rook
+            {
+                castleTracker = castleTracker & ~(int)(castleTrack.wKing);
+            }
+            else if (ply.Start == new Vector2Int(0, 0)) //queen side rook
+            {
+                castleTracker = castleTracker & ~(int)(castleTrack.wQueen); 
+            }
+        }
+        else if (ply.Type == Piece.BRook)
+        {
+            if (ply.Start == new Vector2Int(7, 7)) 
+            {
+                castleTracker = castleTracker & ~(int)(castleTrack.bKing);
+            }
+            else if (ply.Start == new Vector2Int(0, 7))
+            {
+                castleTracker = castleTracker & ~(int)(castleTrack.bQueen);
+            }
+        }
+
+
         if (ply.Type == Piece.WPawn && ((ply.End-ply.Start) == new Vector2Int(0,2)))
         {
             passantTrack = 1ul << end_idx << 8;
@@ -221,7 +269,10 @@ public struct Board
 
     public ulong KingMovesParalegal(ulong pos, Side side, bool moved) { 
         ulong sameSide = side == Side.White ? WhitePieces : BlackPieces;
-        ulong theOps = side != Side.White ? WhitePieces : BlackPieces;
+        ulong theOpps = side != Side.White ? WhitePieces : BlackPieces;
+        ulong wkSlide = 6 << 60;
+        ulong bkSlide = 6 << 4;
+        //do the queen slides, 01110 instead of 0110 slid by king position or wtv
         
 
         // You can either move forward, or capture
@@ -237,10 +288,34 @@ public struct Board
             // ▼ Left right movement
             | ( pos >> 1 & ~fileH )
             | ( pos << 1 & ~fileA );
-
+        if (side == Side.White)
+        {
+            if ((castleTracker & (int)castleTrack.wKing) > 0 ) //need to check if the row is clear
+            {
+                attacks = attacks | (pos << 2);
+            }
+            if ((castleTracker & (int)castleTrack.wQueen) > 0) //need to check if the row is clear
+            {
+                attacks = attacks | (pos >> 3);
+            }
+        }
+        else
+        {
+            if ((castleTracker & (int)castleTrack.bKing) > 0) //need to check if the row is clear
+            {
+                attacks = attacks | (pos << 2);
+            }
+            if ((castleTracker & (int)castleTrack.bQueen) > 0) //need to check if the row is clear
+            {
+                attacks = attacks | (pos >> 3);
+            }
+        }
         if (moved)
+        {
+           
             return attacks & ~sameSide;
 
+        }
         
         // These are the squares that the king would move to castle
         // const ulong castleSpots = 0x4400000000000044;
