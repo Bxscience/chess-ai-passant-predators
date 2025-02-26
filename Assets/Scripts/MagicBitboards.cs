@@ -14,13 +14,15 @@ public static class MagicBitboards {
             // Rook magics
             RookMagics[i] = new Magics();
             (ulong rank, ulong file) = RankFileMask(i/8, i%8);
-            RookMagics[i].movementMask = (rank | file) & 1ul<<i
+            RookMagics[i].movementMask = (rank | file) & (1ul<<i)
                 & (i/8 == 0 ? 0xFFFFFFFFFFFFFFFF : ~Board.fileA)
                 & (i/8 == 7 ? 0xFFFFFFFFFFFFFFFF : ~Board.fileH)
                 & (i%8 == 0 ? 0xFFFFFFFFFFFFFFFF : ~Board.rank7) // These last two may be flipped around
                 & (i%8 == 7 ? 0xFFFFFFFFFFFFFFFF : ~Board.rank1);
+            Debug.Log(RookMagics[i].movementMask);
             // while(!FillTable(ref RookMagics[i])) {}
-            for(int j = 0; j < 12; j++) {
+            
+            for (int j = 0; j < 100; j++) {
                 if(FillTable(ref RookMagics[i])) {
                     break;
                 }
@@ -33,7 +35,7 @@ public static class MagicBitboards {
 
         Dictionary<ulong, ulong> testBoard = new Dictionary<ulong, ulong>();
         ulong mask = magic.movementMask;
-        for (int i = 0; i < 0xFFFF; i++) {
+        for (int i = 0; i < (int)0xFFFF; i++) {
             // Add code here to iterate through board configs
             // This is hard to read
             // blockers is where blockers can be
@@ -53,7 +55,7 @@ public static class MagicBitboards {
                     // max number of moves in a movement mask should be 14 I think, so if its more than 16, we break
                     if(pos > 16) break;
                     pos++;
-                    if((mask & 1ul<<pos) == 0) {
+                    if((mask & (1ul<<pos)) == 0) {
                         j--; // We increment back until we find a 1
                     }
                 }
@@ -62,6 +64,7 @@ public static class MagicBitboards {
                 b >>= 1;
                 digit++;
             }
+            Debug.Log(i + " " + blockers);
             // We now finally have blockers
 
             // the shift should be by some number, i'm just doing last 14 bits for now
@@ -74,10 +77,14 @@ public static class MagicBitboards {
                 // We try with a magic
                 return false;
             } 
+            if(blockers == mask) {
+                break;
+            }
         }
         magic.magic = test_magic;
-        magic.moves = new ulong[testBoard.Keys.Max()];
+        magic.moves = new ulong[testBoard.Keys.Max()+1];
         foreach(ulong key in testBoard.Keys) {
+            Debug.Log("Key: " + key);
             magic.moves[key] = testBoard[key];
         }
         return true;

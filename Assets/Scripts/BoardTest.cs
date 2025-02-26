@@ -8,7 +8,9 @@ public class BoardTest : MonoBehaviour
     {
         MagicBitboards.GenerateMagicNumbers();
         foreach(Magics m in MagicBitboards.RookMagics) {
-            Debug.Log(m.magic + " " + m.moves.ToString());
+            string s = "";
+            foreach(ulong move in m.moves) s += " " +move;
+            Debug.Log("The magic: " + m.magic + " & the items in mvoes: " + s);
         }
     }
 
