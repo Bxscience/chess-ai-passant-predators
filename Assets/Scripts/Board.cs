@@ -167,7 +167,7 @@ public struct Board
         else if(ply.Type == Piece.BPawn && ( (1ul<<end_idx) & rank1) != 0) {
             Promote(1ul<<end_idx, Side.Black, (Piece)ply.PromoteType);
         }
-        Debug.Log("Current state"+MagicBitboards.PrintBitBoard(Pieces));
+        // Debug.Log("Current state"+MagicBitboards.PrintBitBoard(Pieces));
     }
     
     public bool IsEnPassant(Vector2Int endPos) {
@@ -226,13 +226,32 @@ public struct Board
             Piece.WKing or Piece.BKing => KingMovesParalegal(pos, piece.side, piece.moved),
             
             // Sliding (not yet implemented)
-            Piece.WBishop or Piece.BBishop => ~(piece.side == Side.White ? WhitePieces : BlackPieces),
-            Piece.WRook or Piece.BRook => ~(piece.side == Side.White ? WhitePieces : BlackPieces),
-            Piece.WQueen or Piece.BQueen => ~(piece.side == Side.White ? WhitePieces : BlackPieces),
+            Piece.WBishop or Piece.BBishop => BishopMovesParalegal(piece.idx.x + (7-piece.idx.y)*8, piece.side),
+            Piece.WRook or Piece.BRook => RookMovesParalegal(piece.idx.x + (7-piece.idx.y)*8, piece.side),
+            Piece.WQueen or Piece.BQueen => QueenMovesParalegal(piece.idx.x + (7-piece.idx.y)*8, piece.side),
             
             // Can't move nothing
             _ => 0ul,
         };
+    }
+    
+    public ulong RookMovesParalegal(int square, Side side) {
+        ulong attacks = MagicBitboards.RookMagics[square].GetMove(Pieces);
+        Debug.Log(MagicBitboards.PrintBitBoard(attacks));
+        Debug.Log(MagicBitboards.PrintBitBoard(
+            MagicBitboards.FindMovesRook(new Vector2Int(square%8, square/8), MagicBitboards.RookMagics[square].movementMask&Pieces) & (side == Side.White ? BlackPieces : WhitePieces)
+        ));
+        return attacks & ~(side == Side.White ? BlackPieces : WhitePieces);
+    }
+
+    public ulong BishopMovesParalegal(int square, Side side) {
+        ulong attacks = MagicBitboards.RookMagics[square].GetMove(Pieces);
+        Debug.Log(MagicBitboards.PrintBitBoard(attacks));
+        return attacks & ~(side == Side.White ? BlackPieces : WhitePieces);
+    }
+
+    public ulong QueenMovesParalegal(int square, Side side) {
+        return RookMovesParalegal(square, side) | BishopMovesParalegal(square, side);
     }
 
     public ulong KnightMovesParalegal(ulong pos, Side side) { 

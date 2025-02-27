@@ -22,13 +22,13 @@ public static class MagicBitboards {
             // Debug.Log("Movement Mask\n" + PrintBitBoard(RookMagics[i].movementMask));
             RookMagics[i].shift = 63-count1s(RookMagics[i].movementMask);
             // Debug.Log(63-RookMagics[i].shift);
-            // while(!FillTable(ref RookMagics[i])) {}
+            while(!FillTable(ref RookMagics[i], i)) {}
             
-            for (int j = 0; j < 70; j++) {
-                if(FillTable(ref RookMagics[i], i)) {
-                    break;
-                }
-            }
+            // for (int j = 0; j < 70; j++) {
+            //     if(FillTable(ref RookMagics[i], i)) {
+            //         break;
+            //     }
+            // }
             // Debug.Log("Magic: " + RookMagics[i].magic);
             
 
@@ -43,13 +43,13 @@ public static class MagicBitboards {
             BishopMagics[i].shift = 63-count1s(BishopMagics[i].movementMask);
             // Debug.Log("Movement Mask\n" + PrintBitBoard(BishopMagics[i].movementMask));
             // Debug.Log(63-BishopMagics[i].shift);
-            // while(!FillTable(ref BishopMagics[i])) {}
+            while(!FillTable(ref BishopMagics[i], i, false)) {}
             
-            for (int j = 0; j < 70; j++) {
-                if(FillTable(ref BishopMagics[i], i, false)) {
-                    break;
-                }
-            }
+            // for (int j = 0; j < 70; j++) {
+            //     if(FillTable(ref BishopMagics[i], i, false)) {
+            //         break;
+            //     }
+            // }
         }
     }
     
@@ -340,4 +340,10 @@ public struct Magics {
     public ulong magic;
     public ulong movementMask;
     public int shift;
+    
+    public ulong GetMove(ulong boardPosition) {
+        ulong important = boardPosition & movementMask;
+        Debug.Log("These should be blockers" + MagicBitboards.PrintBitBoard(important));
+        return moves[(important*magic)>>shift];
+    }
 }
