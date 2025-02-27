@@ -10,23 +10,24 @@ public static class MagicBitboards {
 
     public static void GenerateMagicNumbers() {
         // I am pretty sure that this i is 
-        for(int i = 0; i < 64; i++) {
+        for(int i = 63; i < 64; i++) {
             // Rook magics
             RookMagics[i] = new Magics();
-            (ulong rank, ulong file) = RankFileMask(i/8, i%8);
-            RookMagics[i].movementMask = (rank | file) & (1ul<<i)
-                & (i/8 == 0 ? 0xFFFFFFFFFFFFFFFF : ~Board.fileA)
-                & (i/8 == 7 ? 0xFFFFFFFFFFFFFFFF : ~Board.fileH)
-                & (i%8 == 0 ? 0xFFFFFFFFFFFFFFFF : ~Board.rank7) // These last two may be flipped around
-                & (i%8 == 7 ? 0xFFFFFFFFFFFFFFFF : ~Board.rank1);
+            (ulong rank, ulong file) = RankFileMask(i%8, i/8);
+            RookMagics[i].movementMask = (file|rank) & ~(1ul<<(63-i));
+                // & (i/8 == 0 ? 0xFFFFFFFFFFFFFFFF : ~Board.fileA)
+                // & (i/8 == 7 ? 0xFFFFFFFFFFFFFFFF : ~Board.fileH)
+                // & (i%8 == 0 ? 0xFFFFFFFFFFFFFFFF : ~Board.rank7) // These last two may be flipped around
+                // & (i%8 == 7 ? 0xFFFFFFFFFFFFFFFF : ~Board.rank1);
             Debug.Log(RookMagics[i].movementMask);
             // while(!FillTable(ref RookMagics[i])) {}
             
-            for (int j = 0; j < 100; j++) {
+            for (int j = 0; j < 1000; j++) {
                 if(FillTable(ref RookMagics[i])) {
                     break;
                 }
             }
+            Debug.Log(" ");
         }
     }
     
@@ -43,27 +44,23 @@ public static class MagicBitboards {
             // This exists so that i isn't touched, blocker number
             uint b = (uint)i;
             // This is how many digits through i are we
-            int digit = 1;
             
-            // This loop adds bits to blockers where there are blockers
-            while (b > 0) {
-                // Is it a 1 or a 0
-                uint stuff = b & 0b1u;
-                int pos = 0;
-                // Find where the nth 1 is, corresponding to the nth digit of b
-                for(int j = 0; j<digit; j++) {
-                    // max number of moves in a movement mask should be 14 I think, so if its more than 16, we break
-                    if(pos > 16) break;
-                    pos++;
-                    if((mask & (1ul<<pos)) == 0) {
-                        j--; // We increment back until we find a 1
-                    }
+            ulong blockerSpotsTaken = 0;
+            Debug.Log("AHHHHHH Start");
+            while(b > 0) {
+                uint digit = b & 1;
+                
+                for(int j = 0; j < 64; j++) {
+                    if( (mask & (1ul<<j)) == 0 ) continue;
+                    if( (blockerSpotsTaken & (1ul<<j)) > 0 ) continue;
+                    blockerSpotsTaken |= 1ul<<j;
+                    blockers |= digit<<j;
+                    break;
                 }
-                // add the bit. If there is something in this digit.
-                blockers |= stuff;
-                b >>= 1;
-                digit++;
+
+                b>>=1;
             }
+
             Debug.Log(i + " " + blockers);
             // We now finally have blockers
 
@@ -75,11 +72,14 @@ public static class MagicBitboards {
                 testBoard.Add(magicIdx, moves);
             } else if(moves != testBoard[magicIdx]) {
                 // We try with a magic
+                Debug.Log("just stop it");
                 return false;
             } 
             if(blockers == mask) {
+                Debug.Log("heyu");
                 break;
             }
+            Debug.Log("AHHHHHH End");
         }
         magic.magic = test_magic;
         magic.moves = new ulong[testBoard.Keys.Max()+1];
@@ -227,7 +227,7 @@ public static class MagicBitboards {
             _ => Board.rank1,
         };
 
-        ulong file = x switch
+        ulong file = (7-x) switch
         {
             0 => Board.fileA,
             1 => Board.fileB,
@@ -258,7 +258,7 @@ public static class MagicBitboards {
             _ => Board.rank1,
         };
 
-        ulong file = pos.x switch {
+        ulong file = (7-pos.x) switch {
             0 => Board.fileA,
             1 => Board.fileB,
             2 => Board.fileC,
