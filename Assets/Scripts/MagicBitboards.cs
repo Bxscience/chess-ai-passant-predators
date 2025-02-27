@@ -22,7 +22,8 @@ public static class MagicBitboards {
             // Debug.Log(RookMagics[i].movementMask);
             // while(!FillTable(ref RookMagics[i])) {}
             
-            for (int j = 0; j < 1000; j++) {
+            Debug.Log(RandU64()&RandU64()&RandU64());
+            for (int j = 0; j < 10000; j++) {
                 if(FillTable(ref RookMagics[i])) {
                     break;
                 }
@@ -86,9 +87,12 @@ public static class MagicBitboards {
     
     public static ulong RandU64() {
         System.Random random = new System.Random();
-        byte[] bytes = new byte[8];
-        random.NextBytes(bytes);
-        return BitConverter.ToUInt64(bytes);
+        // byte[] bytes = new byte[8];
+        // random.NextBytes(bytes);
+        // return BitConverter.ToUInt64(bytes);
+        uint a = (uint)random.Next();
+        uint b = (uint)random.Next();
+        return (((ulong)a)<<32)|((ulong)b);
     }
     
     public static ulong FindMovesRook(Vector2Int pos, ulong allPieces) {
