@@ -19,7 +19,7 @@ public static class MagicBitboards {
                 // & (i/8 == 7 ? 0xFFFFFFFFFFFFFFFF : ~Board.fileH)
                 // & (i%8 == 0 ? 0xFFFFFFFFFFFFFFFF : ~Board.rank7) // These last two may be flipped around
                 // & (i%8 == 7 ? 0xFFFFFFFFFFFFFFFF : ~Board.rank1);
-            Debug.Log(RookMagics[i].movementMask);
+            // Debug.Log(RookMagics[i].movementMask);
             // while(!FillTable(ref RookMagics[i])) {}
             
             for (int j = 0; j < 1000; j++) {
@@ -27,7 +27,8 @@ public static class MagicBitboards {
                     break;
                 }
             }
-            Debug.Log(" ");
+            Debug.Log("Magic: " + RookMagics[i].magic);
+            // Debug.Log(" ");
         }
     }
     
@@ -46,7 +47,6 @@ public static class MagicBitboards {
             // This is how many digits through i are we
             
             ulong blockerSpotsTaken = 0;
-            Debug.Log("AHHHHHH Start");
             while(b > 0) {
                 uint digit = b & 1;
                 
@@ -60,8 +60,6 @@ public static class MagicBitboards {
 
                 b>>=1;
             }
-
-            Debug.Log(i + " " + blockers);
             // We now finally have blockers
 
             // the shift should be by some number, i'm just doing last 14 bits for now
@@ -72,19 +70,15 @@ public static class MagicBitboards {
                 testBoard.Add(magicIdx, moves);
             } else if(moves != testBoard[magicIdx]) {
                 // We try with a magic
-                Debug.Log("just stop it");
                 return false;
             } 
             if(blockers == mask) {
-                Debug.Log("heyu");
                 break;
             }
-            Debug.Log("AHHHHHH End");
         }
         magic.magic = test_magic;
         magic.moves = new ulong[testBoard.Keys.Max()+1];
         foreach(ulong key in testBoard.Keys) {
-            Debug.Log("Key: " + key);
             magic.moves[key] = testBoard[key];
         }
         return true;
