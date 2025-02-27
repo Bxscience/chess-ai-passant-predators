@@ -14,16 +14,16 @@ public static class MagicBitboards {
             // Rook magics
             RookMagics[i] = new Magics();
             (ulong rank, ulong file) = RankFileMask(i%8, i/8);
-            RookMagics[i].movementMask = (file|rank) & ~(1ul<<(63-i));
-                // & (i/8 == 0 ? 0xFFFFFFFFFFFFFFFF : ~Board.fileA)
-                // & (i/8 == 7 ? 0xFFFFFFFFFFFFFFFF : ~Board.fileH)
-                // & (i%8 == 0 ? 0xFFFFFFFFFFFFFFFF : ~Board.rank7) // These last two may be flipped around
-                // & (i%8 == 7 ? 0xFFFFFFFFFFFFFFFF : ~Board.rank1);
-            // Debug.Log(RookMagics[i].movementMask);
+            RookMagics[i].movementMask = (file|rank) & ~(1ul<<(63-i))
+                & (i%8 == 0 ? 0xFFFFFFFFFFFFFFFF : ~Board.fileH)
+                & (i%8 == 7 ? 0xFFFFFFFFFFFFFFFF : ~Board.fileA)
+                & (i/8 == 0 ? 0xFFFFFFFFFFFFFFFF : ~Board.rank1) // These last two may be flipped around
+                & (i/8 == 7 ? 0xFFFFFFFFFFFFFFFF : ~Board.rank7);
+            Debug.Log(RookMagics[i].movementMask);
+            RookMagics[i].shift = 63-count1s(RookMagics[i].movementMask);
             // while(!FillTable(ref RookMagics[i])) {}
             
-            Debug.Log(RandU64()&RandU64()&RandU64());
-            for (int j = 0; j < 10000; j++) {
+            for (int j = 0; j < 1000000; j++) {
                 if(FillTable(ref RookMagics[i])) {
                     break;
                 }
@@ -47,24 +47,24 @@ public static class MagicBitboards {
             uint b = (uint)i;
             // This is how many digits through i are we
             
+            // This is used to ignore places we have already set
             ulong blockerSpotsTaken = 0;
             while(b > 0) {
                 uint digit = b & 1;
                 
                 for(int j = 0; j < 64; j++) {
-                    if( (mask & (1ul<<j)) == 0 ) continue;
-                    if( (blockerSpotsTaken & (1ul<<j)) > 0 ) continue;
+                    if( (mask & (1ul<<j)) == 0 ) continue; // If there is not a 1, continue
+                    if( (blockerSpotsTaken & (1ul<<j)) > 0 ) continue; // If we have set in the blocker already, continue
                     blockerSpotsTaken |= 1ul<<j;
                     blockers |= digit<<j;
-                    break;
+                    break; // We break out as soon as we find a spot
                 }
 
                 b>>=1;
             }
             // We now finally have blockers
 
-            // the shift should be by some number, i'm just doing last 14 bits for now
-            ulong magicIdx = (blockers * test_magic) >> (64-16);
+            ulong magicIdx = (blockers * test_magic) >> magic.shift;
             ulong moves = FindMovesRook(new Vector2Int(i/8, i%8), blockers);
             // If the testboard contains this magic index AND the moves for this set of blockers is different from whats saved, this magic number is bad
             if(!testBoard.ContainsKey(magicIdx)) {
@@ -83,6 +83,14 @@ public static class MagicBitboards {
             magic.moves[key] = testBoard[key];
         }
         return true;
+    }
+    
+    public static int count1s(ulong mask) {
+        int b = 0;
+        for(int i = 0; i < 64; i++) {
+            if((mask&(1ul<<i)) > 0) b++;
+        }
+        return b;
     }
     
     public static ulong RandU64() {
@@ -276,4 +284,5 @@ public struct Magics {
     public ulong[] moves;
     public ulong magic;
     public ulong movementMask;
+    public int shift;
 }
