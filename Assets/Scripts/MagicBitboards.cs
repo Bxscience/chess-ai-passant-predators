@@ -17,9 +17,9 @@ public static class MagicBitboards {
             RookMagics[i].movementMask = (file|rank) & ~(1ul<<i)
                 & (i%8 == 0 ? 0xFFFFFFFFFFFFFFFF : ~Board.fileA)
                 & (i%8 == 7 ? 0xFFFFFFFFFFFFFFFF : ~Board.fileH)
-                & (i/8 == 0 ? 0xFFFFFFFFFFFFFFFF : ~Board.rank8) // These last two may be flipped around
+                & (i/8 == 0 ? 0xFFFFFFFFFFFFFFFF : ~Board.rank8)
                 & (i/8 == 7 ? 0xFFFFFFFFFFFFFFFF : ~Board.rank1);
-            Debug.Log("Movement Mask\n" + PrintBitBoard(RookMagics[i].movementMask));
+            // Debug.Log("Movement Mask\n" + PrintBitBoard(RookMagics[i].movementMask));
             RookMagics[i].shift = 63-count1s(RookMagics[i].movementMask);
             // Debug.Log(63-RookMagics[i].shift);
             // while(!FillTable(ref RookMagics[i])) {}
@@ -29,12 +29,31 @@ public static class MagicBitboards {
                     break;
                 }
             }
-            Debug.Log("Magic: " + RookMagics[i].magic);
-            // Debug.Log(" ");
+            // Debug.Log("Magic: " + RookMagics[i].magic);
+            
+
+            // Bishop magics
+            BishopMagics[i] = new Magics();
+            (ulong positiveDiagnol, ulong negativeDiagnol) = PosNegDiagnolMask(i%8, i/8);
+            BishopMagics[i].movementMask = (positiveDiagnol|negativeDiagnol) & ~(1ul<<i)
+                & (i%8 == 0 ? 0xFFFFFFFFFFFFFFFF : ~Board.fileA)
+                & (i%8 == 7 ? 0xFFFFFFFFFFFFFFFF : ~Board.fileH)
+                & (i/8 == 0 ? 0xFFFFFFFFFFFFFFFF : ~Board.rank8)
+                & (i/8 == 7 ? 0xFFFFFFFFFFFFFFFF : ~Board.rank1);
+            BishopMagics[i].shift = 63-count1s(BishopMagics[i].movementMask);
+            // Debug.Log("Movement Mask\n" + PrintBitBoard(BishopMagics[i].movementMask));
+            // Debug.Log(63-BishopMagics[i].shift);
+            // while(!FillTable(ref BishopMagics[i])) {}
+            
+            for (int j = 0; j < 70; j++) {
+                if(FillTable(ref BishopMagics[i], i, false)) {
+                    break;
+                }
+            }
         }
     }
     
-    public static bool FillTable(ref Magics magic, int pos) {
+    public static bool FillTable(ref Magics magic, int pos, bool isRook = true) {
         ulong test_magic = RandU64()&RandU64()&RandU64();
 
         Dictionary<ulong, ulong> testBoard = new Dictionary<ulong, ulong>();
@@ -66,7 +85,7 @@ public static class MagicBitboards {
             // We now finally have blockers
 
             ulong magicIdx = (blockers * test_magic) >> magic.shift;
-            ulong moves = FindMovesRook(new Vector2Int(pos%8, pos/8), blockers);
+            ulong moves = isRook ? FindMovesRook(new Vector2Int(pos%8, pos/8), blockers) : FindMovesBishop(new Vector2Int(pos%8, pos/8), blockers);
             // If the testboard contains this magic index AND the moves for this set of blockers is different from whats saved, this magic number is bad
             if(!testBoard.ContainsKey(magicIdx)) {
                 testBoard.Add(magicIdx, moves);
@@ -178,15 +197,16 @@ public static class MagicBitboards {
         // Get position as an integer
         // Our position starts from rank 8, so y=0 (which is rank 1), should be a higher value of pos
         // ie a Vec2I of (0,0) which is A1, should be pos=56 
-        int square = pos.x + (7-pos.y)*8;
+        int square = pos.x + pos.y*8;
         
         Vector2Int rayPos = pos + Vector2Int.one;
         while(
-            rayPos.x > 1 && rayPos.x < 7
-            && rayPos.y > 1 && rayPos.y < 7
+            rayPos.x >= 0 && rayPos.x <= 7
+            && rayPos.y >= 0 && rayPos.y <= 7
         ) {
-            moves |= 1ul << (rayPos.x + (7-rayPos.y)*8);
-            if((allPieces & moves) == 0) {
+            ulong changedBit = 1ul << (rayPos.x + rayPos.y*8);
+            moves |= changedBit;
+            if((allPieces & changedBit) != 0) {
                 break;
             }
             rayPos += Vector2Int.one;
@@ -194,11 +214,12 @@ public static class MagicBitboards {
 
         rayPos = pos - Vector2Int.one;
         while(
-            rayPos.x > 1 && rayPos.x < 7
-            && rayPos.y > 1 && rayPos.y < 7
+            rayPos.x >= 0 && rayPos.x <= 7
+            && rayPos.y >= 0 && rayPos.y <= 7
         ) {
-            moves |= 1ul << (rayPos.x + (7-rayPos.y)*8);
-            if((allPieces & moves) == 0) {
+            ulong changedBit = 1ul << (rayPos.x + (7-rayPos.y)*8);
+            moves |= changedBit;
+            if((allPieces & changedBit) != 0) {
                 break;
             }
             rayPos -= Vector2Int.one;
@@ -206,11 +227,12 @@ public static class MagicBitboards {
 
         rayPos = pos + negSlope;
         while(
-            rayPos.x > 1 && rayPos.x < 7
-            && rayPos.y > 1 && rayPos.y < 7
+            rayPos.x >= 0 && rayPos.x <= 7
+            && rayPos.y >= 0 && rayPos.y <= 7
         ) {
-            moves |= 1ul << (rayPos.x + (7-rayPos.y)*8);
-            if((allPieces & moves) == 0) {
+            ulong changedBit = 1ul << (rayPos.x + (7-rayPos.y)*8);
+            moves |= changedBit;
+            if((allPieces & changedBit) != 0) {
                 break;
             }
             rayPos += negSlope;
@@ -218,17 +240,64 @@ public static class MagicBitboards {
 
         rayPos = pos - negSlope;
         while(
-            rayPos.x > 1 && rayPos.x < 7
-            && rayPos.y > 1 && rayPos.y < 7
+            rayPos.x >= 0 && rayPos.x <= 7
+            && rayPos.y >= 0 && rayPos.y <= 7
         ) {
-            moves |= 1ul << (rayPos.x + (7-rayPos.y)*8);
-            if((allPieces & moves) == 0) {
+            ulong changedBit = 1ul << (rayPos.x + (7-rayPos.y)*8);
+            moves |= changedBit;
+            if((allPieces & changedBit) != 0) {
                 break;
             }
             rayPos -= negSlope;
         }
 
         return moves;
+    }
+    
+    public static (ulong, ulong) PosNegDiagnolMask(int x, int y) {
+        ulong posDiagnol = 0;
+        ulong negDiagnol = 0;
+
+        Vector2Int negSlope = new(-1,1);
+        //Idk why its not (7-y)*8 like everywhere else, but this makes it match so /shrug/ 
+        int square = x + y*8;
+
+        Vector2Int rayPos = new Vector2Int(x,y) + Vector2Int.one;
+        while(
+            rayPos.x >= 0 && rayPos.x <= 7
+            && rayPos.y >= 0 && rayPos.y <= 7
+        ) {
+            posDiagnol |= 1ul << (rayPos.x + rayPos.y*8);
+            rayPos += Vector2Int.one;
+        }
+
+        rayPos = new Vector2Int(x, y) - Vector2Int.one;
+        while(
+            rayPos.x >= 0 && rayPos.x <= 7
+            && rayPos.y >= 0 && rayPos.y <= 7
+        ) {
+            posDiagnol |= 1ul << (rayPos.x + rayPos.y*8);
+            rayPos -= Vector2Int.one;
+        }
+
+        rayPos = new Vector2Int(x, y) + negSlope;
+        while(
+            rayPos.x >= 0 && rayPos.x <= 7
+            && rayPos.y >= 0 && rayPos.y <= 7
+        ) {
+            negDiagnol |= 1ul << (rayPos.x + rayPos.y*8);
+            rayPos += negSlope;
+        }
+
+        rayPos = new Vector2Int(x, y) - negSlope;
+        while(
+            rayPos.x >= 0 && rayPos.x <= 7
+            && rayPos.y >= 0 && rayPos.y <= 7
+        ) {
+            negDiagnol |= 1ul << (rayPos.x + rayPos.y*8);
+            rayPos -= negSlope;
+        }
+        return (posDiagnol, negDiagnol);
     }
 
     public static (ulong, ulong) RankFileMask(int x, int y) {
