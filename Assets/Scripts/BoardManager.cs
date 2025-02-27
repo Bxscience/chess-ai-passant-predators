@@ -19,6 +19,9 @@ public class BoardManager : MonoBehaviour
 
     public ChessPiece[] pieceBoard = new ChessPiece[64];
 
+    private bool isPromoting = false;
+    private Ply pendingPromotionPly;
+
     void Start()
     {
         instance = this;
@@ -27,6 +30,12 @@ public class BoardManager : MonoBehaviour
 
     void Update()
     {
+        if (isPromoting)
+        {
+            HandlePromotionInput();
+            return;
+        }
+
         if(Input.GetKeyDown(KeyCode.Backspace)) {
             Debug.Log("AAA");
             UndoPly();
@@ -76,13 +85,15 @@ public class BoardManager : MonoBehaviour
                     enPassantable = null;
 
                     if(currentlySelected.type == Piece.WPawn && currentlySelected.idx.y == 7) {
-                        newPly.PromoteType = Piece.WQueen;
-                        currentlySelected.Promote((Piece)newPly.PromoteType);
+                        pendingPromotionPly = newPly;
+                        isPromoting = true;
+                        return;
                     }
 
                     if(currentlySelected.type == Piece.BPawn && currentlySelected.idx.y == 0) {
-                        newPly.PromoteType = Piece.BQueen;
-                        currentlySelected.Promote((Piece)newPly.PromoteType);
+                        pendingPromotionPly = newPly;
+                        isPromoting = true;
+                        return;
                     }
                     
                     if((newPly.Type == Piece.WPawn || newPly.Type == Piece.BPawn) && Vector2Int.Distance(newPly.End, newPly.Start) == 2) {
@@ -114,5 +125,29 @@ public class BoardManager : MonoBehaviour
             realivePiece.transform.position += Vector3.up*10;
         }
         isWhiteTurn = !isWhiteTurn;
+    }
+
+    private void HandlePromotionInput() {
+        if (Input.GetKeyDown(KeyCode.Alpha1)) {
+            pendingPromotionPly.PromoteType = isWhiteTurn ? Piece.WBishop : Piece.BBishop;
+        } else if (Input.GetKeyDown(KeyCode.Alpha2)) {
+            pendingPromotionPly.PromoteType = isWhiteTurn ? Piece.WRook : Piece.BRook;
+        } else if (Input.GetKeyDown(KeyCode.Alpha3)) {
+            pendingPromotionPly.PromoteType = isWhiteTurn ? Piece.WKnight : Piece.BKnight;
+        } else if (Input.GetKeyDown(KeyCode.Alpha4)) {
+            pendingPromotionPly.PromoteType = isWhiteTurn ? Piece.WQueen : Piece.BQueen;
+        } else {
+            return;
+        }
+
+        currentlySelected.Promote((Piece)pendingPromotionPly.PromoteType);
+        moved.Push(currentlySelected);
+        currentlySelected.moved = true;
+        currentlySelected = null;
+
+        board.PlayPly(pendingPromotionPly);
+        plies.Push(pendingPromotionPly);
+        isWhiteTurn = !isWhiteTurn;
+        isPromoting = false;
     }
 }

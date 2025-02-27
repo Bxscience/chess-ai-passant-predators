@@ -23,7 +23,7 @@ public enum castleTrack
 public struct Board
 {
     // 0-5 is White
-    // 6-11 is Black
+    // 6-11 is Black 
     public ulong[] boards;
     public ulong passantTrack;
     public ulong passantCaptured;
