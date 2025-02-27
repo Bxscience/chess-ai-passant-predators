@@ -24,7 +24,7 @@ public static class MagicBitboards {
             Debug.Log(63-RookMagics[i].shift);
             // while(!FillTable(ref RookMagics[i])) {}
             
-            for (int j = 0; j < 700000; j++) {
+            for (int j = 0; j < 70; j++) {
                 if(FillTable(ref RookMagics[i])) {
                     break;
                 }
@@ -66,12 +66,14 @@ public static class MagicBitboards {
             // We now finally have blockers
 
             ulong magicIdx = (blockers * test_magic) >> magic.shift;
-            ulong moves = FindMovesRook(new Vector2Int(i/8, i%8), blockers);
+            ulong moves = FindMovesRook(new Vector2Int(i%8, i/8), blockers);
             // If the testboard contains this magic index AND the moves for this set of blockers is different from whats saved, this magic number is bad
             if(!testBoard.ContainsKey(magicIdx)) {
                 testBoard.Add(magicIdx, moves);
             } else if(moves != testBoard[magicIdx]) {
                 // We try with a magic
+                Debug.Log("HIII + " + i);
+                Debug.Log(PrintBitBoard(moves));
                 return false;
             } 
             if(blockers == mask) {
@@ -84,6 +86,16 @@ public static class MagicBitboards {
             magic.moves[key] = testBoard[key];
         }
         return true;
+    }
+    
+    public static string PrintBitBoard(ulong u) {
+        string s = "";
+        for(int i = 63; i>=0; i--) {
+            s+=(u&(1ul<<i))>>i;
+            if(i % 8 == 0) s += '\n';
+        }
+        s+='\n';
+        return s;
     }
     
     public static int count1s(ulong mask) {
@@ -112,27 +124,23 @@ public static class MagicBitboards {
         // ie a Vec2I of (0,0) which is A1, should be pos=56 
         int square = pos.x + (7-pos.y)*8;
         ulong posBoard = 1ul << square;
-        (ulong rank, ulong file) = RankFileMask(pos);
-        
-        // Set all bits not on the rank or file to 0
-        ulong importantPieces = allPieces & (rank|file);
         
         // Along a rank
         // First/last file doesn't matter, we assume we can always capture
         // We'll filter later
         for(int i = pos.x+1; i < 7; i++) {
             //Add the new move into the board
-            moves += 1ul << (square + i - pos.x);
+            moves |= 1ul << (square + i - pos.x);
 
-            if( ((1ul << (square + i)) & importantPieces) == 0) {
+            if( ((1ul << (square + i)) & allPieces) == 0) {
                 break;
             }
         }
         for(int i = pos.x-1; i > 1; i--) {
             //Add the new move into the board
-            moves += 1ul << (square + i);
+            moves |= 1ul << (square - (i-pos.x));
 
-            if( ((1ul << (square + i - pos.x)) & importantPieces) == 0) {
+            if( ((1ul << (square - (i-pos.x))) & allPieces) == 0) {
                 break;
             }
         }
@@ -142,18 +150,18 @@ public static class MagicBitboards {
         // We'll filter later
         for(int i = pos.y+1; i < 7; i++) {
             // Add the new move into the board
-            moves += 1ul << (pos.x + (7-i)*8);
+            moves |= 1ul << (pos.x + (7-i)*8);
 
-            if( (moves & importantPieces) == 0) {
+            if( (moves & allPieces) == 0) {
                 break;
             }
         }
 
         for(int i = pos.y-1; i > 1; i--) {
             // Add the new move into the board
-            moves += 1ul << (pos.x + (7-i)*8);
+            moves |= 1ul << (pos.x + (7-i)*8);
 
-            if( (moves & importantPieces) == 0) {
+            if( (moves & allPieces) == 0) {
                 break;
             }
         }
@@ -174,7 +182,7 @@ public static class MagicBitboards {
             rayPos.x > 1 && rayPos.x < 7
             && rayPos.y > 1 && rayPos.y < 7
         ) {
-            moves += 1ul << (rayPos.x + (7-rayPos.y)*8);
+            moves |= 1ul << (rayPos.x + (7-rayPos.y)*8);
             if((allPieces & moves) == 0) {
                 break;
             }
@@ -186,7 +194,7 @@ public static class MagicBitboards {
             rayPos.x > 1 && rayPos.x < 7
             && rayPos.y > 1 && rayPos.y < 7
         ) {
-            moves += 1ul << (rayPos.x + (7-rayPos.y)*8);
+            moves |= 1ul << (rayPos.x + (7-rayPos.y)*8);
             if((allPieces & moves) == 0) {
                 break;
             }
@@ -198,7 +206,7 @@ public static class MagicBitboards {
             rayPos.x > 1 && rayPos.x < 7
             && rayPos.y > 1 && rayPos.y < 7
         ) {
-            moves += 1ul << (rayPos.x + (7-rayPos.y)*8);
+            moves |= 1ul << (rayPos.x + (7-rayPos.y)*8);
             if((allPieces & moves) == 0) {
                 break;
             }
@@ -210,7 +218,7 @@ public static class MagicBitboards {
             rayPos.x > 1 && rayPos.x < 7
             && rayPos.y > 1 && rayPos.y < 7
         ) {
-            moves += 1ul << (rayPos.x + (7-rayPos.y)*8);
+            moves |= 1ul << (rayPos.x + (7-rayPos.y)*8);
             if((allPieces & moves) == 0) {
                 break;
             }
