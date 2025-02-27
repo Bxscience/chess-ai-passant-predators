@@ -21,9 +21,10 @@ public static class MagicBitboards {
                 & (i/8 == 7 ? 0xFFFFFFFFFFFFFFFF : ~Board.rank7);
             Debug.Log(RookMagics[i].movementMask);
             RookMagics[i].shift = 63-count1s(RookMagics[i].movementMask);
+            Debug.Log(63-RookMagics[i].shift);
             // while(!FillTable(ref RookMagics[i])) {}
             
-            for (int j = 0; j < 1000000; j++) {
+            for (int j = 0; j < 700000; j++) {
                 if(FillTable(ref RookMagics[i])) {
                     break;
                 }
