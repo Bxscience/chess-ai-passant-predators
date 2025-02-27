@@ -146,7 +146,7 @@ public static class MagicBitboards {
         // Along a rank
         // First/last file doesn't matter, we assume we can always capture
         // We'll filter later
-        for(int i = pos.x+1; i < 7; i++) {
+        for(int i = pos.x+1; i <= 7; i++) {
             //Add the new move into the board
             ulong changedBit = 1ul << (i + 8*pos.y);
             moves |= changedBit;
@@ -155,7 +155,7 @@ public static class MagicBitboards {
                 break;
             }
         }
-        for(int i = pos.x-1; i > 1; i--) {
+        for(int i = pos.x-1; i >= 0; i--) {
             //Add the new move into the board
             ulong changedBit = 1ul << (i + 8*pos.y);
             moves |= changedBit;
@@ -168,7 +168,7 @@ public static class MagicBitboards {
         // Along a file
         // First/last rank doesn't matter, we assume we can always capture
         // We'll filter later
-        for(int i = pos.y+1; i < 7; i++) {
+        for(int i = pos.y+1; i <= 7; i++) {
             // Add the new move into the board
             ulong changedBit = 1ul << (pos.x + i*8);
             moves |= changedBit;
@@ -178,7 +178,7 @@ public static class MagicBitboards {
             }
         }
 
-        for(int i = pos.y-1; i > 1; i--) {
+        for(int i = pos.y-1; i >= 0; i--) {
             // Add the new move into the board
             ulong changedBit = 1ul << (pos.x + i*8);
             moves |= changedBit;
