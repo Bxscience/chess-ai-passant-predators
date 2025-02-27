@@ -270,17 +270,20 @@ public struct Board
     public ulong KingMovesParalegal(ulong pos, Side side, bool moved) { 
         ulong sameSide = side == Side.White ? WhitePieces : BlackPieces;
         ulong theOpps = side != Side.White ? WhitePieces : BlackPieces;
-        ulong wkSlide = 6 << 60;
-        ulong bkSlide = 6 << 4;
+        ulong wkSlide = 0x6000000000000000;
+        Debug.Log(" WK " + wkSlide);
+        ulong bkSlide = 0x0000000000000060;
+        ulong wqSlide = 0x0E00000000000000;
+        ulong bqSlide = 0x000000000000000E;
         //do the queen slides, 01110 instead of 0110 slid by king position or wtv
-        
+
 
         // You can either move forward, or capture
         // The capture on the right can't be in file A, and the capture on the left can't be in file H
         ulong attacks = ( pos >> 7 & ~fileA )
             | pos >> 8
             | ( pos >> 9 & ~fileH )
-            // ▲ up the board
+            // ▲ up the board   
             // ▼ Down the board
             | ( pos << 9 & ~fileA )
             | pos << 8
@@ -288,26 +291,31 @@ public struct Board
             // ▼ Left right movement
             | ( pos >> 1 & ~fileH )
             | ( pos << 1 & ~fileA );
+        Debug.Log(WhitePieces);
+        Debug.Log(wkSlide);
+        Debug.Log(WhitePieces | wkSlide);
+        Debug.Log(WhitePieces & wkSlide);
+        Debug.Log(((WhitePieces | wkSlide) > 0));
         if (side == Side.White)
         {
-            if ((castleTracker & (int)castleTrack.wKing) > 0 ) //need to check if the row is clear
+            if (((castleTracker & (int)castleTrack.wKing) > 0) & ((WhitePieces & wkSlide) == 0)) //need to check if the row is clear      & (WhitePieces & wkSlide > 0)
             {
                 attacks = attacks | (pos << 2);
             }
-            if ((castleTracker & (int)castleTrack.wQueen) > 0) //need to check if the row is clear
+            if ((castleTracker & (int)castleTrack.wQueen) > 0 & ((WhitePieces & wqSlide) == 0) ) //need to check if the row is clear
             {
-                attacks = attacks | (pos >> 3);
+                attacks = attacks | (pos >> 2);
             }
         }
         else
         {
-            if ((castleTracker & (int)castleTrack.bKing) > 0) //need to check if the row is clear
+            if ((castleTracker & (int)castleTrack.bKing) > 0 & ((BlackPieces & bkSlide) == 0) ) //need to check if the row is clear
             {
                 attacks = attacks | (pos << 2);
             }
-            if ((castleTracker & (int)castleTrack.bQueen) > 0) //need to check if the row is clear
+            if ((castleTracker & (int)castleTrack.bQueen) > 0 & ((BlackPieces & bqSlide) == 0)) //need to check if the row is clear
             {
-                attacks = attacks | (pos >> 3);
+                attacks = attacks | (pos >> 2);
             }
         }
         if (moved)

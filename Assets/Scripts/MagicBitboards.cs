@@ -24,7 +24,7 @@ public static class MagicBitboards {
             Debug.Log(63-RookMagics[i].shift);
             // while(!FillTable(ref RookMagics[i])) {}
             
-            for (int j = 0; j < 700000; j++) {
+            for (int j = 0; j < 10; j++) {
                 if(FillTable(ref RookMagics[i])) {
                     break;
                 }
