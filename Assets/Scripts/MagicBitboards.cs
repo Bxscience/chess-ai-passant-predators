@@ -10,22 +10,22 @@ public static class MagicBitboards {
 
     public static void GenerateMagicNumbers() {
         // I am pretty sure that this i is 
-        for(int i = 63; i < 64; i++) {
+        for(int i = 0; i < 64; i++) {
             // Rook magics
             RookMagics[i] = new Magics();
             (ulong rank, ulong file) = RankFileMask(i%8, i/8);
-            RookMagics[i].movementMask = (file|rank) & ~(1ul<<(63-i))
-                & (i%8 == 0 ? 0xFFFFFFFFFFFFFFFF : ~Board.fileH)
-                & (i%8 == 7 ? 0xFFFFFFFFFFFFFFFF : ~Board.fileA)
-                & (i/8 == 0 ? 0xFFFFFFFFFFFFFFFF : ~Board.rank1) // These last two may be flipped around
-                & (i/8 == 7 ? 0xFFFFFFFFFFFFFFFF : ~Board.rank7);
-            Debug.Log(RookMagics[i].movementMask);
+            RookMagics[i].movementMask = (file|rank) & ~(1ul<<i)
+                & (i%8 == 0 ? 0xFFFFFFFFFFFFFFFF : ~Board.fileA)
+                & (i%8 == 7 ? 0xFFFFFFFFFFFFFFFF : ~Board.fileH)
+                & (i/8 == 0 ? 0xFFFFFFFFFFFFFFFF : ~Board.rank8) // These last two may be flipped around
+                & (i/8 == 7 ? 0xFFFFFFFFFFFFFFFF : ~Board.rank1);
+            Debug.Log("Movement Mask\n" + PrintBitBoard(RookMagics[i].movementMask));
             RookMagics[i].shift = 63-count1s(RookMagics[i].movementMask);
-            Debug.Log(63-RookMagics[i].shift);
+            // Debug.Log(63-RookMagics[i].shift);
             // while(!FillTable(ref RookMagics[i])) {}
             
             for (int j = 0; j < 70; j++) {
-                if(FillTable(ref RookMagics[i])) {
+                if(FillTable(ref RookMagics[i], i)) {
                     break;
                 }
             }
@@ -34,7 +34,7 @@ public static class MagicBitboards {
         }
     }
     
-    public static bool FillTable(ref Magics magic) {
+    public static bool FillTable(ref Magics magic, int pos) {
         ulong test_magic = RandU64()&RandU64()&RandU64();
 
         Dictionary<ulong, ulong> testBoard = new Dictionary<ulong, ulong>();
@@ -66,14 +66,12 @@ public static class MagicBitboards {
             // We now finally have blockers
 
             ulong magicIdx = (blockers * test_magic) >> magic.shift;
-            ulong moves = FindMovesRook(new Vector2Int(i%8, i/8), blockers);
+            ulong moves = FindMovesRook(new Vector2Int(pos%8, pos/8), blockers);
             // If the testboard contains this magic index AND the moves for this set of blockers is different from whats saved, this magic number is bad
             if(!testBoard.ContainsKey(magicIdx)) {
                 testBoard.Add(magicIdx, moves);
             } else if(moves != testBoard[magicIdx]) {
                 // We try with a magic
-                Debug.Log("HIII + " + i);
-                Debug.Log(PrintBitBoard(moves));
                 return false;
             } 
             if(blockers == mask) {
@@ -89,12 +87,12 @@ public static class MagicBitboards {
     }
     
     public static string PrintBitBoard(ulong u) {
-        string s = "";
+        string s = "White\n";
         for(int i = 63; i>=0; i--) {
             s+=(u&(1ul<<i))>>i;
             if(i % 8 == 0) s += '\n';
         }
-        s+='\n';
+        s+="\nBlack";
         return s;
     }
     
@@ -122,25 +120,28 @@ public static class MagicBitboards {
         // Get position as an integer
         // Our position starts from rank 8, so y=0 (which is rank 1), should be a higher value of pos
         // ie a Vec2I of (0,0) which is A1, should be pos=56 
-        int square = pos.x + (7-pos.y)*8;
+        int square = pos.x + pos.y*8;
         ulong posBoard = 1ul << square;
+        // Debug.Log("Pos Board: " + PrintBitBoard(posBoard));
         
         // Along a rank
         // First/last file doesn't matter, we assume we can always capture
         // We'll filter later
         for(int i = pos.x+1; i < 7; i++) {
             //Add the new move into the board
-            moves |= 1ul << (square + i - pos.x);
+            ulong changedBit = 1ul << (i + 8*pos.y);
+            moves |= changedBit;
 
-            if( ((1ul << (square + i)) & allPieces) == 0) {
+            if( (changedBit & allPieces) != 0) {
                 break;
             }
         }
         for(int i = pos.x-1; i > 1; i--) {
             //Add the new move into the board
-            moves |= 1ul << (square - (i-pos.x));
+            ulong changedBit = 1ul << (i + 8*pos.y);
+            moves |= changedBit;
 
-            if( ((1ul << (square - (i-pos.x))) & allPieces) == 0) {
+            if( (changedBit & allPieces) != 0) {
                 break;
             }
         }
@@ -150,18 +151,20 @@ public static class MagicBitboards {
         // We'll filter later
         for(int i = pos.y+1; i < 7; i++) {
             // Add the new move into the board
-            moves |= 1ul << (pos.x + (7-i)*8);
+            ulong changedBit = 1ul << (pos.x + i*8);
+            moves |= changedBit;
 
-            if( (moves & allPieces) == 0) {
+            if( (changedBit & allPieces) != 0) {
                 break;
             }
         }
 
         for(int i = pos.y-1; i > 1; i--) {
             // Add the new move into the board
-            moves |= 1ul << (pos.x + (7-i)*8);
+            ulong changedBit = 1ul << (pos.x + i*8);
+            moves |= changedBit;
 
-            if( (moves & allPieces) == 0) {
+            if( (changedBit & allPieces) != 0) {
                 break;
             }
         }
@@ -229,7 +232,7 @@ public static class MagicBitboards {
     }
 
     public static (ulong, ulong) RankFileMask(int x, int y) {
-        ulong rank = y switch {
+        ulong rank = (7-y) switch {
             0 => Board.rank1,
             1 => Board.rank2,
             2 => Board.rank3,
@@ -242,7 +245,7 @@ public static class MagicBitboards {
             _ => Board.rank1,
         };
 
-        ulong file = (7-x) switch
+        ulong file = x switch
         {
             0 => Board.fileA,
             1 => Board.fileB,
@@ -259,33 +262,7 @@ public static class MagicBitboards {
     }
     
     public static (ulong, ulong) RankFileMask(Vector2Int pos) {
-        ulong rank = pos.y switch
-        {
-            0 => Board.rank1,
-            1 => Board.rank2,
-            2 => Board.rank3,
-            3 => Board.rank4,
-            4 => Board.rank5,
-            5 => Board.rank6,
-            6 => Board.rank7,
-            7 => Board.rank8,
-
-            _ => Board.rank1,
-        };
-
-        ulong file = (7-pos.x) switch {
-            0 => Board.fileA,
-            1 => Board.fileB,
-            2 => Board.fileC,
-            3 => Board.fileD,
-            4 => Board.fileE,
-            5 => Board.fileF,
-            6 => Board.fileG,
-            7 => Board.fileH,
-
-            _ => Board.fileA,
-        };
-        return (rank, file);
+        return RankFileMask(pos.x, pos.y);
     }
 }
 

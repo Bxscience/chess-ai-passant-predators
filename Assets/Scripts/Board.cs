@@ -167,7 +167,7 @@ public struct Board
         else if(ply.Type == Piece.BPawn && ( (1ul<<end_idx) & rank1) != 0) {
             Promote(1ul<<end_idx, Side.Black, (Piece)ply.PromoteType);
         }
-        
+        Debug.Log("Current state"+MagicBitboards.PrintBitBoard(Pieces));
     }
     
     public bool IsEnPassant(Vector2Int endPos) {
