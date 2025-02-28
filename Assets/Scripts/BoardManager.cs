@@ -18,6 +18,7 @@ public class BoardManager : MonoBehaviour
     public event Action PlayedPly;
 
     public ChessPiece[] pieceBoard = new ChessPiece[64];
+   
 
     private bool isPromoting = false;
     private Ply pendingPromotionPly;
@@ -75,7 +76,7 @@ public class BoardManager : MonoBehaviour
                         taken.Push(pressed);
                         pressed.transform.position -= Vector3.up*10;
                     }
-                    if(board.IsEnPassant(pressed.idx)) {
+                    if((currentlySelected.type == Piece.WPawn || currentlySelected.type == Piece.BPawn) && board.IsEnPassant(pressed.idx)) {
                         newPly.Captured = isWhiteTurn ? Piece.BPawn : Piece.WPawn;
                         taken.Push(enPassantable);
                         enPassantable.transform.position -= Vector3.up*10;
@@ -98,6 +99,10 @@ public class BoardManager : MonoBehaviour
                     
                     if((newPly.Type == Piece.WPawn || newPly.Type == Piece.BPawn) && Vector2Int.Distance(newPly.End, newPly.Start) == 2) {
                         enPassantable = currentlySelected;
+                    }
+                    if ((currentlySelected.type == Piece.WKing || currentlySelected.type == Piece.BKing) && Math.Abs(newPly.End.x - newPly.Start.x) == 2)
+                    {
+                        return;
                     }
 
                     moved.Push(currentlySelected);
