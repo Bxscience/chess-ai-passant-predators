@@ -268,7 +268,6 @@ public struct Magics {
     
     public ulong GetMove(ulong boardPosition) {
         ulong important = boardPosition & movementMask;
-        Debug.Log("These should be blockers" + MagicBitboards.PrintBitBoard(important));
         return moves[(important*magic)>>shift];
     }
 }
