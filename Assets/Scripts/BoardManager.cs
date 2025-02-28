@@ -100,9 +100,19 @@ public class BoardManager : MonoBehaviour
                     if((newPly.Type == Piece.WPawn || newPly.Type == Piece.BPawn) && Vector2Int.Distance(newPly.End, newPly.Start) == 2) {
                         enPassantable = currentlySelected;
                     }
-                    if ((currentlySelected.type == Piece.WKing || currentlySelected.type == Piece.BKing) && Math.Abs(newPly.End.x - newPly.Start.x) == 2)
-                    {
-                        return;
+                    
+                    // We be castling
+                    if ((currentlySelected.type == Piece.WKing || currentlySelected.type == Piece.BKing) && Math.Abs(newPly.End.x - newPly.Start.x) == 2) {
+                        if(newPly.End.x == 6) {
+                            ChessPiece rook = FindPiece(Piece.WRook, new Vector2Int(7, 0));
+                            rook.idx.x = 5;
+                            rook.transform.position = Board.IdxToPos(rook.idx);
+                        }
+                        if(newPly.End.x == 2) {
+                            ChessPiece rook = FindPiece(Piece.WRook, new Vector2Int(0, 0));
+                            rook.idx.x = 3;
+                            rook.transform.position = Board.IdxToPos(rook.idx);
+                        }
                     }
 
                     moved.Push(currentlySelected);
@@ -115,6 +125,13 @@ public class BoardManager : MonoBehaviour
                 }
             }
         }
+    }
+    
+    public ChessPiece FindPiece(Piece type, Vector2Int idx) {
+        foreach(ChessPiece piece in SpawnPieces.instance.pieces[(int)type]) {
+            if(piece.idx == idx) return piece;
+        }
+        return null;
     }
     
     public void UndoPly() {

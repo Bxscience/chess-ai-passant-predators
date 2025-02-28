@@ -26,10 +26,12 @@ public class SpawnPieces : MonoBehaviour
     //BOARD: -19.25, -13.75, -8.25, -2.75, 2.75, 8.25, 13.75, 19.25, this is in both directions, x and z. Pieces should be at y=2
 
     public List<ChessPiece>[] pieces = new List<ChessPiece>[12];
+    public static SpawnPieces instance;
 
 
     void Start()
     {
+        instance = this;
         GameObject.Instantiate(BoardPrefab, new Vector3(0,0,0), Quaternion.Euler(-90,0,0));
         for(int i = 0; i <= 11; i++) {
             pieces[i] = new List<ChessPiece>();

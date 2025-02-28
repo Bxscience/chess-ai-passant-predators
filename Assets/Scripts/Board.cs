@@ -122,6 +122,7 @@ public struct Board
                 // King side test
                 boards[(int)Piece.WRook] = boards[(int)Piece.WRook]  & ~0x8000000000000000ul;
                 boards[(int)Piece.WRook] |=  0x2000000000000000ul;
+                Debug.Log(MagicBitboards.PrintBitBoard(boards[(int)Piece.WRook]));
             }
             if (ply.End.x-ply.Start.x<=-2) {
                 // Queen side test
