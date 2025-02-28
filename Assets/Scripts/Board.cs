@@ -229,9 +229,9 @@ public struct Board
             Piece.WKing or Piece.BKing => KingMovesParalegal(pos, piece.side, piece.moved),
             
             // Sliding (not yet implemented)
-            Piece.WBishop or Piece.BBishop => BishopMovesParalegal(pos, piece.side),
-            Piece.WRook or Piece.BRook => RookMovesParalegal(pos, piece.side),
-            Piece.WQueen or Piece.BQueen => QueenMovesParalegal(pos, piece.side),
+            Piece.WBishop or Piece.BBishop => BishopMovesParalegal(piece.idx.x + (7-piece.idx.y)*8, piece.side),
+            Piece.WRook or Piece.BRook => RookMovesParalegal(piece.idx.x + (7-piece.idx.y)*8, piece.side),
+            Piece.WQueen or Piece.BQueen => QueenMovesParalegal(piece.idx.x + (7-piece.idx.y)*8, piece.side),
             
             // Can't move nothing
             _ => 0ul,
@@ -331,48 +331,22 @@ public struct Board
         return attacks & ~sameSide;
     }
 
-    public ulong RookMovesParalegal(ulong pos, Side side) {
+    public ulong RookMovesParalegal(int pos, Side side) {
         ulong sameSide = side == Side.White ? WhitePieces : BlackPieces;
         ulong moves = 0ul;
-        int square = BitScanForward(pos);
-
-        // Along a rank
-        for (int i = square % 8 + 1; i <= 7; i++) {
-            ulong changedBit = 1ul << (i + 8 * (square / 8));
-            moves |= changedBit;
-            if ((changedBit & Pieces) != 0) break;
-        }
-        for (int i = square % 8 - 1; i >= 0; i--) {
-            ulong changedBit = 1ul << (i + 8 * (square / 8));
-            moves |= changedBit;
-            if ((changedBit & Pieces) != 0) break;
-        }
-
-        // Along a file
-        for (int i = square / 8 + 1; i <= 7; i++) {
-            ulong changedBit = 1ul << (square % 8 + i * 8);
-            moves |= changedBit;
-            if ((changedBit & Pieces) != 0) break;
-        }
-        for (int i = square / 8 - 1; i >= 0; i--) {
-            ulong changedBit = 1ul << (square % 8 + i * 8);
-            moves |= changedBit;
-            if ((changedBit & Pieces) != 0) break;
-        }
-        
-        moves = MagicBitboards.RookMagics[BitScanForward(pos)].GetMove(Pieces);
+        moves = MagicBitboards.RookMagics[pos].GetMove(Pieces);
 
         return moves & ~sameSide;
     }
 
-    public ulong BishopMovesParalegal(ulong pos, Side side) {
+    public ulong BishopMovesParalegal(int pos, Side side) {
         ulong sameSide = side == Side.White ? WhitePieces : BlackPieces;
-        ulong moves = MagicBitboards.BishopMagics[BitScanForward(pos)].GetMove(Pieces);
+        ulong moves = MagicBitboards.BishopMagics[pos].GetMove(Pieces);
 
         return moves & ~sameSide;
     }
 
-    public ulong QueenMovesParalegal(ulong pos, Side side) {
+    public ulong QueenMovesParalegal(int pos, Side side) {
         ulong rookMoves = RookMovesParalegal(pos, side);
         ulong bishopMoves = BishopMovesParalegal(pos, side);
         return rookMoves | bishopMoves;

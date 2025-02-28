@@ -22,10 +22,11 @@ public static class MagicBitboards {
             // Debug.Log("Movement Mask\n" + PrintBitBoard(RookMagics[i].movementMask));
             RookMagics[i].shift = 63-count1s(RookMagics[i].movementMask);
             // Debug.Log(63-RookMagics[i].shift);
-            while(!FillTable(ref RookMagics[i], i)) {}
-            
-            // for (int j = 0; j < 70; j++) {
-            //     if(FillTable(ref RookMagics[i], i)) {
+            while(!FillTable(ref RookMagics[i], i, true)) {}
+
+            // Debug.Log("Movement mask: "+PrintBitBoard(RookMagics[i].movementMask));
+            // for (int j = 0; j < 1; j++) {
+            //     if(FillTable(ref RookMagics[i], i, true)) {
             //         break;
             //     }
             // }
@@ -58,7 +59,7 @@ public static class MagicBitboards {
 
         Dictionary<ulong, ulong> testBoard = new Dictionary<ulong, ulong>();
         ulong mask = magic.movementMask;
-        for (int i = 0; i < (int)0xFFFF; i++) {
+        for (int i = 0; i < 0xFFFF; i++) {
             // Add code here to iterate through board configs
             // This is hard to read
             // blockers is where blockers can be
@@ -70,8 +71,7 @@ public static class MagicBitboards {
             // This is used to ignore places we have already set
             ulong blockerSpotsTaken = 0;
             while(b > 0) {
-                uint digit = b & 1;
-                
+                ulong digit = b & 1;
                 for(int j = 0; j < 64; j++) {
                     if( (mask & (1ul<<j)) == 0 ) continue; // If there is not a 1, continue
                     if( (blockerSpotsTaken & (1ul<<j)) > 0 ) continue; // If we have set in the blocker already, continue
@@ -85,7 +85,7 @@ public static class MagicBitboards {
             // We now finally have blockers
 
             ulong magicIdx = (blockers * test_magic) >> magic.shift;
-            ulong moves = isRook ? FindMovesRook(new Vector2Int(pos%8, pos/8), blockers) : FindMovesBishop(new Vector2Int(pos%8, pos/8), blockers);
+            ulong moves = isRook ? FindMovesRook(pos, blockers) : FindMovesBishop(new Vector2Int(pos%8, pos/8), blockers);
             // If the testboard contains this magic index AND the moves for this set of blockers is different from whats saved, this magic number is bad
             if(!testBoard.ContainsKey(magicIdx)) {
                 testBoard.Add(magicIdx, moves);
@@ -133,30 +133,29 @@ public static class MagicBitboards {
         return (((ulong)a)<<32)|((ulong)b);
     }
     
-    public static ulong FindMovesRook(Vector2Int pos, ulong allPieces) {
+    public static ulong FindMovesRook(int pos, ulong allPieces) {
         ulong moves = 0ul;
-        int square = pos.x + pos.y*8;
 
         // Along a rank
-        for (int i = square % 8 + 1; i <= 7; i++) {
-            ulong changedBit = 1ul << (i + 8 * (square / 8));
+        for (int i = pos % 8 + 1; i <= 7; i++) {
+            ulong changedBit = 1ul << (i + 8 * (pos / 8));
             moves |= changedBit;
             if ((changedBit & allPieces) != 0) break;
         }
-        for (int i = square % 8 - 1; i >= 0; i--) {
-            ulong changedBit = 1ul << (i + 8 * (square / 8));
+        for (int i = pos % 8 - 1; i >= 0; i--) {
+            ulong changedBit = 1ul << (i + 8 * (pos / 8));
             moves |= changedBit;
             if ((changedBit & allPieces) != 0) break;
         }
 
         // Along a file
-        for (int i = square / 8 + 1; i <= 7; i++) {
-            ulong changedBit = 1ul << (square % 8 + i * 8);
+        for (int i = pos / 8 + 1; i <= 7; i++) {
+            ulong changedBit = 1ul << (pos % 8 + i * 8);
             moves |= changedBit;
             if ((changedBit & allPieces) != 0) break;
         }
-        for (int i = square / 8 - 1; i >= 0; i--) {
-            ulong changedBit = 1ul << (square % 8 + i * 8);
+        for (int i = pos / 8 - 1; i >= 0; i--) {
+            ulong changedBit = 1ul << (pos % 8 + i * 8);
             moves |= changedBit;
             if ((changedBit & allPieces) != 0) break;
         }
