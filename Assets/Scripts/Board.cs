@@ -105,7 +105,7 @@ public struct Board
         
         if(ply.Captured != Piece.None) {
             if((1ul<<end_idx & passantTrack) != 0) {
-                boards[(int)ply.Captured] = boards[(int)Piece.BPawn] & ~passantCaptured;
+                boards[(int)ply.Captured] = boards[(int)ply.Captured] & ~passantCaptured;
             } else {
                 boards[(int)ply.Captured] = ~(~boards[(int)ply.Captured] | 1ul<<end_idx);
             }
@@ -113,7 +113,7 @@ public struct Board
 
         passantTrack = 0;
         passantCaptured = 0;
-
+    
         //king move -> no more castle on that color
         if (ply.Type == Piece.WKing)
         {
@@ -167,7 +167,7 @@ public struct Board
         else if(ply.Type == Piece.BPawn && ( (1ul<<end_idx) & rank1) != 0) {
             Promote(1ul<<end_idx, Side.Black, (Piece)ply.PromoteType);
         }
-        // Debug.Log("Current state"+MagicBitboards.PrintBitBoard(Pieces));
+        
     }
     
     public bool IsEnPassant(Vector2Int endPos) {
@@ -198,8 +198,11 @@ public struct Board
         boards[(int)ply.Type] = boards[(int)ply.Type] | 1ul<<start_idx;
         
         if(ply.Captured != Piece.None) {
-            // This sets the captured piece's index to 1
-            boards[(int)ply.Captured] = boards[(int)ply.Captured] | 1ul<<end_idx;
+            if((1ul<<end_idx & passantTrack) != 0) {
+                boards[(int)ply.Captured] = boards[(int)ply.Captured] | passantCaptured;
+            } else {
+                boards[(int)ply.Captured] = boards[(int)ply.Captured] | 1ul<<end_idx;
+            }
         }
     }
 
@@ -226,32 +229,13 @@ public struct Board
             Piece.WKing or Piece.BKing => KingMovesParalegal(pos, piece.side, piece.moved),
             
             // Sliding (not yet implemented)
-            Piece.WBishop or Piece.BBishop => BishopMovesParalegal(piece.idx.x + (7-piece.idx.y)*8, piece.side),
-            Piece.WRook or Piece.BRook => RookMovesParalegal(piece.idx.x + (7-piece.idx.y)*8, piece.side),
-            Piece.WQueen or Piece.BQueen => QueenMovesParalegal(piece.idx.x + (7-piece.idx.y)*8, piece.side),
+            Piece.WBishop or Piece.BBishop => BishopMovesParalegal(pos, piece.side),
+            Piece.WRook or Piece.BRook => RookMovesParalegal(pos, piece.side),
+            Piece.WQueen or Piece.BQueen => QueenMovesParalegal(pos, piece.side),
             
             // Can't move nothing
             _ => 0ul,
         };
-    }
-    
-    public ulong RookMovesParalegal(int square, Side side) {
-        ulong attacks = MagicBitboards.RookMagics[square].GetMove(Pieces);
-        Debug.Log(MagicBitboards.PrintBitBoard(attacks));
-        Debug.Log(MagicBitboards.PrintBitBoard(
-            MagicBitboards.FindMovesRook(new Vector2Int(square%8, square/8), MagicBitboards.RookMagics[square].movementMask&Pieces) & (side == Side.White ? BlackPieces : WhitePieces)
-        ));
-        return attacks & ~(side == Side.White ? BlackPieces : WhitePieces);
-    }
-
-    public ulong BishopMovesParalegal(int square, Side side) {
-        ulong attacks = MagicBitboards.RookMagics[square].GetMove(Pieces);
-        Debug.Log(MagicBitboards.PrintBitBoard(attacks));
-        return attacks & ~(side == Side.White ? BlackPieces : WhitePieces);
-    }
-
-    public ulong QueenMovesParalegal(int square, Side side) {
-        return RookMovesParalegal(square, side) | BishopMovesParalegal(square, side);
     }
 
     public ulong KnightMovesParalegal(ulong pos, Side side) { 
@@ -289,20 +273,17 @@ public struct Board
     public ulong KingMovesParalegal(ulong pos, Side side, bool moved) { 
         ulong sameSide = side == Side.White ? WhitePieces : BlackPieces;
         ulong theOpps = side != Side.White ? WhitePieces : BlackPieces;
-        ulong wkSlide = 0x6000000000000000;
-        Debug.Log(" WK " + wkSlide);
-        ulong bkSlide = 0x0000000000000060;
-        ulong wqSlide = 0x0E00000000000000;
-        ulong bqSlide = 0x000000000000000E;
+        ulong wkSlide = 6 << 60;
+        ulong bkSlide = 6 << 4;
         //do the queen slides, 01110 instead of 0110 slid by king position or wtv
-
+        
 
         // You can either move forward, or capture
         // The capture on the right can't be in file A, and the capture on the left can't be in file H
         ulong attacks = ( pos >> 7 & ~fileA )
             | pos >> 8
             | ( pos >> 9 & ~fileH )
-            // ▲ up the board   
+            // ▲ up the board
             // ▼ Down the board
             | ( pos << 9 & ~fileA )
             | pos << 8
@@ -310,31 +291,26 @@ public struct Board
             // ▼ Left right movement
             | ( pos >> 1 & ~fileH )
             | ( pos << 1 & ~fileA );
-        Debug.Log(WhitePieces);
-        Debug.Log(wkSlide);
-        Debug.Log(WhitePieces | wkSlide);
-        Debug.Log(WhitePieces & wkSlide);
-        Debug.Log(((WhitePieces | wkSlide) > 0));
         if (side == Side.White)
         {
-            if (((castleTracker & (int)castleTrack.wKing) > 0) & ((WhitePieces & wkSlide) == 0)) //need to check if the row is clear      & (WhitePieces & wkSlide > 0)
+            if ((castleTracker & (int)castleTrack.wKing) > 0 ) //need to check if the row is clear
             {
                 attacks = attacks | (pos << 2);
             }
-            if ((castleTracker & (int)castleTrack.wQueen) > 0 & ((WhitePieces & wqSlide) == 0) ) //need to check if the row is clear
+            if ((castleTracker & (int)castleTrack.wQueen) > 0) //need to check if the row is clear
             {
-                attacks = attacks | (pos >> 2);
+                attacks = attacks | (pos >> 3);
             }
         }
         else
         {
-            if ((castleTracker & (int)castleTrack.bKing) > 0 & ((BlackPieces & bkSlide) == 0) ) //need to check if the row is clear
+            if ((castleTracker & (int)castleTrack.bKing) > 0) //need to check if the row is clear
             {
                 attacks = attacks | (pos << 2);
             }
-            if ((castleTracker & (int)castleTrack.bQueen) > 0 & ((BlackPieces & bqSlide) == 0)) //need to check if the row is clear
+            if ((castleTracker & (int)castleTrack.bQueen) > 0) //need to check if the row is clear
             {
-                attacks = attacks | (pos >> 2);
+                attacks = attacks | (pos >> 3);
             }
         }
         if (moved)
@@ -353,5 +329,67 @@ public struct Board
         // Idk how to implement castling well
 
         return attacks & ~sameSide;
+    }
+
+    public ulong RookMovesParalegal(ulong pos, Side side) {
+        ulong sameSide = side == Side.White ? WhitePieces : BlackPieces;
+        ulong moves = 0ul;
+        int square = BitScanForward(pos);
+
+        // Along a rank
+        for (int i = square % 8 + 1; i <= 7; i++) {
+            ulong changedBit = 1ul << (i + 8 * (square / 8));
+            moves |= changedBit;
+            if ((changedBit & Pieces) != 0) break;
+        }
+        for (int i = square % 8 - 1; i >= 0; i--) {
+            ulong changedBit = 1ul << (i + 8 * (square / 8));
+            moves |= changedBit;
+            if ((changedBit & Pieces) != 0) break;
+        }
+
+        // Along a file
+        for (int i = square / 8 + 1; i <= 7; i++) {
+            ulong changedBit = 1ul << (square % 8 + i * 8);
+            moves |= changedBit;
+            if ((changedBit & Pieces) != 0) break;
+        }
+        for (int i = square / 8 - 1; i >= 0; i--) {
+            ulong changedBit = 1ul << (square % 8 + i * 8);
+            moves |= changedBit;
+            if ((changedBit & Pieces) != 0) break;
+        }
+
+        return moves & ~sameSide;
+    }
+
+    public ulong BishopMovesParalegal(ulong pos, Side side) {
+        ulong sameSide = side == Side.White ? WhitePieces : BlackPieces;
+        ulong moves = 0ul;
+        int square = BitScanForward(pos);
+        Vector2Int[] directions = { new Vector2Int(1, 1), new Vector2Int(1, -1), new Vector2Int(-1, 1), new Vector2Int(-1, -1) };
+
+        foreach (var direction in directions) {
+            Vector2Int rayPos = new Vector2Int(square % 8, square / 8) + direction;
+            while (rayPos.x >= 0 && rayPos.x <= 7 && rayPos.y >= 0 && rayPos.y <= 7) {
+                ulong changedBit = 1ul << (rayPos.x + rayPos.y * 8);
+                moves |= changedBit;
+                if ((Pieces & changedBit) != 0) break;
+                rayPos += direction;
+            }
+        }
+
+        return moves & ~sameSide;
+    }
+
+    public ulong QueenMovesParalegal(ulong pos, Side side) {
+        ulong sameSide = side == Side.White ? WhitePieces : BlackPieces;
+        ulong rookMoves = RookMovesParalegal(pos, side);
+        ulong bishopMoves = BishopMovesParalegal(pos, side);
+        return (rookMoves | bishopMoves) & ~sameSide;
+    }
+
+    private int BitScanForward(ulong bb) {
+        return (int)Math.Log(bb & ~(bb - 1), 2);
     }
 }

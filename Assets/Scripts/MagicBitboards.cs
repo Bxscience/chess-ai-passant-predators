@@ -135,122 +135,48 @@ public static class MagicBitboards {
     
     public static ulong FindMovesRook(Vector2Int pos, ulong allPieces) {
         ulong moves = 0ul;
-
-        // Get position as an integer
-        // Our position starts from rank 8, so y=0 (which is rank 1), should be a higher value of pos
-        // ie a Vec2I of (0,0) which is A1, should be pos=56 
-        int square = pos.x + pos.y*8;
+        int square = pos.x + (7 - pos.y) * 8;
         ulong posBoard = 1ul << square;
-        // Debug.Log("Pos Board: " + PrintBitBoard(posBoard));
-        
+
         // Along a rank
-        // First/last file doesn't matter, we assume we can always capture
-        // We'll filter later
-        for(int i = pos.x+1; i <= 7; i++) {
-            //Add the new move into the board
-            ulong changedBit = 1ul << (i + 8*pos.y);
+        for (int i = pos.x + 1; i <= 7; i++) {
+            ulong changedBit = 1ul << (i + 8 * pos.y);
             moves |= changedBit;
-
-            if( (changedBit & allPieces) != 0) {
-                break;
-            }
+            if ((changedBit & allPieces) != 0) break;
         }
-        for(int i = pos.x-1; i >= 0; i--) {
-            //Add the new move into the board
-            ulong changedBit = 1ul << (i + 8*pos.y);
+        for (int i = pos.x - 1; i >= 0; i--) {
+            ulong changedBit = 1ul << (i + 8 * pos.y);
             moves |= changedBit;
-
-            if( (changedBit & allPieces) != 0) {
-                break;
-            }
+            if ((changedBit & allPieces) != 0) break;
         }
-        
+
         // Along a file
-        // First/last rank doesn't matter, we assume we can always capture
-        // We'll filter later
-        for(int i = pos.y+1; i <= 7; i++) {
-            // Add the new move into the board
-            ulong changedBit = 1ul << (pos.x + i*8);
+        for (int i = pos.y + 1; i <= 7; i++) {
+            ulong changedBit = 1ul << (pos.x + i * 8);
             moves |= changedBit;
-
-            if( (changedBit & allPieces) != 0) {
-                break;
-            }
+            if ((changedBit & allPieces) != 0) break;
         }
-
-        for(int i = pos.y-1; i >= 0; i--) {
-            // Add the new move into the board
-            ulong changedBit = 1ul << (pos.x + i*8);
+        for (int i = pos.y - 1; i >= 0; i--) {
+            ulong changedBit = 1ul << (pos.x + i * 8);
             moves |= changedBit;
-
-            if( (changedBit & allPieces) != 0) {
-                break;
-            }
+            if ((changedBit & allPieces) != 0) break;
         }
         return moves;
     }
         
     public static ulong FindMovesBishop(Vector2Int pos, ulong allPieces) {
         ulong moves = 0ul;
-        Vector2Int negSlope = new(-1,1);
+        Vector2Int[] directions = { new Vector2Int(1, 1), new Vector2Int(1, -1), new Vector2Int(-1, 1), new Vector2Int(-1, -1) };
 
-        // Get position as an integer
-        // Our position starts from rank 8, so y=0 (which is rank 1), should be a higher value of pos
-        // ie a Vec2I of (0,0) which is A1, should be pos=56 
-        int square = pos.x + pos.y*8;
-        
-        Vector2Int rayPos = pos + Vector2Int.one;
-        while(
-            rayPos.x >= 0 && rayPos.x <= 7
-            && rayPos.y >= 0 && rayPos.y <= 7
-        ) {
-            ulong changedBit = 1ul << (rayPos.x + rayPos.y*8);
-            moves |= changedBit;
-            if((allPieces & changedBit) != 0) {
-                break;
+        foreach (var direction in directions) {
+            Vector2Int rayPos = pos + direction;
+            while (rayPos.x >= 0 && rayPos.x <= 7 && rayPos.y >= 0 && rayPos.y <= 7) {
+                ulong changedBit = 1ul << (rayPos.x + rayPos.y * 8);
+                moves |= changedBit;
+                if ((allPieces & changedBit) != 0) break;
+                rayPos += direction;
             }
-            rayPos += Vector2Int.one;
         }
-
-        rayPos = pos - Vector2Int.one;
-        while(
-            rayPos.x >= 0 && rayPos.x <= 7
-            && rayPos.y >= 0 && rayPos.y <= 7
-        ) {
-            ulong changedBit = 1ul << (rayPos.x + (7-rayPos.y)*8);
-            moves |= changedBit;
-            if((allPieces & changedBit) != 0) {
-                break;
-            }
-            rayPos -= Vector2Int.one;
-        }
-
-        rayPos = pos + negSlope;
-        while(
-            rayPos.x >= 0 && rayPos.x <= 7
-            && rayPos.y >= 0 && rayPos.y <= 7
-        ) {
-            ulong changedBit = 1ul << (rayPos.x + (7-rayPos.y)*8);
-            moves |= changedBit;
-            if((allPieces & changedBit) != 0) {
-                break;
-            }
-            rayPos += negSlope;
-        }
-
-        rayPos = pos - negSlope;
-        while(
-            rayPos.x >= 0 && rayPos.x <= 7
-            && rayPos.y >= 0 && rayPos.y <= 7
-        ) {
-            ulong changedBit = 1ul << (rayPos.x + (7-rayPos.y)*8);
-            moves |= changedBit;
-            if((allPieces & changedBit) != 0) {
-                break;
-            }
-            rayPos -= negSlope;
-        }
-
         return moves;
     }
     
