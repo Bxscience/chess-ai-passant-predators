@@ -135,32 +135,32 @@ public static class MagicBitboards {
     
     public static ulong FindMovesRook(Vector2Int pos, ulong allPieces) {
         ulong moves = 0ul;
-        int square = pos.x + (7 - pos.y) * 8;
-        ulong posBoard = 1ul << square;
+        int square = pos.x + pos.y*8;
 
         // Along a rank
-        for (int i = pos.x + 1; i <= 7; i++) {
-            ulong changedBit = 1ul << (i + 8 * pos.y);
+        for (int i = square % 8 + 1; i <= 7; i++) {
+            ulong changedBit = 1ul << (i + 8 * (square / 8));
             moves |= changedBit;
             if ((changedBit & allPieces) != 0) break;
         }
-        for (int i = pos.x - 1; i >= 0; i--) {
-            ulong changedBit = 1ul << (i + 8 * pos.y);
+        for (int i = square % 8 - 1; i >= 0; i--) {
+            ulong changedBit = 1ul << (i + 8 * (square / 8));
             moves |= changedBit;
             if ((changedBit & allPieces) != 0) break;
         }
 
         // Along a file
-        for (int i = pos.y + 1; i <= 7; i++) {
-            ulong changedBit = 1ul << (pos.x + i * 8);
+        for (int i = square / 8 + 1; i <= 7; i++) {
+            ulong changedBit = 1ul << (square % 8 + i * 8);
             moves |= changedBit;
             if ((changedBit & allPieces) != 0) break;
         }
-        for (int i = pos.y - 1; i >= 0; i--) {
-            ulong changedBit = 1ul << (pos.x + i * 8);
+        for (int i = square / 8 - 1; i >= 0; i--) {
+            ulong changedBit = 1ul << (square % 8 + i * 8);
             moves |= changedBit;
             if ((changedBit & allPieces) != 0) break;
         }
+
         return moves;
     }
         

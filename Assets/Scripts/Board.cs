@@ -359,34 +359,23 @@ public struct Board
             moves |= changedBit;
             if ((changedBit & Pieces) != 0) break;
         }
+        
+        moves = MagicBitboards.RookMagics[BitScanForward(pos)].GetMove(Pieces);
 
         return moves & ~sameSide;
     }
 
     public ulong BishopMovesParalegal(ulong pos, Side side) {
         ulong sameSide = side == Side.White ? WhitePieces : BlackPieces;
-        ulong moves = 0ul;
-        int square = BitScanForward(pos);
-        Vector2Int[] directions = { new Vector2Int(1, 1), new Vector2Int(1, -1), new Vector2Int(-1, 1), new Vector2Int(-1, -1) };
-
-        foreach (var direction in directions) {
-            Vector2Int rayPos = new Vector2Int(square % 8, square / 8) + direction;
-            while (rayPos.x >= 0 && rayPos.x <= 7 && rayPos.y >= 0 && rayPos.y <= 7) {
-                ulong changedBit = 1ul << (rayPos.x + rayPos.y * 8);
-                moves |= changedBit;
-                if ((Pieces & changedBit) != 0) break;
-                rayPos += direction;
-            }
-        }
+        ulong moves = MagicBitboards.BishopMagics[BitScanForward(pos)].GetMove(Pieces);
 
         return moves & ~sameSide;
     }
 
     public ulong QueenMovesParalegal(ulong pos, Side side) {
-        ulong sameSide = side == Side.White ? WhitePieces : BlackPieces;
         ulong rookMoves = RookMovesParalegal(pos, side);
         ulong bishopMoves = BishopMovesParalegal(pos, side);
-        return (rookMoves | bishopMoves) & ~sameSide;
+        return rookMoves | bishopMoves;
     }
 
     private int BitScanForward(ulong bb) {
