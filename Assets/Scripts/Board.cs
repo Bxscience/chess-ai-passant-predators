@@ -123,10 +123,13 @@ public struct Board
                 boards[(int)Piece.WRook] = boards[(int)Piece.WRook]  & ~0x8000000000000000ul;
                 boards[(int)Piece.WRook] |=  0x2000000000000000ul;
             }
-            if (ply.End.x-ply.Start.x<=-3) {
+            if (ply.End.x-ply.Start.x<=-2) {
                 // Queen side test
-                boards[(int)Piece.WRook] &= ~0x020000000000000ul;                
-                boards[(int)Piece.WRook] &= ~0x080000000000000ul;                
+                Debug.Log("Happened");
+                boards[(int)Piece.WRook] &= ~0x0100000000000000ul;
+                Debug.Log(boards[(int)Piece.WRook]);
+                boards[(int)Piece.WRook] |= 0x0800000000000000ul;
+                Debug.Log(boards[(int)Piece.WRook]);
             }
             castleTracker &= ~(int)(castleTrack.wKing|castleTrack.wQueen);
         }
