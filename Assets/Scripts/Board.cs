@@ -351,8 +351,4 @@ public struct Board
         ulong bishopMoves = BishopMovesParalegal(pos, side);
         return rookMoves | bishopMoves;
     }
-
-    private int BitScanForward(ulong bb) {
-        return (int)Math.Log(bb & ~(bb - 1), 2);
-    }
 }
