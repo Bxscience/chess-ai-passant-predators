@@ -118,14 +118,10 @@ public struct Board
         if (ply.Type == Piece.WKing)
         {
             // We have castled
-            Debug.Log(ply.End.x - ply.Start.x);
-            if(Math.Abs(ply.End.x-ply.Start.x)>=2) {
+            if(ply.End.x-ply.Start.x>=2) {
                 // King side test
-                Debug.Log(boards[(int)Piece.WRook]);
-                boards[(int)Piece.WRook] &=  ~(0x8000000000000000ul);
-                Debug.Log(boards[(int)Piece.WRook]);
+                boards[(int)Piece.WRook] = boards[(int)Piece.WRook]  & ~0x8000000000000000ul;
                 boards[(int)Piece.WRook] |=  0x2000000000000000ul;
-                Debug.Log(boards[(int)Piece.WRook]);
             }
             if (ply.End.x-ply.Start.x<=-3) {
                 // Queen side test
@@ -138,7 +134,8 @@ public struct Board
         {
             // We have castled
             if(Math.Abs(ply.End.x-ply.Start.x)>=2) {
-                                
+                boards[(int)Piece.BRook] &= ~0x0000000000000001ul;
+                boards[(int)Piece.BRook] |= 0x00000000000000004ul;
             }
             castleTracker &= ~(int)(castleTrack.bKing|castleTrack.bQueen);
         }
