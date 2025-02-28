@@ -37,8 +37,18 @@ public class ChessPiece : MonoBehaviour
             _ => WQueenMesh
         };
     }
+    // public PieceConfig pieceConfig => new PieceConfig(idx, type);
 }
 
 public enum Side {
     White, Black, None
 }
+
+// public struct PieceConfig {
+//     public Vector2Int Idx;
+//     public Piece Type;
+//     public PieceConfig(Vector2Int idx, Piece type) {
+//         Idx = idx;
+//         Type = type;
+//     }
+// }

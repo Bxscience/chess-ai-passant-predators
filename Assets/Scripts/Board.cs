@@ -117,22 +117,37 @@ public struct Board
         //king move -> no more castle on that color
         if (ply.Type == Piece.WKing)
         {
-            castleTracker = castleTracker & ~(int)(castleTrack.wKing) & ~(int)(castleTrack.wQueen);
+            // We have castled
+            if(ply.End.x-ply.Start.x>=2) {
+                // King side test
+                boards[(int)Piece.WRook] &= ~0x800000000000000ul;
+                boards[(int)Piece.WRook] |=  0x200000000000000ul;                
+            }
+            if(ply.End.x-ply.Start.x<=-3) {
+                // Queen side test
+                boards[(int)Piece.WRook] &= ~0x020000000000000ul;                
+                boards[(int)Piece.WRook] &= ~0x080000000000000ul;                
+            }
+            castleTracker &= ~(int)(castleTrack.wKing|castleTrack.wQueen);
         }
         else if (ply.Type == Piece.BKing)
         {
-            castleTracker = castleTracker & ~(int)(castleTrack.bKing) & ~(int)(castleTrack.bQueen);
+            // We have castled
+            if(Math.Abs(ply.End.x-ply.Start.x)>=2) {
+                                
+            }
+            castleTracker &= ~(int)(castleTrack.bKing|castleTrack.bQueen);
         }
 
         if (ply.Type == Piece.WRook)
         {
             if (ply.Start == new Vector2Int(7, 0)) //king side rook
             {
-                castleTracker = castleTracker & ~(int)(castleTrack.wKing);
+                castleTracker &= ~(int)castleTrack.wKing;
             }
             else if (ply.Start == new Vector2Int(0, 0)) //queen side rook
             {
-                castleTracker = castleTracker & ~(int)(castleTrack.wQueen); 
+                castleTracker &= ~(int)castleTrack.wQueen; 
             }
         }
         else if (ply.Type == Piece.BRook)
@@ -186,6 +201,7 @@ public struct Board
             boards[(int)promoteType] |= pos;
         }
     }
+
     public void UndoPly(Ply ply) {
         // the start coordinate, as an offset, starting from A1
         // If Start.y is 7, that should correlate with the 8th rank.   
@@ -205,6 +221,21 @@ public struct Board
             }
         }
     }
+    
+    public ulong GetMoveLegal(int square, Piece type, Side side) {
+        // For check:
+        // Get the moves of every piece
+        // | them together (for the other side of course)
+        // Check if the king bitboard & all_attack_board != 0
+        // King is in check
+        //
+        // For checkmate:
+        // ~all_attack_board & paralegal moves of king == 0
+        // Checkmate
+        // why? if we unset every point where an attack is from the moves of the king, then the king is stuck if its 0
+        // Essentially, is every move of the king within the board of attacks
+        return 0;
+    }
 
     public static Vector3 IdxToPos(int x, int y) {
         float min = -19.25f;
@@ -218,20 +249,22 @@ public struct Board
         return IdxToPos(idx.x, idx.y);
     }
     
-    public ulong GetMoveParalegal(ChessPiece piece) {
+    public ulong GetMoveParalegal(ChessPiece piece) => GetMoveParalegal(piece.idx.x + 8*(7-piece.idx.y), piece.type, piece.side);
+    
+    public ulong GetMoveParalegal(int square, Piece type, Side side) {
         // if idx.y == 7, then its in the first few bits, because we start fropm A8
-        ulong pos = 1ul << (piece.idx.x + (7-piece.idx.y)*8);
-        return piece.type switch
+        ulong pos = 1ul << square;
+        return type switch
         {
             // Leaping
-            Piece.WPawn or Piece.BPawn => PawnMovesParalegal(pos, piece.side, piece.moved),
-            Piece.WKnight or Piece.BKnight => KnightMovesParalegal(pos, piece.side),
-            Piece.WKing or Piece.BKing => KingMovesParalegal(pos, piece.side, piece.moved),
+            Piece.WPawn or Piece.BPawn => PawnMovesParalegal(pos, side),
+            Piece.WKnight or Piece.BKnight => KnightMovesParalegal(pos, side),
+            Piece.WKing or Piece.BKing => KingMovesParalegal(pos, side),
             
             // Sliding (not yet implemented)
-            Piece.WBishop or Piece.BBishop => BishopMovesParalegal(piece.idx.x + (7-piece.idx.y)*8, piece.side),
-            Piece.WRook or Piece.BRook => RookMovesParalegal(piece.idx.x + (7-piece.idx.y)*8, piece.side),
-            Piece.WQueen or Piece.BQueen => QueenMovesParalegal(piece.idx.x + (7-piece.idx.y)*8, piece.side),
+            Piece.WBishop or Piece.BBishop => BishopMovesParalegal(square, side),
+            Piece.WRook or Piece.BRook => RookMovesParalegal(square, side),
+            Piece.WQueen or Piece.BQueen => QueenMovesParalegal(square, side),
             
             // Can't move nothing
             _ => 0ul,
@@ -250,18 +283,18 @@ public struct Board
         return attacks & ~(side == Side.White ? WhitePieces : BlackPieces);
     }
     
-    public ulong PawnMovesParalegal(ulong pos, Side side, bool moved) { 
+    public ulong PawnMovesParalegal(ulong pos, Side side) { 
         // You can either move forward, or capture
         // The capture on the right can't be in file A, and the capture on the left can't be in file H
         ulong attacksWhite = (pos >> 8 & ~Pieces)
             | (pos>>7 & BlackPieces & ~fileA)
             | (pos>>9 & BlackPieces & ~fileH) | (pos>>7 & (passantTrack) & ~fileA) | (pos>>9 & passantTrack & ~fileH)
-            | ((moved || (pos>>8 & Pieces) != 0) ? 0 : pos>>16);
+            | (( (pos & Board.rank2) == 0 || (pos>>8 & Pieces) != 0) ? 0 : pos>>16);
         
         ulong attacksBlack = (pos << 8 & ~Pieces)
             | (pos<<9 & WhitePieces & ~fileA)
             | (pos<<7 & WhitePieces & ~fileH) | (pos << 9 & (passantTrack) & ~fileA) | (pos << 7 & passantTrack & ~fileH)
-            | ((moved || ((pos<<8 & Pieces) != 0)) ? 0 : pos<<16);
+            | (( (pos & Board.rank7) == 0 || ((pos<<8 & Pieces) != 0)) ? 0 : pos<<16);
 
         if(side == Side.White) 
             return attacksWhite & ~WhitePieces;
@@ -270,7 +303,7 @@ public struct Board
     }
 
 
-    public ulong KingMovesParalegal(ulong pos, Side side, bool moved) { 
+    public ulong KingMovesParalegal(ulong pos, Side side) { 
         ulong sameSide = side == Side.White ? WhitePieces : BlackPieces;
         ulong theOpps = side != Side.White ? WhitePieces : BlackPieces;
         ulong wkSlide = 6 << 60;
@@ -312,12 +345,6 @@ public struct Board
             {
                 attacks = attacks | (pos >> 3);
             }
-        }
-        if (moved)
-        {
-           
-            return attacks & ~sameSide;
-
         }
         
         // These are the squares that the king would move to castle
