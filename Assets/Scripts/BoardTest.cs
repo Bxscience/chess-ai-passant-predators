@@ -6,7 +6,6 @@ public class BoardTest : MonoBehaviour
 {
     void Start()
     {
-        MagicBitboards.GenerateMagicNumbers();
         // Debug.Log("Now Rooks");
         // foreach(Magics m in MagicBitboards.RookMagics) {
         //     string s = "";
