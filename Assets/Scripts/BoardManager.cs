@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class BoardManager : MonoBehaviour
@@ -48,6 +49,7 @@ public class BoardManager : MonoBehaviour
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
             if(Physics.Raycast(ray, out hit)) {
+                if(hit.collider.GetComponent<ChessPiece>() == null) return;
                 if(!isGrabbing) {
                     if(hit.collider.GetComponent<ChessPiece>().side != (isWhiteTurn ? Side.White : Side.Black)) {
                         return;
@@ -74,7 +76,7 @@ public class BoardManager : MonoBehaviour
                     Ply newPly = new Ply(currentlySelected.idx, pressed.idx, currentlySelected.type, pressed.type);
                     
                     VisualizeMove(newPly, currentlySelected, pressed);
-                    currentlySelected = null;
+                    if(!isPromoting) currentlySelected = null;
                 }
             }
         }
@@ -84,7 +86,7 @@ public class BoardManager : MonoBehaviour
         if(selected == null) selected = FindPiece(newPly.Type, newPly.Start);
         if(pressed == null) pressed = FindPiece(newPly.Captured, newPly.End);
 
-        if(newPly.Type != Piece.None) {
+        if(newPly.Captured != Piece.None) {
             taken.Push(pressed);
             pressed.transform.position -= Vector3.up*12;
         }
@@ -119,10 +121,11 @@ public class BoardManager : MonoBehaviour
         ) {
             if(newPly.PromoteType != null) {
                 selected.Promote((Piece)newPly.PromoteType);
+            } else {
+                pendingPromotionPly = newPly;
+                isPromoting = true;
+                return;
             }
-            pendingPromotionPly = newPly;
-            isPromoting = true;
-            return;
         }
 
         selected.transform.position = Board.IdxToPos(newPly.End);
