@@ -9,7 +9,6 @@ public struct Ply
     public Piece Type;
     public Piece Captured;
     public Piece? PromoteType;
-    public bool IsCastling;
     public Side Side => Type switch
     {
         Piece.WPawn or Piece.WBishop or Piece.WKnight or Piece.WRook or Piece.WQueen or Piece.WKing => Side.White,
@@ -19,12 +18,11 @@ public struct Ply
     };
 
 
-    public Ply(Vector2Int start, Vector2Int end, Piece type, bool isCastling = false, Piece captured = Piece.None, Piece? promoteType = null) {
+    public Ply(Vector2Int start, Vector2Int end, Piece type, Piece captured = Piece.None, Piece? promoteType = null) {
         Start = start;
         End = end;
         Type = type;
         Captured = captured;
         PromoteType = promoteType;
-        IsCastling = isCastling;
     }
 }

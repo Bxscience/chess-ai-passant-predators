@@ -126,11 +126,10 @@ public struct Board
             }
             if (ply.End.x-ply.Start.x<=-2) {
                 // Queen side test
-                Debug.Log("Happened");
                 boards[(int)Piece.WRook] &= ~0x0100000000000000ul;
-                Debug.Log(boards[(int)Piece.WRook]);
+                Debug.Log(MagicBitboards.PrintBitBoard(boards[(int)Piece.WRook]));
                 boards[(int)Piece.WRook] |= 0x0800000000000000ul;
-                Debug.Log(boards[(int)Piece.WRook]);
+                Debug.Log(MagicBitboards.PrintBitBoard(boards[(int)Piece.WRook]));
             }
             castleTracker &= ~(int)(castleTrack.wKing|castleTrack.wQueen);
         }

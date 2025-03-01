@@ -70,64 +70,123 @@ public class BoardManager : MonoBehaviour
                     if((1ul<<(pressed.idx.x + (7-pressed.idx.y)*8) & board.GetMoveParalegal(currentlySelected)) == 0)
                         return;
                     isGrabbing = false;
-                    Ply newPly = new Ply(currentlySelected.idx, pressed.idx, currentlySelected.type);
-                    if(pressed.type != Piece.None) {
-                        newPly.Captured = pressed.type;
-                        taken.Push(pressed);
-                        pressed.transform.position -= Vector3.up*10;
-                    }
-                    if((currentlySelected.type == Piece.WPawn || currentlySelected.type == Piece.BPawn) && board.IsEnPassant(pressed.idx)) {
-                        newPly.Captured = isWhiteTurn ? Piece.BPawn : Piece.WPawn;
-                        taken.Push(enPassantable);
-                        enPassantable.transform.position -= Vector3.up*10;
-                    }
-                    currentlySelected.transform.position = Board.IdxToPos(newPly.End);
-                    currentlySelected.idx = newPly.End;
-                    enPassantable = null;
-
-                    if(currentlySelected.type == Piece.WPawn && currentlySelected.idx.y == 7) {
-                        pendingPromotionPly = newPly;
-                        isPromoting = true;
-                        return;
-                    }
-
-                    if(currentlySelected.type == Piece.BPawn && currentlySelected.idx.y == 0) {
-                        pendingPromotionPly = newPly;
-                        isPromoting = true;
-                        return;
-                    }
+                    Ply newPly = new Ply(currentlySelected.idx, pressed.idx, currentlySelected.type, pressed.type);
                     
-                    if((newPly.Type == Piece.WPawn || newPly.Type == Piece.BPawn) && Vector2Int.Distance(newPly.End, newPly.Start) == 2) {
-                        enPassantable = currentlySelected;
-                    }
-                    
-                    // We be castling
-                    if ((currentlySelected.type == Piece.WKing || currentlySelected.type == Piece.BKing) && Math.Abs(newPly.End.x - newPly.Start.x) == 2) {
-                        if(newPly.End.x == 6) {
-                            ChessPiece rook = FindPiece(newPly.Side == Side.White ? Piece.WRook : Piece.BRook, new Vector2Int(7, 0));
-                            rook.idx.x = 5;
-                            rook.transform.position = Board.IdxToPos(rook.idx);
-                        }
-                        if(newPly.End.x == 2) {
-                            ChessPiece rook = FindPiece(newPly.Side == Side.White ? Piece.WRook : Piece.BRook, new Vector2Int(0, 0));
-                            rook.idx.x = 3;
-                            rook.transform.position = Board.IdxToPos(rook.idx);
-                        }
-                    }
+                    // Doing a move
+                    // if(newPly.Type != Piece.None) {
+                    //     taken.Push(pressed);
+                    //     pressed.transform.position -= Vector3.up*12;
+                    // }
+                    // if((newPly.Type == Piece.WPawn || currentlySelected.type == Piece.BPawn) && board.IsEnPassant(newPly.End)) {
+                    //     newPly.Captured = isWhiteTurn ? Piece.BPawn : Piece.WPawn;
+                    //     taken.Push(enPassantable);
+                    //     enPassantable.transform.position -= Vector3.up*12;
+                    // }
+                    // enPassantable = null;
 
-                    moved.Push(currentlySelected);
-                    currentlySelected.moved = true;
+                    // if(newPly.Type == Piece.WPawn && newPly.Start.y == 7) {
+                    //     pendingPromotionPly = newPly;
+                    //     isPromoting = true;
+                    //     return;
+                    // }
+
+                    // if(newPly.Type == Piece.BPawn && currentlySelected.idx.y == 0) {
+                    //     pendingPromotionPly = newPly;
+                    //     isPromoting = true;
+                    //     return;
+                    // }
+                    
+                    // if((newPly.Type == Piece.WPawn || newPly.Type == Piece.BPawn) && Vector2Int.Distance(newPly.End, newPly.Start) == 2) {
+                    //     enPassantable = currentlySelected;
+                    // }
+                    
+                    // // We be castling
+                    // if ((newPly.Type == Piece.WKing || newPly.Type == Piece.BKing) && Math.Abs(newPly.End.x - newPly.Start.x) == 2) {
+                    //     if(newPly.End.x == 6) {
+                    //         ChessPiece rook = FindPiece(newPly.Side == Side.White ? Piece.WRook : Piece.BRook, new Vector2Int(7, 0));
+                    //         rook.idx.x = 5;
+                    //         rook.transform.position = Board.IdxToPos(rook.idx);
+                    //     }
+                    //     if(newPly.End.x == 2) {
+                    //         ChessPiece rook = FindPiece(newPly.Side == Side.White ? Piece.WRook : Piece.BRook, new Vector2Int(0, 0));
+                    //         rook.idx.x = 3;
+                    //         rook.transform.position = Board.IdxToPos(rook.idx);
+                    //     }
+                    // }
+
+                    // currentlySelected.transform.position = Board.IdxToPos(newPly.End);
+                    // currentlySelected.idx = newPly.End;
+
+                    // moved.Push(currentlySelected);
+                    // currentlySelected = null;
+
+                    // board.PlayPly(newPly);
+                    // plies.Push(newPly);
+                    // isWhiteTurn = !isWhiteTurn;
+                    VisualizeMove(newPly, currentlySelected, pressed);
                     currentlySelected = null;
-
-                    board.PlayPly(newPly);
-                    plies.Push(newPly);
-                    isWhiteTurn = !isWhiteTurn;
                 }
             }
         }
     }
     
+    public void VisualizeMove(Ply newPly, ChessPiece selected = null, ChessPiece pressed = null) {
+        if(selected == null) selected = FindPiece(newPly.Type, newPly.Start);
+        if(pressed == null) pressed = FindPiece(newPly.Captured, newPly.End);
+
+        if(newPly.Type != Piece.None) {
+            taken.Push(pressed);
+            pressed.transform.position -= Vector3.up*12;
+        }
+        if((newPly.Type == Piece.WPawn || selected.type == Piece.BPawn) && board.IsEnPassant(newPly.End)) {
+            newPly.Captured = isWhiteTurn ? Piece.BPawn : Piece.WPawn;
+            taken.Push(enPassantable);
+            enPassantable.transform.position -= Vector3.up*12;
+        }
+        enPassantable = null;
+
+        if(newPly.Type == Piece.WPawn && newPly.Start.y == 7) {
+            pendingPromotionPly = newPly;
+            isPromoting = true;
+            return;
+        }
+
+        if(newPly.Type == Piece.BPawn && selected.idx.y == 0) {
+            pendingPromotionPly = newPly;
+            isPromoting = true;
+            return;
+        }
+        
+        if((newPly.Type == Piece.WPawn || newPly.Type == Piece.BPawn) && Vector2Int.Distance(newPly.End, newPly.Start) == 2) {
+            enPassantable = selected;
+        }
+        
+        // We be castling
+        if ((newPly.Type == Piece.WKing || newPly.Type == Piece.BKing) && Math.Abs(newPly.End.x - newPly.Start.x) == 2) {
+            if(newPly.End.x == 6) {
+                ChessPiece rook = newPly.Side == Side.White ? FindPiece(Piece.WRook, new Vector2Int(7, 0)) : FindPiece(Piece.BRook, new Vector2Int(7, 7));
+                rook.idx.x = 5;
+                rook.transform.position = Board.IdxToPos(rook.idx);
+            }
+            if(newPly.End.x == 2) {
+                ChessPiece rook = newPly.Side == Side.White ? FindPiece(Piece.WRook, new Vector2Int(0, 0)) : FindPiece(Piece.BRook, new Vector2Int(0, 7));
+                rook.idx.x = 3;
+                rook.transform.position = Board.IdxToPos(rook.idx);
+            }
+        }
+
+        selected.transform.position = Board.IdxToPos(newPly.End);
+        selected.idx = newPly.End;
+
+        moved.Push(selected);
+
+        board.PlayPly(newPly);
+        plies.Push(newPly);
+        isWhiteTurn = !isWhiteTurn;
+    }
+    
     public ChessPiece FindPiece(Piece type, Vector2Int idx) {
+        if(type == Piece.None) return null;
         foreach(ChessPiece piece in SpawnPieces.instance.pieces[(int)type]) {
             if(piece.idx == idx) return piece;
         }
@@ -144,7 +203,7 @@ public class BoardManager : MonoBehaviour
         p.transform.position = Board.IdxToPos(undoPly.Start);
         if(undoPly.Captured != Piece.None) {
             ChessPiece realivePiece = taken.Pop();
-            realivePiece.transform.position += Vector3.up*10;
+            realivePiece.transform.position += Vector3.up*12;
         }
         isWhiteTurn = !isWhiteTurn;
     }
@@ -164,7 +223,6 @@ public class BoardManager : MonoBehaviour
 
         currentlySelected.Promote((Piece)pendingPromotionPly.PromoteType);
         moved.Push(currentlySelected);
-        currentlySelected.moved = true;
         currentlySelected = null;
 
         board.PlayPly(pendingPromotionPly);

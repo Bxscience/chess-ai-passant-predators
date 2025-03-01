@@ -7,7 +7,6 @@ public class ChessPiece : MonoBehaviour
     public Vector2Int idx;
     [SerializeField]
     public Piece type;
-    public bool moved = false;
     
     [SerializeField]
     MeshFilter meshFilter;
