@@ -27,7 +27,11 @@ public struct Board
     public ulong[] boards;
     public ulong passantTrack;
     public ulong passantCaptured;
+    public ulong allWhiteMovesPsuedolegal;
+    public ulong allBlackMovesPsuedolegal;
     public int castleTracker;
+
+
     public const ulong fileA = 0x0101010101010101;
     public const ulong fileB = 0x0202020202020202;
     public const ulong fileC = 0x0404040404040404;
@@ -70,6 +74,8 @@ public struct Board
     };
 
     public Board(string fen) {
+        allWhiteMovesPsuedolegal = 0;
+        allBlackMovesPsuedolegal = 0;
         castleTracker = 0b1111;
         //castleTracker = castleTracker & ~castleTrack.wQueen for example
         boards = new ulong[12];
@@ -158,11 +164,11 @@ public struct Board
         {
             if (ply.Start == new Vector2Int(7, 7)) 
             {
-                castleTracker = castleTracker & ~(int)(castleTrack.bKing);
+                castleTracker &= ~(int)castleTrack.bKing;
             }
             else if (ply.Start == new Vector2Int(0, 7))
             {
-                castleTracker = castleTracker & ~(int)(castleTrack.bQueen);
+                castleTracker &= ~(int)castleTrack.bQueen;
             }
         }
 
@@ -187,6 +193,29 @@ public struct Board
             Promote(1ul<<end_idx, Side.Black, (Piece)ply.PromoteType);
         }
         
+        // Lets find all paralegal moves
+        allWhiteMovesPsuedolegal = 0;
+        for(int i = 0; i < (int)Piece.WKing; i++) {
+            ulong board = boards[i];
+            while(board>0) {
+                int pos = GetLSBIndex(board);
+                ulong moveBoard = GetMoveParalegal(pos, (Piece)i, Side.White);
+                allWhiteMovesPsuedolegal |= moveBoard;
+                board &= ~(1ul<<pos);
+            }
+        }
+
+        allBlackMovesPsuedolegal = 0;
+        for(int i = 6; i < (int)Piece.BKing; i++) {
+            ulong board = boards[i];
+            while(board>0) {
+                int pos = GetLSBIndex(board);
+                ulong moveBoard = GetMoveParalegal(pos, (Piece)i, Side.Black);
+                allBlackMovesPsuedolegal |= moveBoard;
+                board &= ~(1ul<<pos);
+            }
+        }
+        GetCheckStatus();
     }
     
     public bool IsEnPassant(Vector2Int endPos) {
@@ -227,6 +256,18 @@ public struct Board
     }
     
     public ulong GetMoveLegal(int square, Piece type, Side side) {
+        CheckStatus cs = GetCheckStatus();
+        return 0;
+    }
+    
+    
+    [System.Flags]
+    public enum CheckStatus {
+        None,
+        WKCheck, WKCheckmate, WKStalemate,
+        BKCheck, BKCheckmate, BKStalemate,
+    }
+    public CheckStatus GetCheckStatus() {
         // For check:
         // Get the moves of every piece
         // | them together (for the other side of course)
@@ -238,7 +279,32 @@ public struct Board
         // Checkmate
         // why? if we unset every point where an attack is from the moves of the king, then the king is stuck if its 0
         // Essentially, is every move of the king within the board of attacks
-        return 0;
+        CheckStatus cs = CheckStatus.None;
+        if( (boards[(int)Piece.WKing] & allBlackMovesPsuedolegal) > 0 ) {
+            cs |= CheckStatus.WKCheck;
+            Debug.Log("White king in check");
+        }
+
+        int wKingPos = GetLSBIndex(boards[(int)Piece.WKing]);
+        ulong wKingMoveBoard = KingImmediateMoves(1ul<<wKingPos, Side.White);
+        
+        if(
+            ((wKingMoveBoard | 1ul<<wKingPos) & ~allBlackMovesPsuedolegal) == 0 
+            // && One of White's Pieces can block
+            // && One of White's Pieces can take
+        ) {
+            Debug.Log("White king checkmate");
+            cs |= CheckStatus.WKCheckmate;
+        } else if ( (wKingMoveBoard & ~allBlackMovesPsuedolegal) == 0 ) {
+            Debug.Log("White stalemate");
+            cs = CheckStatus.WKStalemate;
+        }
+
+        if( (boards[(int)Piece.BKing] & allWhiteMovesPsuedolegal) > 0 ) {
+            Debug.Log("Black king in check");
+        }
+        
+        return cs;
     }
 
     public static Vector3 IdxToPos(int x, int y) {
@@ -353,15 +419,25 @@ public struct Board
                 attacks = attacks | (pos >> 2);
             }
         }
-        
-        // These are the squares that the king would move to castle
-        // const ulong castleSpots = 0x4400000000000044;
-        
-        // The king must slide through these lines
-        // const ulong castleLine = 0xC6000000000000C6;
-        
-        // Idk how to implement castling well
 
+        return attacks & ~sameSide;
+    }
+    
+    private ulong KingImmediateMoves(ulong pos, Side side) {
+        ulong sameSide = side == Side.White ? WhitePieces : BlackPieces;
+        // You can either move forward, or capture
+        // The capture on the right can't be in file A, and the capture on the left can't be in file H
+        ulong attacks = ( pos >> 7 & ~fileA )
+            | pos >> 8
+            | ( pos >> 9 & ~fileH )
+            // ▲ up the board
+            // ▼ Down the board
+            | ( pos << 9 & ~fileA )
+            | pos << 8
+            | ( pos << 7 & ~fileH )
+            // ▼ Left right movement
+            | ( pos >> 1 & ~fileH )
+            | ( pos << 1 & ~fileA );
         return attacks & ~sameSide;
     }
 
@@ -384,5 +460,46 @@ public struct Board
         ulong rookMoves = RookMovesParalegal(pos, side);
         ulong bishopMoves = BishopMovesParalegal(pos, side);
         return rookMoves | bishopMoves;
+    }
+    
+    // This is from: https://graphics.stanford.edu/~seander/bithacks.html#ZerosOnRightBinSearch
+    public static int GetLSBIndex(ulong b) {
+        int c; // c will be the number of zero bits on the right,
+        if ((b & 0x1) == 1)
+        {
+            // special case for odd v (assumed to happen half of the time)
+            c = 0;
+        }
+        else
+        {
+            c = 1;
+            if ((b & 0xffffffff) == 0)
+            {
+                b >>= 32;
+                c += 32;
+            }
+            if ((b & 0xffff) == 0)
+            {
+                b >>= 16;
+                c += 16;
+            }
+            if ((b & 0xff) == 0)
+            {
+                b >>= 8;
+                c += 8;
+            }
+            if ((b & 0xf) == 0)
+            {
+                b >>= 4;
+                c += 4;
+            }
+            if ((b & 0x3) == 0)
+            {
+                b >>= 2;
+                c += 2;
+            }
+            c -= (int)(b & 0x1);
+        }
+        return c;
     }
 }
