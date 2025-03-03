@@ -12,22 +12,24 @@ public struct MovesHelper {
     // If this is 0, we are not in check
     // Otherwise we are in check
     public ulong CheckAttackBoard;
+    public ulong KingAttackBoard;
     Side side;
-    
+
     public MovesHelper(Side side) {
         Pinned = 0ul;
+        KingAttackBoard = 0;
         Checkers = new List<int>();
         CheckAttackBoard = 0;
         // LegalMoves = new ulong[64];
         this.side = side;
     }
-    
+
     public void ClearMoves() {
         Checkers.Clear();
         Pinned = 0ul;
         CheckAttackBoard = 0ul;
     }
-    
+
     public void AddCheckAttack(Piece typeAttacking, int attackingPos, int kingPos) {
         // Find out how this type is attacking the king
         // Add to the check attack board
@@ -41,70 +43,80 @@ public struct MovesHelper {
             case Piece.WKing:
             case Piece.WKnight:
             case Piece.WPawn:
-                CheckAttackBoard |= 1ul<<attackingPos;
+                KingAttackBoard |= 1ul << attackingPos;
+                CheckAttackBoard |= 1ul << attackingPos;
                 Checkers.Add(attackingPos);
                 break;
             // All the sliding pieces
-            
-                // From that piece pos to king pos
-                // Add that path to CheckAttackBoard
-                // That way we can determine what moves are legal
-                // If a non-king piece move onto CheckAttackBoard, or the king moves off of the CheckAttackBoard or captures the piece, then it should be legal
-                // given that CheckAttackBoard>0
-                // This doesn't account for pinned pieces, which is where Pinned comes into play.
+
+            // From that piece pos to king pos
+            // Add that path to CheckAttackBoard
+            // That way we can determine what moves are legal
+            // If a non-king piece move onto CheckAttackBoard, or the king moves off of the CheckAttackBoard or captures the piece, then it should be legal
+            // given that CheckAttackBoard>0
+            // This doesn't account for pinned pieces, which is where Pinned comes into play.
             case Piece.BBishop:
             case Piece.WBishop:
                 AddBishopCheckBoard(attackingPos, kingPos);
+                KingAttackBoard |= 1ul << attackingPos;
 
                 Checkers.Add(attackingPos);
                 break;
             case Piece.BRook:
             case Piece.WRook:
+                KingAttackBoard |= 1ul << attackingPos;
                 AddRookCheckBoard(attackingPos, kingPos);
 
                 Checkers.Add(attackingPos);
                 break;
             case Piece.BQueen:
             case Piece.WQueen:
-                if(kingPos % 8 == attackingPos % 8) AddRookCheckBoard(attackingPos, kingPos);
+                KingAttackBoard |= 1ul << attackingPos;
+                if ((kingPos % 8 == attackingPos % 8) || (kingPos / 8 == attackingPos / 8)) AddRookCheckBoard(attackingPos, kingPos);
                 else AddBishopCheckBoard(attackingPos, kingPos);
 
                 Checkers.Add(attackingPos);
                 break;
+
         }
+        Debug.Log(CheckAttackBoard);
     }
-    
+
     private void AddBishopCheckBoard(int attackingPos, int kingPos) {
         int increment = 0;
         // If king is under attackingPos
-        if(kingPos>attackingPos)
+        if (kingPos > attackingPos)
             // If kingPos is further right of attackingPos, then shift 9
             // Assuming king is under us
-            increment = (kingPos%8 > attackingPos%8) ? 9 : 7;
+            increment = (kingPos % 8 > attackingPos % 8) ? 9 : 7;
         else
             // If kingPos is further right of attackingPos, then shift 7
             // Assuming king is above us
-            increment = -((kingPos%8 > attackingPos%8) ? 7 : 9);
+            increment = -((kingPos % 8 > attackingPos % 8) ? 7 : 9);
 
-        for(int i = attackingPos; i != kingPos; i += increment)
-            CheckAttackBoard |= 1ul<<i;
+        for (int i = attackingPos; i != kingPos; i += increment)
+            CheckAttackBoard |= 1ul << i;
     }
-    
+
     private void AddRookCheckBoard(int attackingPos, int kingPos) {
         int increment = 0;
         // If not equal, then it should be different rows?
-        increment = ((kingPos/8 != attackingPos/8) ? 8 : 1)*Math.Sign(kingPos-attackingPos);
-        for(int i = attackingPos; i != kingPos; i += increment)
-            CheckAttackBoard |= 1ul<<i;
+        increment = ((kingPos / 8 != attackingPos / 8) ? 8 : 1) * Math.Sign(kingPos - attackingPos);
+        for (int i = attackingPos; i != kingPos; i += increment)
+            CheckAttackBoard |= 1ul << i;
     }
-    
-    public ulong FilterForLegalMoves(ulong moveBoard, int pos, Piece type) {
-        if(
-            (Pinned & (1ul<<pos)) != 0
-            // Okay well, if this piece can take whose pinning it, then we shouldn't
-            // So this is incomplete
+
+    public ulong FilterForLegalMoves(ulong moveBoard, int pos, Piece type, ulong enemyAttacking) {
+        if (
+            (Pinned & (1ul << pos)) != 0
+        // Okay well, if this piece can take whose pinning it, then we shouldn't
+        // So this is incomplete
         ) {
             return 0ul;
+        }
+        if (type == Piece.WKing || type == Piece.BKing)
+        {
+            return (moveBoard & ~(enemyAttacking));
         }
         
         if(Checkers.Count > 1) {

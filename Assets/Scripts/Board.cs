@@ -209,7 +209,7 @@ public struct Board
         //         allWhiteMovesPsuedolegal |= moveBoard;
                 
         //         // Check check for bking
-        //         if( (moveBoard&boards[(int)Piece.BKing]) == 0 ) 
+        //         if( (moveBoard&boards[(int)Piece.BKing]) != 0 ) 
         //             BlackHelper.AddCheckAttack((Piece)i, pos, GetLSBIndex(boards[(int)Piece.BKing]));
 
         //         board &= ~(1ul<<pos);
@@ -226,7 +226,7 @@ public struct Board
         //         allBlackMovesPsuedolegal |= moveBoard;
                 
         //         // Check check for bking
-        //         if( (moveBoard&boards[(int)Piece.WKing]) == 0 ) 
+        //         if( (moveBoard&boards[(int)Piece.WKing]) != 0 ) 
         //             BlackHelper.AddCheckAttack((Piece)i, pos, GetLSBIndex(boards[(int)Piece.WKing]));
 
         //         board &= ~(1ul<<pos);
@@ -420,11 +420,11 @@ public struct Board
             | ( pos << 1 & ~fileA );
         if (side == Side.White)
         {
-            if (((castleTracker & (int)castleTrack.wKing) > 0) & ((WhitePieces & wkSlide) == 0)) //need to check if the row is clear      & (WhitePieces & wkSlide > 0
+            if (((castleTracker & (int)castleTrack.wKing) > 0) & ((WhitePieces & wkSlide) == 0))
             {
                 attacks = attacks | (pos << 2);
             }
-            if ((castleTracker & (int)castleTrack.wQueen) > 0 & ((WhitePieces & wqSlide) == 0))//need to check if the row is clear
+            if ((castleTracker & (int)castleTrack.wQueen) > 0 & ((WhitePieces & wqSlide) == 0))
             {
                 attacks = attacks | (pos >> 2);
             }
