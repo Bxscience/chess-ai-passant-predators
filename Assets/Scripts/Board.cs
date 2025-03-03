@@ -198,6 +198,7 @@ public struct Board
             Promote(1ul<<end_idx, Side.Black, (Piece)ply.PromoteType);
         }
         
+        BlackHelper.ClearMoves();
         // Lets find all paralegal moves
         allWhiteMovesPsuedolegal = 0;
         for(int i = 0; i < (int)Piece.WKing; i++) {
@@ -215,6 +216,7 @@ public struct Board
             }
         }
 
+        WhiteHelper.ClearMoves();
         allBlackMovesPsuedolegal = 0;
         for(int i = 6; i < (int)Piece.BKing; i++) {
             ulong board = boards[i];
@@ -273,9 +275,9 @@ public struct Board
     public ulong GetMoveLegal(int square, Piece type, Side side) {
         // CheckStatus cs = GetCheckStatus();
         if(side == Side.White) {
-            return WhiteHelper.FilterForLegalMoves(GetMoveParalegal(square, type, side), square);
+            return WhiteHelper.FilterForLegalMoves(GetMoveParalegal(square, type, side), square, type);
         } else if(side == Side.Black) {
-            return BlackHelper.FilterForLegalMoves(GetMoveParalegal(square, type, side), square);
+            return BlackHelper.FilterForLegalMoves(GetMoveParalegal(square, type, side), square, type);
         }
         return 0;
     }

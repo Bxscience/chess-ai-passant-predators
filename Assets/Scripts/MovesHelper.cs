@@ -98,14 +98,26 @@ public struct MovesHelper {
             CheckAttackBoard |= 1ul<<i;
     }
     
-    public ulong FilterForLegalMoves(ulong moveBoard, int pos) {
-        if( 
+    public ulong FilterForLegalMoves(ulong moveBoard, int pos, Piece type) {
+        if(
             (Pinned & (1ul<<pos)) != 0
             // Okay well, if this piece can take whose pinning it, then we shouldn't
             // So this is incomplete
         ) {
             return 0ul;
         }
+        
+        if(Checkers.Count > 1) {
+            // More than two pieces checking the king means that only the king can move out of check
+            if(type != Piece.WKing || type != Piece.BKing)
+                return 0;
+            // We need to return here with either of two things
+            // The king moved onto one of the checkers which is not protected
+            // The king moved off of the checkers board
+            // Rn I'm just doing moving off the CheckAttackBoard
+            return moveBoard & ~CheckAttackBoard;
+        }
+
         if( CheckAttackBoard == 0 ) {
             return moveBoard;
         }
