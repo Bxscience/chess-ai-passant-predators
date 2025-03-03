@@ -198,40 +198,40 @@ public struct Board
             Promote(1ul<<end_idx, Side.Black, (Piece)ply.PromoteType);
         }
         
-        BlackHelper.ClearMoves();
-        // Lets find all paralegal moves
-        allWhiteMovesPsuedolegal = 0;
-        for(int i = 0; i < (int)Piece.WKing; i++) {
-            ulong board = boards[i];
-            while(board>0) {
-                int pos = GetLSBIndex(board);
-                ulong moveBoard = GetMoveParalegal(pos, (Piece)i, Side.White);
-                allWhiteMovesPsuedolegal |= moveBoard;
+        // BlackHelper.ClearMoves();
+        // // Lets find all paralegal moves
+        // allWhiteMovesPsuedolegal = 0;
+        // for(int i = 0; i < (int)Piece.WKing; i++) {
+        //     ulong board = boards[i];
+        //     while(board>0) {
+        //         int pos = GetLSBIndex(board);
+        //         ulong moveBoard = GetMoveParalegal(pos, (Piece)i, Side.White);
+        //         allWhiteMovesPsuedolegal |= moveBoard;
                 
-                // Check check for bking
-                if( (moveBoard&boards[(int)Piece.BKing]) == 0 ) 
-                    BlackHelper.AddCheckAttack((Piece)i, pos, GetLSBIndex(boards[(int)Piece.BKing]));
+        //         // Check check for bking
+        //         if( (moveBoard&boards[(int)Piece.BKing]) == 0 ) 
+        //             BlackHelper.AddCheckAttack((Piece)i, pos, GetLSBIndex(boards[(int)Piece.BKing]));
 
-                board &= ~(1ul<<pos);
-            }
-        }
+        //         board &= ~(1ul<<pos);
+        //     }
+        // }
 
-        WhiteHelper.ClearMoves();
-        allBlackMovesPsuedolegal = 0;
-        for(int i = 6; i < (int)Piece.BKing; i++) {
-            ulong board = boards[i];
-            while(board>0) {
-                int pos = GetLSBIndex(board);
-                ulong moveBoard = GetMoveParalegal(pos, (Piece)i, Side.Black);
-                allBlackMovesPsuedolegal |= moveBoard;
+        // WhiteHelper.ClearMoves();
+        // allBlackMovesPsuedolegal = 0;
+        // for(int i = 6; i < (int)Piece.BKing; i++) {
+        //     ulong board = boards[i];
+        //     while(board>0) {
+        //         int pos = GetLSBIndex(board);
+        //         ulong moveBoard = GetMoveParalegal(pos, (Piece)i, Side.Black);
+        //         allBlackMovesPsuedolegal |= moveBoard;
                 
-                // Check check for bking
-                if( (moveBoard&boards[(int)Piece.WKing]) == 0 ) 
-                    BlackHelper.AddCheckAttack((Piece)i, pos, GetLSBIndex(boards[(int)Piece.WKing]));
+        //         // Check check for bking
+        //         if( (moveBoard&boards[(int)Piece.WKing]) == 0 ) 
+        //             BlackHelper.AddCheckAttack((Piece)i, pos, GetLSBIndex(boards[(int)Piece.WKing]));
 
-                board &= ~(1ul<<pos);
-            }
-        }
+        //         board &= ~(1ul<<pos);
+        //     }
+        // }
         // GetCheckStatus();
     }
     
