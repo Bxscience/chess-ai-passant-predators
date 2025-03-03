@@ -230,7 +230,7 @@ public struct Board
                 board &= ~(1ul<<pos);
             }
         }
-        GetCheckStatus();
+        // GetCheckStatus();
     }
     
     public bool IsEnPassant(Vector2Int endPos) {
