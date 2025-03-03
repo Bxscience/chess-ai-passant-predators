@@ -78,8 +78,9 @@ public struct MovesHelper {
                 Checkers.Add(attackingPos);
                 break;
 
-        }
-        Debug.Log(CheckAttackBoard);
+        } 
+        Debug.Log(MagicBitboards.PrintBitBoard(CheckAttackBoard));
+        Debug.Log(MagicBitboards.PrintBitBoard(KingAttackBoard));
     }
 
     private void AddBishopCheckBoard(int attackingPos, int kingPos) {
@@ -116,6 +117,10 @@ public struct MovesHelper {
         }
         if (type == Piece.WKing || type == Piece.BKing)
         {
+            if (KingAttackBoard > 0)
+            {
+                return (moveBoard & ~(enemyAttacking) & KingAttackBoard);
+            }
             return (moveBoard & ~(enemyAttacking));
         }
         
