@@ -22,6 +22,8 @@ public enum castleTrack
 }
 public struct Board
 {
+    private MovesHelper WhiteHelper;
+    private MovesHelper BlackHelper;
     // 0-5 is White
     // 6-11 is Black 
     public ulong[] boards;
@@ -74,6 +76,9 @@ public struct Board
     };
 
     public Board(string fen) {
+        WhiteHelper = new MovesHelper(Side.White);
+        BlackHelper = new MovesHelper(Side.Black);
+
         allWhiteMovesPsuedolegal = 0;
         allBlackMovesPsuedolegal = 0;
         castleTracker = 0b1111;
@@ -201,6 +206,11 @@ public struct Board
                 int pos = GetLSBIndex(board);
                 ulong moveBoard = GetMoveParalegal(pos, (Piece)i, Side.White);
                 allWhiteMovesPsuedolegal |= moveBoard;
+                
+                // Check check for bking
+                if( (moveBoard&boards[(int)Piece.BKing]) == 0 ) 
+                    BlackHelper.AddCheckAttack((Piece)i, pos, GetLSBIndex(boards[(int)Piece.BKing]));
+
                 board &= ~(1ul<<pos);
             }
         }
@@ -212,6 +222,11 @@ public struct Board
                 int pos = GetLSBIndex(board);
                 ulong moveBoard = GetMoveParalegal(pos, (Piece)i, Side.Black);
                 allBlackMovesPsuedolegal |= moveBoard;
+                
+                // Check check for bking
+                if( (moveBoard&boards[(int)Piece.WKing]) == 0 ) 
+                    BlackHelper.AddCheckAttack((Piece)i, pos, GetLSBIndex(boards[(int)Piece.WKing]));
+
                 board &= ~(1ul<<pos);
             }
         }
@@ -256,56 +271,61 @@ public struct Board
     }
     
     public ulong GetMoveLegal(int square, Piece type, Side side) {
-        CheckStatus cs = GetCheckStatus();
+        // CheckStatus cs = GetCheckStatus();
+        if(side == Side.White) {
+            return WhiteHelper.FilterForLegalMoves(GetMoveParalegal(square, type, side), square);
+        } else if(side == Side.Black) {
+            return BlackHelper.FilterForLegalMoves(GetMoveParalegal(square, type, side), square);
+        }
         return 0;
     }
     
     
-    [System.Flags]
-    public enum CheckStatus {
-        None,
-        WKCheck, WKCheckmate, WKStalemate,
-        BKCheck, BKCheckmate, BKStalemate,
-    }
-    public CheckStatus GetCheckStatus() {
-        // For check:
-        // Get the moves of every piece
-        // | them together (for the other side of course)
-        // Check if the king bitboard & all_attack_board != 0
-        // King is in check
-        //
-        // For checkmate:
-        // ~all_attack_board & paralegal moves of king == 0
-        // Checkmate
-        // why? if we unset every point where an attack is from the moves of the king, then the king is stuck if its 0
-        // Essentially, is every move of the king within the board of attacks
-        CheckStatus cs = CheckStatus.None;
-        if( (boards[(int)Piece.WKing] & allBlackMovesPsuedolegal) > 0 ) {
-            cs |= CheckStatus.WKCheck;
-            Debug.Log("White king in check");
-        }
+    // [System.Flags]
+    // public enum CheckStatus {
+    //     None,
+    //     WKCheck, WKCheckmate, WKStalemate,
+    //     BKCheck, BKCheckmate, BKStalemate,
+    // }
+    // public CheckStatus GetCheckStatus() {
+    //     // For check:
+    //     // Get the moves of every piece
+    //     // | them together (for the other side of course)
+    //     // Check if the king bitboard & all_attack_board != 0
+    //     // King is in check
+    //     //
+    //     // For checkmate:
+    //     // ~all_attack_board & paralegal moves of king == 0
+    //     // Checkmate
+    //     // why? if we unset every point where an attack is from the moves of the king, then the king is stuck if its 0
+    //     // Essentially, is every move of the king within the board of attacks
+    //     CheckStatus cs = CheckStatus.None;
+    //     if( (boards[(int)Piece.WKing] & allBlackMovesPsuedolegal) > 0 ) {
+    //         cs |= CheckStatus.WKCheck;
+    //         Debug.Log("White king in check");
+    //     }
 
-        int wKingPos = GetLSBIndex(boards[(int)Piece.WKing]);
-        ulong wKingMoveBoard = KingImmediateMoves(1ul<<wKingPos, Side.White);
+    //     int wKingPos = GetLSBIndex(boards[(int)Piece.WKing]);
+    //     ulong wKingMoveBoard = KingImmediateMoves(1ul<<wKingPos, Side.White);
         
-        // if(
-        //     ((wKingMoveBoard | 1ul<<wKingPos) & ~allBlackMovesPsuedolegal) == 0 
-        //     // && One of White's Pieces can block
-        //     // && One of White's Pieces can take
-        // ) {
-        //     Debug.Log("White king checkmate");
-        //     cs |= CheckStatus.WKCheckmate;
-        // } else if ( (wKingMoveBoard & ~allBlackMovesPsuedolegal) == 0 ) {
-        //     Debug.Log("White stalemate");
-        //     cs = CheckStatus.WKStalemate;
-        // }
+    //     // if(
+    //     //     ((wKingMoveBoard | 1ul<<wKingPos) & ~allBlackMovesPsuedolegal) == 0 
+    //     //     // && One of White's Pieces can block
+    //     //     // && One of White's Pieces can take
+    //     // ) {
+    //     //     Debug.Log("White king checkmate");
+    //     //     cs |= CheckStatus.WKCheckmate;
+    //     // } else if ( (wKingMoveBoard & ~allBlackMovesPsuedolegal) == 0 ) {
+    //     //     Debug.Log("White stalemate");
+    //     //     cs = CheckStatus.WKStalemate;
+    //     // }
 
-        if( (boards[(int)Piece.BKing] & allWhiteMovesPsuedolegal) > 0 ) {
-            Debug.Log("Black king in check");
-        }
+    //     if( (boards[(int)Piece.BKing] & allWhiteMovesPsuedolegal) > 0 ) {
+    //         Debug.Log("Black king in check");
+    //     }
         
-        return cs;
-    }
+    //     return cs;
+    // }
 
     public static Vector3 IdxToPos(int x, int y) {
         float min = -19.25f;
