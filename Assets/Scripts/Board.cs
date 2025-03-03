@@ -288,17 +288,17 @@ public struct Board
         int wKingPos = GetLSBIndex(boards[(int)Piece.WKing]);
         ulong wKingMoveBoard = KingImmediateMoves(1ul<<wKingPos, Side.White);
         
-        if(
-            ((wKingMoveBoard | 1ul<<wKingPos) & ~allBlackMovesPsuedolegal) == 0 
-            // && One of White's Pieces can block
-            // && One of White's Pieces can take
-        ) {
-            Debug.Log("White king checkmate");
-            cs |= CheckStatus.WKCheckmate;
-        } else if ( (wKingMoveBoard & ~allBlackMovesPsuedolegal) == 0 ) {
-            Debug.Log("White stalemate");
-            cs = CheckStatus.WKStalemate;
-        }
+        // if(
+        //     ((wKingMoveBoard | 1ul<<wKingPos) & ~allBlackMovesPsuedolegal) == 0 
+        //     // && One of White's Pieces can block
+        //     // && One of White's Pieces can take
+        // ) {
+        //     Debug.Log("White king checkmate");
+        //     cs |= CheckStatus.WKCheckmate;
+        // } else if ( (wKingMoveBoard & ~allBlackMovesPsuedolegal) == 0 ) {
+        //     Debug.Log("White stalemate");
+        //     cs = CheckStatus.WKStalemate;
+        // }
 
         if( (boards[(int)Piece.BKing] & allWhiteMovesPsuedolegal) > 0 ) {
             Debug.Log("Black king in check");
