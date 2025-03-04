@@ -299,6 +299,30 @@ public struct Board
     //     // Check if the king bitboard & all_attack_board != 0
     //     // King is in check
     //     //
+
+//  ulong allWhiteMoves = 0;
+//  for (int i = 0; i < 6; i++) { 
+//      ulong board = boards[i];
+//      while (board > 0) {
+//        int pos = GetLSBIndex(board);
+//        ulong moveBoard = GetMoveParalegal(pos, (Piece)i, Side.White);
+//        allWhiteMoves |= moveBoard;
+//        board &= ~(1ul << pos);
+//      }
+//  }
+//  ulong allBlackMoves = 0;
+//  for (int i = 6; i < 12; i++) { 
+//      ulong board = boards[i];
+//      while (board > 0) {
+//        int pos = GetLSBIndex(board);
+//        ulong moveBoard = GetMoveParalegal(pos, (Piece)i, Side.Black);
+//        allBlackMoves |= moveBoard;
+//        board &= ~(1ul << pos);
+//      }
+//  }
+
+
+
     //     // For checkmate:
     //     // ~all_attack_board & paralegal moves of king == 0
     //     // Checkmate
