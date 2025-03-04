@@ -137,13 +137,14 @@ public struct MovesHelper {
         }
         if (type == Piece.WKing || type == Piece.BKing)
         {
+            /*
             if (KingAttackBoard > 0)
             {
-                return (moveBoard & ~(enemyAttacking) & KingAttackBoard);
+                return (moveBoard & ~(enemyAttacking & ~KingAttackBoard));
             }
+            */
             return (moveBoard & ~(enemyAttacking));
-        }
-        
+        } 
         if(Checkers.Count > 1) {
             // More than two pieces checking the king means that only the king can move out of check
             if(type != Piece.WKing || type != Piece.BKing)
