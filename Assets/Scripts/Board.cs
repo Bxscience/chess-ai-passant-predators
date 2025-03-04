@@ -216,7 +216,18 @@ public struct Board
                     BlackHelper.AddCheckAttack((Piece)i, pos, bKingPos);
                 // Check pins for bpieces
                 if( i == (int)Piece.WBishop || i == (int)Piece.WQueen ) {
-                    
+                    if(Math.Abs(pos/8-bKingPos/8) == Math.Abs(pos%8-bKingPos%8)) {
+                        Debug.Log("AHHH");
+                        ulong pinnRay = BlackHelper.AddBishopCheckBoard(pos, bKingPos);
+                        ulong intersect = pinnRay & (BlackPieces&~(1ul<<bKingPos));
+                        // Essentially, if there is an intersection, then check if that has more than 2 bits
+                        // by clearing the first lsb and checking it its == 0
+                        // if both checks are true, is there is an intersection and there is only one intersecting piece, that piece is pinned
+                        if(intersect > 0 && (intersect & ~(1ul<<GetLSBIndex(intersect))) == 0) {
+                            BlackHelper.Pinned |= intersect;
+                            Debug.Log("Black pinned: "+MagicBitboards.PrintBitBoard(BlackHelper.Pinned));
+                        }
+                    }
                 }
                 if( i == (int)Piece.WRook || i == (int)Piece.WQueen ) {
                     if(pos%8 == bKingPos%8 || pos/8 == bKingPos/8) {
@@ -253,7 +264,17 @@ public struct Board
                     BlackHelper.AddCheckAttack((Piece)i, pos, GetLSBIndex(boards[(int)Piece.WKing]));
                 // Check pins for wpieces
                 if( i == (int)Piece.BBishop || i == (int)Piece.BQueen ) {
-                    
+                    if(Math.Abs(pos/8-wKingPos/8) == Math.Abs(pos%8-wKingPos%8)) {
+                        ulong pinnRay = WhiteHelper.AddBishopCheckBoard(pos, wKingPos);
+                        ulong intersect = pinnRay & (WhitePieces&~(1ul<<wKingPos));
+                        // Essentially, if there is an intersection, then check if that has more than 2 bits
+                        // by clearing the first lsb and checking it its == 0
+                        // if both checks are true, is there is an intersection and there is only one intersecting piece, that piece is pinned
+                        if(intersect != 0 && (intersect & ~(1ul<<GetLSBIndex(intersect))) == 0) {
+                            WhiteHelper.Pinned |= intersect;
+                            Debug.Log(MagicBitboards.PrintBitBoard(WhiteHelper.Pinned));
+                        }
+                    }
                 }
                 if( i == (int)Piece.BRook || i == (int)Piece.BQueen ) {
                     if(pos%8 == wKingPos%8 || pos/8 == wKingPos/8) {
