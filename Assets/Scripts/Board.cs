@@ -202,7 +202,7 @@ public struct Board
         int bKingPos = GetLSBIndex(boards[(int)Piece.BKing]);
         // Lets find all paralegal moves
         allWhiteMovesPsuedolegal = 0;
-        for (int i = 0; i < (int)Piece.WKing; i++)
+        for (int i = 0; i <= (int)Piece.WKing; i++)
         {
             ulong board = boards[i];
             while (board > 0)
@@ -225,6 +225,7 @@ public struct Board
                         // if both checks are true, is there is an intersection and there is only one intersecting piece, that piece is pinned
                         if(intersect > 0 && (intersect & ~(1ul<<GetLSBIndex(intersect))) == 0) {
                             BlackHelper.Pinned |= intersect;
+                            BlackHelper.PinBoards.Add(pinnRay);
                             Debug.Log("Black pinned: "+MagicBitboards.PrintBitBoard(BlackHelper.Pinned));
                         }
                     }
@@ -237,6 +238,7 @@ public struct Board
                         // by clearing the first lsb and checking it its == 0
                         // if both checks are true, is there is an intersection and there is only one intersecting piece, that piece is pinned
                         if(intersect > 0 && (intersect & ~(1ul<<GetLSBIndex(intersect))) == 0) {
+                            BlackHelper.PinBoards.Add(pinnRay);
                             BlackHelper.Pinned |= intersect;
                             Debug.Log("Black pinned: "+MagicBitboards.PrintBitBoard(BlackHelper.Pinned));
                         }
@@ -250,7 +252,7 @@ public struct Board
         WhiteHelper.ClearMoves();
         int wKingPos = GetLSBIndex(boards[(int)Piece.WKing]);
         allBlackMovesPsuedolegal = 0;
-        for (int i = 6; i < (int)Piece.BKing; i++)
+        for (int i = 6; i <= (int)Piece.BKing; i++)
         {
             ulong board = boards[i];
             while (board > 0)
@@ -271,6 +273,7 @@ public struct Board
                         // by clearing the first lsb and checking it its == 0
                         // if both checks are true, is there is an intersection and there is only one intersecting piece, that piece is pinned
                         if(intersect != 0 && (intersect & ~(1ul<<GetLSBIndex(intersect))) == 0) {
+                            WhiteHelper.PinBoards.Add(pinnRay);
                             WhiteHelper.Pinned |= intersect;
                             Debug.Log(MagicBitboards.PrintBitBoard(WhiteHelper.Pinned));
                         }
@@ -284,6 +287,7 @@ public struct Board
                         // by clearing the first lsb and checking it its == 0
                         // if both checks are true, is there is an intersection and there is only one intersecting piece, that piece is pinned
                         if(intersect != 0 && (intersect & ~(1ul<<GetLSBIndex(intersect))) == 0) {
+                            WhiteHelper.PinBoards.Add(pinnRay);
                             WhiteHelper.Pinned |= intersect;
                             Debug.Log(MagicBitboards.PrintBitBoard(WhiteHelper.Pinned));
                         }
@@ -340,6 +344,9 @@ public struct Board
             return BlackHelper.FilterForLegalMoves(GetMoveParalegal(square, type, side), square, type, allWhiteMovesPsuedolegal);
         }
         return 0;
+    }
+    public ulong GetMoveLegal(ChessPiece piece) {
+        return GetMoveLegal(piece.idx.x + 8*(7-piece.idx.y), piece.type, piece.side);
     }
     
     

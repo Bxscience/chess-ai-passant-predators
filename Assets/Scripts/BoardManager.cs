@@ -70,7 +70,7 @@ public class BoardManager : MonoBehaviour
                         currentlySelected.transform.position += Vector3.up*2;
                         return;
                     }
-                    if((1ul<<(pressed.idx.x + (7-pressed.idx.y)*8) & board.GetMoveParalegal(currentlySelected)) == 0)
+                    if((1ul<<(pressed.idx.x + (7-pressed.idx.y)*8) & board.GetMoveLegal(currentlySelected)) == 0)
                         return;
                     isGrabbing = false;
                     Ply newPly = new Ply(currentlySelected.idx, pressed.idx, currentlySelected.type, pressed.type);

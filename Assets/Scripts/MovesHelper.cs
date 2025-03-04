@@ -4,7 +4,7 @@ using UnityEngine;
 
 // This is per-side
 public struct MovesHelper {
-    public List<int> Checkers;
+    public List<ulong> PinBoards;
     // Maybe we use this?
     // It'd contain legal moves for a side.
     // public ulong[] LegalMoves;
@@ -13,19 +13,22 @@ public struct MovesHelper {
     // Otherwise we are in check
     public ulong CheckAttackBoard;
     public ulong KingAttackBoard;
+    public int NumCheckers;
     Side side;
 
     public MovesHelper(Side side) {
+        NumCheckers = 0;
+        PinBoards = new List<ulong>();
         Pinned = 0ul;
         KingAttackBoard = 0;
-        Checkers = new List<int>();
         CheckAttackBoard = 0;
         // LegalMoves = new ulong[64];
         this.side = side;
     }
 
     public void ClearMoves() {
-        Checkers.Clear();
+        NumCheckers = 0;
+        PinBoards.Clear();
         Pinned = 0ul;
         CheckAttackBoard = 0ul;
     }
@@ -45,7 +48,7 @@ public struct MovesHelper {
             case Piece.WPawn:
                 KingAttackBoard |= 1ul << attackingPos;
                 CheckAttackBoard |= 1ul << attackingPos;
-                Checkers.Add(attackingPos);
+                NumCheckers++;
                 break;
             // All the sliding pieces
 
@@ -60,14 +63,14 @@ public struct MovesHelper {
                 CheckAttackBoard |= AddBishopCheckBoard(attackingPos, kingPos);
                 KingAttackBoard |= 1ul << attackingPos;
 
-                Checkers.Add(attackingPos);
+                NumCheckers++;
                 break;
             case Piece.BRook:
             case Piece.WRook:
                 KingAttackBoard |= 1ul << attackingPos;
                 CheckAttackBoard |= AddRookCheckBoard(attackingPos, kingPos);
 
-                Checkers.Add(attackingPos);
+                NumCheckers++;
                 break;
             case Piece.BQueen:
             case Piece.WQueen:
@@ -75,7 +78,7 @@ public struct MovesHelper {
                 if ((kingPos % 8 == attackingPos % 8) || (kingPos / 8 == attackingPos / 8)) CheckAttackBoard |= AddRookCheckBoard(attackingPos, kingPos);
                 else CheckAttackBoard |= AddBishopCheckBoard(attackingPos, kingPos);
 
-                Checkers.Add(attackingPos);
+                NumCheckers++;
                 break;
 
         } 
@@ -130,22 +133,18 @@ public struct MovesHelper {
     public ulong FilterForLegalMoves(ulong moveBoard, int pos, Piece type, ulong enemyAttacking) {
         if (
             (Pinned & (1ul << pos)) != 0
-        // Okay well, if this piece can take whose pinning it, then we shouldn't
-        // So this is incomplete
         ) {
-            return 0ul;
+            for(int i = 0; i < PinBoards.Count; i++) {
+                if((PinBoards[i] & (1ul<<pos)) > 0) {
+                    return moveBoard & PinBoards[i];
+                }
+            }
         }
         if (type == Piece.WKing || type == Piece.BKing)
         {
-            /*
-            if (KingAttackBoard > 0)
-            {
-                return (moveBoard & ~(enemyAttacking & ~KingAttackBoard));
-            }
-            */
             return (moveBoard & ~(enemyAttacking));
         } 
-        if(Checkers.Count > 1) {
+        if(NumCheckers > 1) {
             // More than two pieces checking the king means that only the king can move out of check
             if(type != Piece.WKing || type != Piece.BKing)
                 return 0;
@@ -153,6 +152,7 @@ public struct MovesHelper {
             // The king moved onto one of the checkers which is not protected
             // The king moved off of the checkers board
             // Rn I'm just doing moving off the CheckAttackBoard
+            // This might not run
             return moveBoard & ~CheckAttackBoard;
         }
 
