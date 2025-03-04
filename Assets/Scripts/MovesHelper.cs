@@ -57,7 +57,7 @@ public struct MovesHelper {
             // This doesn't account for pinned pieces, which is where Pinned comes into play.
             case Piece.BBishop:
             case Piece.WBishop:
-                AddBishopCheckBoard(attackingPos, kingPos);
+                CheckAttackBoard |= AddBishopCheckBoard(attackingPos, kingPos);
                 KingAttackBoard |= 1ul << attackingPos;
 
                 Checkers.Add(attackingPos);
@@ -65,15 +65,15 @@ public struct MovesHelper {
             case Piece.BRook:
             case Piece.WRook:
                 KingAttackBoard |= 1ul << attackingPos;
-                AddRookCheckBoard(attackingPos, kingPos);
+                CheckAttackBoard |= AddRookCheckBoard(attackingPos, kingPos);
 
                 Checkers.Add(attackingPos);
                 break;
             case Piece.BQueen:
             case Piece.WQueen:
                 KingAttackBoard |= 1ul << attackingPos;
-                if ((kingPos % 8 == attackingPos % 8) || (kingPos / 8 == attackingPos / 8)) AddRookCheckBoard(attackingPos, kingPos);
-                else AddBishopCheckBoard(attackingPos, kingPos);
+                if ((kingPos % 8 == attackingPos % 8) || (kingPos / 8 == attackingPos / 8)) CheckAttackBoard |= AddRookCheckBoard(attackingPos, kingPos);
+                else CheckAttackBoard |= AddBishopCheckBoard(attackingPos, kingPos);
 
                 Checkers.Add(attackingPos);
                 break;
@@ -83,7 +83,8 @@ public struct MovesHelper {
         Debug.Log(MagicBitboards.PrintBitBoard(KingAttackBoard));
     }
 
-    private void AddBishopCheckBoard(int attackingPos, int kingPos) {
+    public ulong AddBishopCheckBoard(int attackingPos, int kingPos) {
+        ulong ray = 0;
         int increment = 0;
         // If king is under attackingPos
         if (kingPos > attackingPos)
@@ -96,15 +97,34 @@ public struct MovesHelper {
             increment = -((kingPos % 8 > attackingPos % 8) ? 7 : 9);
 
         for (int i = attackingPos; i != kingPos; i += increment)
-            CheckAttackBoard |= 1ul << i;
+            ray |= 1ul << i;
+        return ray;
     }
 
-    private void AddRookCheckBoard(int attackingPos, int kingPos) {
-        int increment = 0;
+    public ulong AddRookCheckBoard(int attackingPos, int kingPos) {
+        ulong ray = 0;
         // If not equal, then it should be different rows?
-        increment = ((kingPos / 8 != attackingPos / 8) ? 8 : 1) * Math.Sign(kingPos - attackingPos);
+        int increment = ((kingPos / 8 != attackingPos / 8) ? 8 : 1) * Math.Sign(kingPos - attackingPos);
         for (int i = attackingPos; i != kingPos; i += increment)
-            CheckAttackBoard |= 1ul << i;
+            ray |= 1ul << i;
+        return ray;
+        
+        // int kingRank = kingPos/8;
+        // int kingFile = kingPos%8;
+        // int attackRank = attackingPos/8;
+        // int attackFile = attackingPos%8;
+        // Same file
+        // if(kingFile==attackFile) {
+        //     ulong currentFile = Board.fileA<<kingFile;
+        //     if(kingPos>attackingPos) currentFile = (currentFile<<attackRank<<(kingRank+1))>>(kingRank+1);
+        //     else currentFile = (currentFile<<attackRank<<(attackRank+1)>>(attackRank+1))<<kingRank;
+        //     CheckAttackBoard |= currentFile;
+        // } else {
+        //     ulong currentRank = Board.rank1 << (8*kingRank);
+        //     if(kingPos>attackingPos) currentRank = ;
+        //     else ;
+        //     CheckAttackBoard |= currentFile;
+        // }
     }
 
     public ulong FilterForLegalMoves(ulong moveBoard, int pos, Piece type, ulong enemyAttacking) {
