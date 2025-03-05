@@ -36,6 +36,36 @@ public class AI : MonoBehaviour
     -35,  -1, -20, -23, -15,  24, 38, -22,
       0,   0,   0,   0,   0,   0,  0,   0,
 };
+    public int[] mg_bishop_table = {
+    -29,   4, -82, -37, -25, -42,   7,  -8,
+    -26,  16, -18, -13,  30,  59,  18, -47,
+    -16,  37,  43,  40,  35,  50,  37,  -2,
+     -4,   5,  19,  50,  37,  37,   7,  -2,
+     -6,  13,  13,  26,  34,  12,  10,   4,
+      0,  15,  15,  15,  14,  27,  18,  10,
+      4,  15,  16,   0,   7,  21,  33,   1,
+    -33,  -3, -14, -21, -13, -12, -39, -21,
+};
+    public int[] mg_rook_table = {
+     32,  42,  32,  51, 63,  9,  31,  43,
+     27,  32,  58,  62, 80, 67,  26,  44,
+     -5,  19,  26,  36, 17, 45,  61,  16,
+    -24, -11,   7,  26, 24, 35,  -8, -20,
+    -36, -26, -12,  -1,  9, -7,   6, -23,
+    -45, -25, -16, -17,  3,  0,  -5, -33,
+    -44, -16, -20,  -9, -1, 11,  -6, -71,
+    -19, -13,   1,  17, 16,  7, -37, -26,
+};
+    public int[] mg_queen_table = {
+    -28,   0,  29,  12,  59,  44,  43,  45,
+    -24, -39,  -5,   1, -16,  57,  28,  54,
+    -13, -17,   7,   8,  29,  56,  47,  57,
+    -27, -27, -16, -16,  -1,  17,  -2,   1,
+     -9, -26,  -9, -10,  -2,  -4,   3,  -3,
+    -14,   2, -11,  -2,  -5,   2,  14,   5,
+    -35,  -8,  11,   2,   8,  15,  -3,   1,
+     -1, -18,  -9,  10, -15, -25, -31, -50,
+};
 
     void Start()
     {
@@ -69,6 +99,7 @@ public class AI : MonoBehaviour
                     if (i == (int)Piece.WBishop)
                     {
                         score += bishop;
+                        score += mg_bishop_table[pos];
                         if (countPieces(curboard) == 2)
                         {
                             score += 25;
@@ -83,10 +114,12 @@ public class AI : MonoBehaviour
                     else if (i == (int)Piece.WRook)
                     {
                         score += rook;
+                        score += mg_rook_table[pos];
                     }
                     else if(i == (int)Piece.WQueen)
                     {
                         score += queen;
+                        score += mg_queen_table[pos];
                     }
                     else if(i == (int)Piece.WPawn)
                     {
@@ -94,7 +127,7 @@ public class AI : MonoBehaviour
                         score += pawn;
                         score += mg_pawn_table[pos];
                     }
-                    else
+                    else if (i == (int)Piece.WKing)
                     {
                         score += king;
                         score += mg_king_table[pos];
@@ -105,7 +138,56 @@ public class AI : MonoBehaviour
         }
         else
         {
+            for (int i = 6; i <= (int)Piece.BKing; i++) //pawns, bishop, knight, rook, q, k
+            {
+                ulong curboard = boards[i];
+                while (curboard > 0)
+                {
+                    int pos = Board.GetLSBIndex(curboard);
+                    ulong moveBoard = board.GetMoveParalegal(pos, (Piece)i, Side.Black);
+                    board.allBlackMovesPsuedolegal |= moveBoard;
 
+                    int blackpos = 56 - pos + 2*(pos % 8);
+                    // Check pins for bpieces
+                    if (i == (int)Piece.BBishop)
+                    {
+                        score += bishop;
+                        score += mg_bishop_table[blackpos];
+                        if (countPieces(curboard) == 2)
+                        {
+                            score += 25;
+                        }
+
+                    }
+                    else if (i == (int)Piece.BKnight)
+                    {
+                        score += knight;
+                        score += mg_knight_table[blackpos];
+                    }
+                    else if (i == (int)Piece.BRook)
+                    {
+                        score += rook;
+                        score += mg_rook_table[blackpos];
+                    }
+                    else if (i == (int)Piece.BQueen)
+                    {
+                        score += queen;
+                        score += mg_queen_table[blackpos];
+                    }
+                    else if (i == (int)Piece.BPawn)
+                    {
+
+                        score += pawn;
+                        score += mg_pawn_table[blackpos];
+                    }
+                    else if (i == (int)Piece.BKing)
+                    {
+                        score += king;
+                        score += mg_king_table[blackpos];
+                    }
+                    curboard &= ~(1ul << pos);
+                }
+            }
         }
         return score;
     }
