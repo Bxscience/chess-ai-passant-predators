@@ -89,6 +89,8 @@ public class BoardManager : MonoBehaviour
         if(newPly.Captured != Piece.None) {
             taken.Push(pressed);
             pressed.transform.position -= Vector3.up*12;
+            pressed.idxBeforeDeath = pressed.idx;
+            pressed.idx = new Vector2Int(-1, -1);
         }
         if((newPly.Type == Piece.WPawn || selected.type == Piece.BPawn) && board.IsEnPassant(newPly.End)) {
             newPly.Captured = isWhiteTurn ? Piece.BPawn : Piece.WPawn;
@@ -157,6 +159,7 @@ public class BoardManager : MonoBehaviour
         if(undoPly.Captured != Piece.None) {
             ChessPiece realivePiece = taken.Pop();
             realivePiece.transform.position += Vector3.up*12;
+            realivePiece.idx = realivePiece.idxBeforeDeath;
         }
         isWhiteTurn = !isWhiteTurn;
     }
