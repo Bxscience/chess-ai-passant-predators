@@ -54,7 +54,7 @@ public struct Board
     public const ulong rank8 = 0x00000000000000FF;
 
     public readonly ulong WhitePieces => boards[0] | boards[1] | boards[2] | boards[3] | boards[4] | boards[5];
-    public readonly ulong BlackPieces => boards[6] | boards[7] | boards[8] | boards[9] | boards[10] | boards[11];
+    public  readonly ulong BlackPieces => boards[6] | boards[7] | boards[8] | boards[9] | boards[10] | boards[11];
     public readonly ulong Pieces => boards[0] | boards[1] | boards[2] | boards[3] | boards[4] | boards[5] | boards[6] | boards[7] | boards[8] | boards[9] | boards[10] | boards[11];
 
     private Piece FromAlgebraic(char c) => c switch
@@ -296,7 +296,9 @@ public struct Board
 
                 board &= ~(1ul << pos);
             }
+
         }
+
     }
     
     public bool IsEnPassant(Vector2Int endPos) {
@@ -309,11 +311,13 @@ public struct Board
         if (side== Side.White) {
             boards[(int)Piece.WPawn] = boards[(int)Piece.WPawn] & ~pos;
             boards[(int)promoteType] |= pos;
+            
         }
         if (side == Side.Black) {
             boards[(int)Piece.BPawn] = boards[(int)Piece.BPawn] & ~pos;
             boards[(int)promoteType] |= pos;
         }
+        Debug.Log(promoteType + ": " + MagicBitboards.PrintBitBoard(boards[(int)promoteType]));
     }
 
     public void UndoPly(Ply ply) {
@@ -339,8 +343,10 @@ public struct Board
     public ulong GetMoveLegal(int square, Piece type, Side side) {
         // CheckStatus cs = GetCheckStatus();
         if(side == Side.White) {
+            Debug.Log("BPL: " + MagicBitboards.PrintBitBoard(allBlackMovesPsuedolegal));
             return WhiteHelper.FilterForLegalMoves(GetMoveParalegal(square, type, side), square, type, allBlackMovesPsuedolegal, castleTracker);
         } else if(side == Side.Black) {
+            Debug.Log("WPL: " + MagicBitboards.PrintBitBoard(allWhiteMovesPsuedolegal));
             return BlackHelper.FilterForLegalMoves(GetMoveParalegal(square, type, side), square, type, allWhiteMovesPsuedolegal, castleTracker);
         }
         return 0;
