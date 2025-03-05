@@ -27,7 +27,7 @@ public class BoardManager : MonoBehaviour
     void Start()
     {
         instance = this;
-        board = new Board("rnbqkbnr/pPpppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
+        board = new Board("rnbqkbnr/pPpPpppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
         MagicBitboards.GenerateMagicNumbers();
     }
 
@@ -125,7 +125,9 @@ public class BoardManager : MonoBehaviour
                 selected.Promote((Piece)newPly.PromoteType);
             } else {
                 selected.transform.position = Board.IdxToPos(newPly.End);
+                selected.idx = newPly.End;
                 pendingPromotionPly = newPly;
+                Debug.Log(pendingPromotionPly.End);
                 isPromoting = true;
                 return;
             }
@@ -182,6 +184,8 @@ public class BoardManager : MonoBehaviour
         moved.Push(currentlySelected);
         currentlySelected = null;
 
+        Debug.Log(pendingPromotionPly.PromoteType);
+        Debug.Log(pendingPromotionPly.End);
         board.PlayPly(pendingPromotionPly);
         plies.Push(pendingPromotionPly);
         isWhiteTurn = !isWhiteTurn;

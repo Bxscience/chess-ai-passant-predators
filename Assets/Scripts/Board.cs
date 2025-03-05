@@ -309,12 +309,12 @@ public struct Board
     public void Promote(ulong pos, Side side, Piece promoteType)
     {
         if (side== Side.White) {
-            boards[(int)Piece.WPawn] = boards[(int)Piece.WPawn] & ~pos;
+            boards[(int)Piece.WPawn] &= ~pos;
             boards[(int)promoteType] |= pos;
-            
+            Debug.Log("White pawns" + MagicBitboards.PrintBitBoard(boards[(int)Piece.WPawn]));
         }
         if (side == Side.Black) {
-            boards[(int)Piece.BPawn] = boards[(int)Piece.BPawn] & ~pos;
+            boards[(int)Piece.BPawn] &= ~pos;
             boards[(int)promoteType] |= pos;
         }
         Debug.Log(promoteType + ": " + MagicBitboards.PrintBitBoard(boards[(int)promoteType]));
@@ -343,10 +343,8 @@ public struct Board
     public ulong GetMoveLegal(int square, Piece type, Side side) {
         // CheckStatus cs = GetCheckStatus();
         if(side == Side.White) {
-            Debug.Log("BPL: " + MagicBitboards.PrintBitBoard(allBlackMovesPsuedolegal));
             return WhiteHelper.FilterForLegalMoves(GetMoveParalegal(square, type, side), square, type, allBlackMovesPsuedolegal, castleTracker);
         } else if(side == Side.Black) {
-            Debug.Log("WPL: " + MagicBitboards.PrintBitBoard(allWhiteMovesPsuedolegal));
             return BlackHelper.FilterForLegalMoves(GetMoveParalegal(square, type, side), square, type, allWhiteMovesPsuedolegal, castleTracker);
         }
         return 0;
