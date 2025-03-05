@@ -208,7 +208,7 @@ public struct Board
             while (board > 0)
             {
                 int pos = GetLSBIndex(board);
-                ulong moveBoard = GetMoveParalegal(pos, (Piece)i, Side.White);
+                ulong moveBoard = GetMoveParalegalForChecks(pos, (Piece)i, Side.White);
                 allWhiteMovesPsuedolegal |= moveBoard;
 
                 // Check check for bking
@@ -258,7 +258,7 @@ public struct Board
             while (board > 0)
             {
                 int pos = GetLSBIndex(board);
-                ulong moveBoard = GetMoveParalegal(pos, (Piece)i, Side.Black);
+                ulong moveBoard = GetMoveParalegalForChecks(pos, (Piece)i, Side.Black);
                 allBlackMovesPsuedolegal |= moveBoard;
 
                 // Check check for wking
@@ -349,76 +349,6 @@ public struct Board
         return GetMoveLegal(piece.idx.x + 8*(7-piece.idx.y), piece.type, piece.side);
     }
     
-    
-    // [System.Flags]
-    // public enum CheckStatus {
-    //     None,
-    //     WKCheck, WKCheckmate, WKStalemate,
-    //     BKCheck, BKCheckmate, BKStalemate,
-    // }
-    // public CheckStatus GetCheckStatus() {
-    //     // For check:
-    //     // Get the moves of every piece
-    //     // | them together (for the other side of course)
-    //     // Check if the king bitboard & all_attack_board != 0
-    //     // King is in check
-    //     //
-
-//  ulong allWhiteMoves = 0;
-//  for (int i = 0; i < 6; i++) { 
-//      ulong board = boards[i];
-//      while (board > 0) {
-//        int pos = GetLSBIndex(board);
-//        ulong moveBoard = GetMoveParalegal(pos, (Piece)i, Side.White);
-//        allWhiteMoves |= moveBoard;
-//        board &= ~(1ul << pos);
-//      }
-//  }
-//  ulong allBlackMoves = 0;
-//  for (int i = 6; i < 12; i++) { 
-//      ulong board = boards[i];
-//      while (board > 0) {
-//        int pos = GetLSBIndex(board);
-//        ulong moveBoard = GetMoveParalegal(pos, (Piece)i, Side.Black);
-//        allBlackMoves |= moveBoard;
-//        board &= ~(1ul << pos);
-//      }
-//  }
-
-
-
-    //     // For checkmate:
-    //     // ~all_attack_board & paralegal moves of king == 0
-    //     // Checkmate
-    //     // why? if we unset every point where an attack is from the moves of the king, then the king is stuck if its 0
-    //     // Essentially, is every move of the king within the board of attacks
-    //     CheckStatus cs = CheckStatus.None;
-    //     if( (boards[(int)Piece.WKing] & allBlackMovesPsuedolegal) > 0 ) {
-    //         cs |= CheckStatus.WKCheck;
-    //         Debug.Log("White king in check");
-    //     }
-
-    //     int wKingPos = GetLSBIndex(boards[(int)Piece.WKing]);
-    //     ulong wKingMoveBoard = KingImmediateMoves(1ul<<wKingPos, Side.White);
-        
-    //     // if(
-    //     //     ((wKingMoveBoard | 1ul<<wKingPos) & ~allBlackMovesPsuedolegal) == 0 
-    //     //     // && One of White's Pieces can block
-    //     //     // && One of White's Pieces can take
-    //     // ) {
-    //     //     Debug.Log("White king checkmate");
-    //     //     cs |= CheckStatus.WKCheckmate;
-    //     // } else if ( (wKingMoveBoard & ~allBlackMovesPsuedolegal) == 0 ) {
-    //     //     Debug.Log("White stalemate");
-    //     //     cs = CheckStatus.WKStalemate;
-    //     // }
-
-    //     if( (boards[(int)Piece.BKing] & allWhiteMovesPsuedolegal) > 0 ) {
-    //         Debug.Log("Black king in check");
-    //     }
-        
-    //     return cs;
-    // }
 
     public static Vector3 IdxToPos(int x, int y) {
         float min = -19.25f;
@@ -435,6 +365,27 @@ public struct Board
     public ulong GetMoveParalegal(ChessPiece piece) => GetMoveParalegal(piece.idx.x + 8*(7-piece.idx.y), piece.type, piece.side);
     
     public ulong GetMoveParalegal(int square, Piece type, Side side) {
+        ulong sameSide = side == Side.White ? WhitePieces : BlackPieces;
+        // if idx.y == 7, then its in the first few bits, because we start fropm A8
+        ulong pos = 1ul << square;
+        return type switch
+        {
+            // Leaping
+            Piece.WPawn or Piece.BPawn => PawnMovesParalegal(pos, side),
+            Piece.WKnight or Piece.BKnight => KnightMovesParalegal(pos, side),
+            Piece.WKing or Piece.BKing => KingMovesParalegal(pos, side),
+            
+            // Sliding (not yet implemented)
+            Piece.WBishop or Piece.BBishop => BishopMovesParalegal(square, side),
+            Piece.WRook or Piece.BRook => RookMovesParalegal(square, side),
+            Piece.WQueen or Piece.BQueen => QueenMovesParalegal(square, side),
+            
+            // Can't move nothing
+            _ => 0ul,
+        } & ~sameSide;
+    }
+
+    private ulong GetMoveParalegalForChecks(int square, Piece type, Side side) {
         // if idx.y == 7, then its in the first few bits, because we start fropm A8
         ulong pos = 1ul << square;
         return type switch
@@ -463,7 +414,7 @@ public struct Board
         | (((pos>>10)|(pos<<6)) & ~(fileG|fileH))
         | (((pos>>15)|(pos<<17) ) & ~fileA)
         | (((pos>>17)|(pos<<15)) & ~fileH);
-        return attacks & ~(side == Side.White ? WhitePieces : BlackPieces);
+        return attacks;
     }
     
     public ulong PawnMovesParalegal(ulong pos, Side side) { 
@@ -480,15 +431,13 @@ public struct Board
             | (( (pos & Board.rank7) == 0 || ((pos<<8 & Pieces) != 0)) ? 0 : pos<<16);
 
         if(side == Side.White) 
-            return attacksWhite & ~WhitePieces;
+            return attacksWhite;
         else
-            return attacksBlack & ~BlackPieces;
+            return attacksBlack;
     }
 
 
     public ulong KingMovesParalegal(ulong pos, Side side) { 
-        ulong sameSide = side == Side.White ? WhitePieces : BlackPieces;
-        ulong theOpps = side != Side.White ? WhitePieces : BlackPieces;
         ulong wkSlide = 0x6000000000000000;
         ulong bkSlide = 0x0000000000000060;
         ulong wqSlide = 0x0E00000000000000;
@@ -533,7 +482,7 @@ public struct Board
             }
         }
 
-        return attacks & ~sameSide;
+        return attacks;
     }
     
     private ulong KingImmediateMoves(ulong pos, Side side) {
@@ -555,18 +504,15 @@ public struct Board
     }
 
     public ulong RookMovesParalegal(int pos, Side side) {
-        ulong sameSide = side == Side.White ? WhitePieces : BlackPieces;
-        ulong moves = 0ul;
-        moves = MagicBitboards.RookMagics[pos].GetMove(Pieces);
+        ulong moves = MagicBitboards.RookMagics[pos].GetMove(Pieces);
 
-        return moves & ~sameSide;
+        return moves;
     }
 
     public ulong BishopMovesParalegal(int pos, Side side) {
-        ulong sameSide = side == Side.White ? WhitePieces : BlackPieces;
         ulong moves = MagicBitboards.BishopMagics[pos].GetMove(Pieces);
 
-        return moves & ~sameSide;
+        return moves;
     }
 
     public ulong QueenMovesParalegal(int pos, Side side) {
