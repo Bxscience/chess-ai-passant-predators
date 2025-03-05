@@ -395,7 +395,7 @@ public struct Board
         return type switch
         {
             // Leaping
-            Piece.WPawn or Piece.BPawn => PawnMovesParalegal(pos, side),
+            Piece.WPawn or Piece.BPawn => PawnMovesParalegalForCheck(pos, side),
             Piece.WKnight or Piece.BKnight => KnightMovesParalegal(pos, side),
             Piece.WKing or Piece.BKing => KingMovesParalegal(pos, side),
             
@@ -439,7 +439,23 @@ public struct Board
         else
             return attacksBlack;
     }
+    
+    public ulong PawnMovesParalegalForCheck(ulong pos, Side side) { 
+        // You can either move forward, or capture
+        // The capture on the right can't be in file A, and the capture on the left can't be in file H
+        ulong attacksWhite = (pos>>7 & ~fileA)
+            | (pos>>9 & ~fileH) | (pos>>7 & (passantTrack) & ~fileA) | (pos>>9 & passantTrack & ~fileH)
+            | (( (pos & Board.rank2) == 0 || (pos>>8 & Pieces) != 0) ? 0 : pos>>16);
+        
+        ulong attacksBlack = (pos<<9 & ~fileA)
+            | (pos<<7 & ~fileH) | (pos << 9 & (passantTrack) & ~fileA) | (pos << 7 & passantTrack & ~fileH)
+            | (( (pos & Board.rank7) == 0 || ((pos<<8 & Pieces) != 0)) ? 0 : pos<<16);
 
+        if(side == Side.White) 
+            return attacksWhite;
+        else
+            return attacksBlack;
+    }
 
     public ulong KingMovesParalegal(ulong pos, Side side) { 
         const ulong wkSlide = 0x6000000000000000;
