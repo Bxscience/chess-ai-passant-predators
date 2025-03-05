@@ -130,7 +130,7 @@ public struct MovesHelper {
         // }
     }
 
-    public ulong FilterForLegalMoves(ulong moveBoard, int pos, Piece type, ulong enemyAttacking) {
+    public ulong FilterForLegalMoves(ulong moveBoard, int pos, Piece type, ulong enemyAttacking, int castleTracker) {
         if (
             (Pinned & (1ul << pos)) != 0
         ) {
@@ -142,7 +142,33 @@ public struct MovesHelper {
         }
         if (type == Piece.WKing || type == Piece.BKing)
         {
-            return (moveBoard & ~(enemyAttacking));
+            ulong removeCastleFromKing = 0ul;
+            const ulong wkSlide = 0x6000000000000000;
+            const ulong bkSlide = 0x0000000000000060;
+            const ulong wqSlide = 0x0C00000000000000;
+            const ulong bqSlide = 0x000000000000000C;
+            if(NumCheckers>0 || ((castleTracker & (int)CastleTrack.wKing) > 0
+                && (wkSlide & enemyAttacking) > 0)
+                || NumCheckers>0
+            ) {
+                removeCastleFromKing |= 1ul<<62;
+            }
+            if(NumCheckers>0 ||((castleTracker & (int)CastleTrack.wQueen) > 0
+                && (wqSlide & enemyAttacking) > 0)
+            ) {
+                removeCastleFromKing |= 1ul<<58;
+            }
+            if(NumCheckers>0 || ((castleTracker & (int)CastleTrack.bKing) > 0
+                && (bkSlide & enemyAttacking) > 0)
+            ) {
+                removeCastleFromKing |= 1ul<<6;
+            }
+            if(NumCheckers>0 || ((castleTracker & (int)CastleTrack.bQueen) > 0
+                && (bqSlide & enemyAttacking) > 0)
+            ) {
+                removeCastleFromKing |= 1ul<<2;
+            }
+            return moveBoard & ~enemyAttacking & ~removeCastleFromKing;
         } 
         if(NumCheckers > 1) {
             // More than two pieces checking the king means that only the king can move out of check

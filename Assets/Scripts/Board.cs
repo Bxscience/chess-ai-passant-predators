@@ -13,7 +13,7 @@ public enum Piece {
 }
 
 [Flags]
-public enum castleTrack
+public enum CastleTrack
 {
     wKing = 0b1000,
     wQueen = 0b0100,
@@ -142,7 +142,7 @@ public struct Board
                 boards[(int)Piece.WRook] |= 0x0800000000000000ul;
                 Debug.Log(MagicBitboards.PrintBitBoard(boards[(int)Piece.WRook]));
             }
-            castleTracker &= ~(int)(castleTrack.wKing|castleTrack.wQueen);
+            castleTracker &= ~(int)(CastleTrack.wKing|CastleTrack.wQueen);
         }
         else if (ply.Type == Piece.BKing)
         {
@@ -151,29 +151,29 @@ public struct Board
                 boards[(int)Piece.BRook] &= ~0x0000000000000001ul;
                 boards[(int)Piece.BRook] |= 0x00000000000000004ul;
             }
-            castleTracker &= ~(int)(castleTrack.bKing|castleTrack.bQueen);
+            castleTracker &= ~(int)(CastleTrack.bKing|CastleTrack.bQueen);
         }
 
         if (ply.Type == Piece.WRook)
         {
             if (ply.Start == new Vector2Int(7, 0)) //king side rook
             {
-                castleTracker &= ~(int)castleTrack.wKing;
+                castleTracker &= ~(int)CastleTrack.wKing;
             }
             else if (ply.Start == new Vector2Int(0, 0)) //queen side rook
             {
-                castleTracker &= ~(int)castleTrack.wQueen; 
+                castleTracker &= ~(int)CastleTrack.wQueen; 
             }
         }
         else if (ply.Type == Piece.BRook)
         {
             if (ply.Start == new Vector2Int(7, 7)) 
             {
-                castleTracker &= ~(int)castleTrack.bKing;
+                castleTracker &= ~(int)CastleTrack.bKing;
             }
             else if (ply.Start == new Vector2Int(0, 7))
             {
-                castleTracker &= ~(int)castleTrack.bQueen;
+                castleTracker &= ~(int)CastleTrack.bQueen;
             }
         }
 
@@ -339,9 +339,9 @@ public struct Board
     public ulong GetMoveLegal(int square, Piece type, Side side) {
         // CheckStatus cs = GetCheckStatus();
         if(side == Side.White) {
-            return WhiteHelper.FilterForLegalMoves(GetMoveParalegal(square, type, side), square, type, allBlackMovesPsuedolegal);
+            return WhiteHelper.FilterForLegalMoves(GetMoveParalegal(square, type, side), square, type, allBlackMovesPsuedolegal, castleTracker);
         } else if(side == Side.Black) {
-            return BlackHelper.FilterForLegalMoves(GetMoveParalegal(square, type, side), square, type, allWhiteMovesPsuedolegal);
+            return BlackHelper.FilterForLegalMoves(GetMoveParalegal(square, type, side), square, type, allWhiteMovesPsuedolegal, castleTracker);
         }
         return 0;
     }
@@ -438,10 +438,10 @@ public struct Board
 
 
     public ulong KingMovesParalegal(ulong pos, Side side) { 
-        ulong wkSlide = 0x6000000000000000;
-        ulong bkSlide = 0x0000000000000060;
-        ulong wqSlide = 0x0E00000000000000;
-        ulong bqSlide = 0x000000000000000E;
+        const ulong wkSlide = 0x6000000000000000;
+        const ulong bkSlide = 0x0000000000000060;
+        const ulong wqSlide = 0x0E00000000000000;
+        const ulong bqSlide = 0x000000000000000E;
         //do the queen slides, 01110 instead of 0110 slid by king position or wtv
 
 
@@ -460,11 +460,11 @@ public struct Board
             | ( pos << 1 & ~fileA );
         if (side == Side.White)
         {
-            if (((castleTracker & (int)castleTrack.wKing) > 0) & ((WhitePieces & wkSlide) == 0))
+            if (((castleTracker & (int)CastleTrack.wKing) > 0) & ((WhitePieces & wkSlide) == 0))
             {
                 attacks = attacks | (pos << 2);
             }
-            if ((castleTracker & (int)castleTrack.wQueen) > 0 & ((WhitePieces & wqSlide) == 0))
+            if ((castleTracker & (int)CastleTrack.wQueen) > 0 & ((WhitePieces & wqSlide) == 0))
             {
                 attacks = attacks | (pos >> 2);
             }
@@ -472,11 +472,11 @@ public struct Board
         }
         else
         {
-            if ((castleTracker & (int)castleTrack.bKing) > 0 & ((BlackPieces & bkSlide) == 0))
+            if ((castleTracker & (int)CastleTrack.bKing) > 0 & ((BlackPieces & bkSlide) == 0))
             {
                 attacks = attacks | (pos << 2);
             }
-            if ((castleTracker & (int)castleTrack.bQueen) > 0 & ((BlackPieces & bqSlide) == 0))
+            if ((castleTracker & (int)CastleTrack.bQueen) > 0 & ((BlackPieces & bqSlide) == 0))
             {
                 attacks = attacks | (pos >> 2);
             }
