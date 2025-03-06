@@ -22,8 +22,8 @@ public enum CastleTrack
 }
 public struct Board
 {
-    private MovesHelper WhiteHelper;
-    private MovesHelper BlackHelper;
+    public MovesHelper WhiteHelper;
+    public MovesHelper BlackHelper;
     // 0-5 is White
     // 6-11 is Black 
     public ulong[] boards;
@@ -100,6 +100,7 @@ public struct Board
                 }
             }
         }
+        // SetupMoves();
     }
     
     public void PlayPly(Ply ply) {
@@ -197,7 +198,10 @@ public struct Board
         else if(ply.Type == Piece.BPawn && ( (1ul<<end_idx) & rank1) != 0) {
             Promote(1ul<<end_idx, Side.Black, (Piece)ply.PromoteType);
         }
-
+        SetupMoves();
+    }
+    
+    private void SetupMoves() {
         BlackHelper.ClearMoves();
         int bKingPos = GetLSBIndex(boards[(int)Piece.BKing]);
         // Lets find all paralegal moves
@@ -296,9 +300,52 @@ public struct Board
 
                 board &= ~(1ul << pos);
             }
-
+        }
+        
+        for (int i = (int)Piece.WKing; i >= (int)Piece.WPawn; i--) {
+            ulong board = boards[i];
+            while (board > 0) {
+                int pos = GetLSBIndex(board);
+                ulong moveBoard = GetMoveLegal(pos, (Piece)i, Side.White);
+                while(moveBoard>0) {
+                    int movePos = GetLSBIndex(moveBoard);
+                    Ply newPly = new Ply(new Vector2Int(pos%8, 7-pos/8), new Vector2Int(movePos%8, 7-movePos/8), (Piece)i);
+                    for(int j = (int)Piece.BPawn; j <= (int)Piece.BKing; j++)
+                        if(((1ul<<movePos) & boards[j]) > 0) {
+                            newPly.Captured = (Piece)j;
+                            break;
+                        }
+                    if(newPly.Type == Piece.WPawn && ((1ul<<pos)&rank8)>0)
+                        newPly.PromoteType = Piece.WQueen;
+                    WhiteHelper.Plies.Add(newPly);
+                    moveBoard &= ~(1ul << movePos);
+                }
+                board &= ~(1ul << pos);
+            }
         }
 
+        for (int i = (int)Piece.BKing; i >= (int)Piece.BPawn; i--) {
+            ulong board = boards[i];
+            while (board > 0) {
+                int pos = GetLSBIndex(board);
+                ulong moveBoard = GetMoveLegal(pos, (Piece)i, Side.Black);
+                while(moveBoard>0) {
+                    int movePos = GetLSBIndex(moveBoard);
+                    Ply newPly = new Ply(new Vector2Int(pos%8, 7-pos/8), new Vector2Int(movePos%8, 7-movePos/8), (Piece)i);
+                    for(int j = (int)Piece.WPawn; j <= (int)Piece.WKing; j++) {
+                        if(((1ul<<movePos) & boards[j]) > 0) {
+                            newPly.Captured = (Piece)j;
+                            break;
+                        }
+                    }
+                    if(newPly.Type == Piece.BPawn && ((1ul<<pos)&rank1)>0)
+                        newPly.PromoteType = Piece.BQueen;
+                    BlackHelper.Plies.Add(newPly);
+                    moveBoard &= ~(1ul << movePos);
+                }
+                board &= ~(1ul << pos);
+            }
+        }
     }
     
     public bool IsEnPassant(Vector2Int endPos) {
@@ -427,12 +474,12 @@ public struct Board
         ulong attacksWhite = (pos >> 8 & ~Pieces)
             | (pos>>7 & BlackPieces & ~fileA)
             | (pos>>9 & BlackPieces & ~fileH) | (pos>>7 & (passantTrack) & ~fileA) | (pos>>9 & passantTrack & ~fileH)
-            | (( (pos & Board.rank2) == 0 || (pos>>8 & Pieces) != 0) ? 0 : pos>>16);
+            | (( (pos & rank2) > 0 && (pos>>8 & Pieces) == 0) ? pos>>16 : 0);
         
         ulong attacksBlack = (pos << 8 & ~Pieces)
             | (pos<<9 & WhitePieces & ~fileA)
             | (pos<<7 & WhitePieces & ~fileH) | (pos << 9 & (passantTrack) & ~fileA) | (pos << 7 & passantTrack & ~fileH)
-            | (( (pos & Board.rank7) == 0 || ((pos<<8 & Pieces) != 0)) ? 0 : pos<<16);
+            | (( (pos & rank7) > 0 && (pos>>8 & Pieces) == 0) ? pos<<16 : 0);
 
         if(side == Side.White) 
             return attacksWhite;
@@ -444,12 +491,12 @@ public struct Board
         // You can either move forward, or capture
         // The capture on the right can't be in file A, and the capture on the left can't be in file H
         ulong attacksWhite = (pos>>7 & ~fileA)
-            | (pos>>9 & ~fileH) | (pos>>7 & (passantTrack) & ~fileA) | (pos>>9 & passantTrack & ~fileH)
-            | (( (pos & Board.rank2) == 0 || (pos>>8 & Pieces) != 0) ? 0 : pos>>16);
+            | (pos>>9 & ~fileH) | (pos>>7 & (passantTrack) & ~fileA) | (pos>>9 & passantTrack & ~fileH);
+            // | (( (pos & Board.rank2) == 0 || (pos>>8 & Pieces) != 0) ? 0 : pos>>16);
         
         ulong attacksBlack = (pos<<9 & ~fileA)
-            | (pos<<7 & ~fileH) | (pos << 9 & (passantTrack) & ~fileA) | (pos << 7 & passantTrack & ~fileH)
-            | (( (pos & Board.rank7) == 0 || ((pos<<8 & Pieces) != 0)) ? 0 : pos<<16);
+            | (pos<<7 & ~fileH) | (pos << 9 & (passantTrack) & ~fileA) | (pos << 7 & passantTrack & ~fileH);
+            // | (( (pos & Board.rank7) == 0 || ((pos<<8 & Pieces) != 0)) ? 0 : pos<<16);
 
         if(side == Side.White) 
             return attacksWhite;

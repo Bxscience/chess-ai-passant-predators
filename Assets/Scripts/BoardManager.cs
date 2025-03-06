@@ -27,7 +27,7 @@ public class BoardManager : MonoBehaviour
     void Start()
     {
         instance = this;
-        board = new Board("rnbqkbnr/pPpPpppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
+        board = new Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
         MagicBitboards.GenerateMagicNumbers();
     }
 
@@ -44,6 +44,17 @@ public class BoardManager : MonoBehaviour
             UndoPly();
         }
         
+        if(isWhiteTurn) {
+            PlayerPly();
+        }
+        else {
+            // PlayerPly();
+            int rand = UnityEngine.Random.Range(0, board.BlackHelper.Plies.Count);
+            VisualizeMove(board.BlackHelper.Plies[rand]);
+        }
+    }
+    
+    private void PlayerPly() {
         // Player
         if(Input.GetMouseButtonUp(0)) {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);

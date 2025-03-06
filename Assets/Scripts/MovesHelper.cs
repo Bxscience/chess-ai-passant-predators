@@ -5,6 +5,7 @@ using UnityEngine;
 // This is per-side
 public struct MovesHelper {
     public List<ulong> PinBoards;
+    public List<Ply> Plies;
     // Maybe we use this?
     // It'd contain legal moves for a side.
     // public ulong[] LegalMoves;
@@ -14,21 +15,22 @@ public struct MovesHelper {
     public ulong CheckAttackBoard;
     public ulong KingAttackBoard;
     public int NumCheckers;
-    Side side;
 
-    public MovesHelper(Side side) {
+    public MovesHelper(Side _side) {
+        Plies = new List<Ply>();
         NumCheckers = 0;
         PinBoards = new List<ulong>();
         Pinned = 0ul;
         KingAttackBoard = 0;
         CheckAttackBoard = 0;
         // LegalMoves = new ulong[64];
-        this.side = side;
+        // this.side = side;
     }
 
     public void ClearMoves() {
         NumCheckers = 0;
         PinBoards.Clear();
+        Plies.Clear();
         Pinned = 0ul;
         CheckAttackBoard = 0ul;
     }
