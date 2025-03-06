@@ -388,6 +388,7 @@ public struct Board
                 boards[(int)ply.Captured] = boards[(int)ply.Captured] | 1ul<<end_idx;
             }
         }
+        SetupMoves();
     }
     
     public ulong GetMoveLegal(int square, Piece type, Side side) {

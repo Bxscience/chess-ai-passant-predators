@@ -14,6 +14,8 @@ public class BoardManager : MonoBehaviour
     Stack<Ply> plies = new Stack<Ply>();
     Stack<ChessPiece> taken = new Stack<ChessPiece>();
     Stack<ChessPiece> moved = new Stack<ChessPiece>();
+
+    AI blackAI = new AI();
     
     public static BoardManager instance;
     public event Action PlayedPly;
@@ -49,8 +51,7 @@ public class BoardManager : MonoBehaviour
         }
         else {
             // PlayerPly();
-            int rand = UnityEngine.Random.Range(0, board.BlackHelper.Plies.Count);
-            VisualizeMove(board.BlackHelper.Plies[rand]);
+            VisualizeMove(blackAI.GetPly(Side.Black));
         }
     }
     

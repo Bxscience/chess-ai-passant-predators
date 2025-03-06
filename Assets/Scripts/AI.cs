@@ -2,10 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AI : MonoBehaviour
+public class AI
 {
-    // Start is called before the first frame update
+    Ply bestPly;
   
+    // Start is called before the first frame update
     public int[] mg_knight_table = {
     -167, -89, -34, -49,  61, -97, -15, -107,
      -73, -41,  72,  36,  23,  62,   7,  -17,
@@ -66,17 +67,6 @@ public class AI : MonoBehaviour
     -35,  -8,  11,   2,   8,  15,  -3,   1,
      -1, -18,  -9,  10, -15, -25, -31, -50,
 };
-
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
 
     public int evaluate(Side side, Board board)
     {
@@ -201,6 +191,30 @@ public class AI : MonoBehaviour
             pieces &= pieces - 1; // This removes the rightmost 1 bit
         }
         return count;
+    }
+
+    public Ply GetPly(Side side) {
+        NegaMax(side, 3, 0, 0, BoardManager.instance.board);
+        return bestPly;
+    }
+
+    public int NegaMax(Side side, int depth, int alpha, int beta, Board b) {
+        if( depth == 0 ) 
+            return evaluate(side, BoardManager.instance.board);
+        int max = int.MinValue;
+        List<Ply> plies = new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies);
+        foreach(Ply ply in plies) {
+            Board newB = b;
+            newB.PlayPly(ply);
+            int score = -NegaMax(side == Side.White ? Side.Black : Side.White, depth-1, alpha, beta, newB);
+            if(score > max) {
+                bestPly = ply;
+                max = score;
+            }
+            newB.UndoPly(ply);
+        }
+        Debug.Log("Best Ply: " + bestPly.End);
+        return max;
     }
 }
 
