@@ -81,9 +81,6 @@ public class AI
                 while (curboard > 0) 
                 {
                     int pos = Board.GetLSBIndex(curboard);
-                    ulong moveBoard = board.GetMoveParalegal(pos, (Piece)i, Side.White);
-                    board.allWhiteMovesPsuedolegal |= moveBoard;
-
                    
                     // Check pins for bpieces
                     if (i == (int)Piece.WBishop)
@@ -194,11 +191,12 @@ public class AI
     }
 
     public Ply GetPly(Side side) {
-        NegaMax(side, 3, 0, 0, BoardManager.instance.board);
+        NegaMax(side, 5, BoardManager.instance.board, 0, 0);
+        Debug.Log(bestPly.Type + " " + bestPly.End);
         return bestPly;
     }
 
-    public int NegaMax(Side side, int depth, int alpha, int beta, Board b) {
+    public int NegaMax(Side side, int depth, Board b, int alpha, int beta, bool canSet = true) {
         if( depth == 0 ) 
             return evaluate(side, BoardManager.instance.board);
         int max = int.MinValue;
@@ -206,14 +204,17 @@ public class AI
         foreach(Ply ply in plies) {
             Board newB = b;
             newB.PlayPly(ply);
-            int score = -NegaMax(side == Side.White ? Side.Black : Side.White, depth-1, alpha, beta, newB);
-            if(score > max) {
-                bestPly = ply;
-                max = score;
-            }
+            int score = -NegaMax(side == Side.White ? Side.Black : Side.White, depth-1, newB, -beta, -alpha, false);
             newB.UndoPly(ply);
+            if(score > max) {
+                if(canSet)
+                    bestPly = ply;
+                max = score;
+                alpha = score;
+            }
+            if(score >= beta)
+                break;
         }
-        Debug.Log("Best Ply: " + bestPly.End);
         return max;
     }
 }

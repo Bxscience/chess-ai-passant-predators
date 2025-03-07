@@ -106,7 +106,7 @@ public struct Board
     public void PlayPly(Ply ply) {
 
         AI ai = new AI();
-        Debug.Log(ply.Side + ": " + ai.evaluate(ply.Side, this));
+        // Debug.Log(ply.Side + ": " + ai.evaluate(ply.Side, this));
         // the start coordinate, as an offset, starting from A1
         // If Start.y is 7, that should correlate with the 8th rank.   
         int start_idx = ply.Start.x + 8*(7-ply.Start.y); 
@@ -137,14 +137,11 @@ public struct Board
                 // King side test
                 boards[(int)Piece.WRook] = boards[(int)Piece.WRook]  & ~0x8000000000000000ul;
                 boards[(int)Piece.WRook] |=  0x2000000000000000ul;
-                Debug.Log(MagicBitboards.PrintBitBoard(boards[(int)Piece.WRook]));
             }
             if (ply.End.x-ply.Start.x<=-2) {
                 // Queen side test
                 boards[(int)Piece.WRook] &= ~0x0100000000000000ul;
-                Debug.Log(MagicBitboards.PrintBitBoard(boards[(int)Piece.WRook]));
                 boards[(int)Piece.WRook] |= 0x0800000000000000ul;
-                Debug.Log(MagicBitboards.PrintBitBoard(boards[(int)Piece.WRook]));
             }
             castleTracker &= ~(int)(CastleTrack.wKing|CastleTrack.wQueen);
         }
@@ -224,7 +221,6 @@ public struct Board
                 // Check pins for bpieces
                 if( i == (int)Piece.WBishop || i == (int)Piece.WQueen ) {
                     if(Math.Abs(pos/8-bKingPos/8) == Math.Abs(pos%8-bKingPos%8)) {
-                        Debug.Log("AHHH");
                         ulong pinnRay = BlackHelper.AddBishopCheckBoard(pos, bKingPos);
                         ulong intersect = pinnRay & (BlackPieces&~(1ul<<bKingPos));
                         // Essentially, if there is an intersection, then check if that has more than 2 bits
@@ -233,7 +229,6 @@ public struct Board
                         if(intersect > 0 && (intersect & ~(1ul<<GetLSBIndex(intersect))) == 0) {
                             BlackHelper.Pinned |= intersect;
                             BlackHelper.PinBoards.Add(pinnRay);
-                            Debug.Log("Black pinned: "+MagicBitboards.PrintBitBoard(BlackHelper.Pinned));
                         }
                     }
                 }
@@ -247,7 +242,6 @@ public struct Board
                         if(intersect > 0 && (intersect & ~(1ul<<GetLSBIndex(intersect))) == 0) {
                             BlackHelper.PinBoards.Add(pinnRay);
                             BlackHelper.Pinned |= intersect;
-                            Debug.Log("Black pinned: "+MagicBitboards.PrintBitBoard(BlackHelper.Pinned));
                         }
                     }
                 }
@@ -282,7 +276,6 @@ public struct Board
                         if(intersect != 0 && (intersect & ~(1ul<<GetLSBIndex(intersect))) == 0) {
                             WhiteHelper.PinBoards.Add(pinnRay);
                             WhiteHelper.Pinned |= intersect;
-                            Debug.Log(MagicBitboards.PrintBitBoard(WhiteHelper.Pinned));
                         }
                     }
                 }
@@ -296,7 +289,6 @@ public struct Board
                         if(intersect != 0 && (intersect & ~(1ul<<GetLSBIndex(intersect))) == 0) {
                             WhiteHelper.PinBoards.Add(pinnRay);
                             WhiteHelper.Pinned |= intersect;
-                            Debug.Log(MagicBitboards.PrintBitBoard(WhiteHelper.Pinned));
                         }
                     }
                 }
@@ -361,13 +353,11 @@ public struct Board
         if (side== Side.White) {
             boards[(int)Piece.WPawn] &= ~pos;
             boards[(int)promoteType] |= pos;
-            Debug.Log("White pawns" + MagicBitboards.PrintBitBoard(boards[(int)Piece.WPawn]));
         }
         if (side == Side.Black) {
             boards[(int)Piece.BPawn] &= ~pos;
             boards[(int)promoteType] |= pos;
         }
-        Debug.Log(promoteType + ": " + MagicBitboards.PrintBitBoard(boards[(int)promoteType]));
     }
 
     public void UndoPly(Ply ply) {

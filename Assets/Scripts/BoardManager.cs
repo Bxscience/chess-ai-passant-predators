@@ -42,7 +42,6 @@ public class BoardManager : MonoBehaviour
         }
 
         if(Input.GetKeyDown(KeyCode.Backspace)) {
-            Debug.Log("AAA");
             UndoPly();
         }
         
@@ -139,7 +138,6 @@ public class BoardManager : MonoBehaviour
                 selected.transform.position = Board.IdxToPos(newPly.End);
                 selected.idx = newPly.End;
                 pendingPromotionPly = newPly;
-                Debug.Log(pendingPromotionPly.End);
                 isPromoting = true;
                 return;
             }
@@ -196,8 +194,6 @@ public class BoardManager : MonoBehaviour
         moved.Push(currentlySelected);
         currentlySelected = null;
 
-        Debug.Log(pendingPromotionPly.PromoteType);
-        Debug.Log(pendingPromotionPly.End);
         board.PlayPly(pendingPromotionPly);
         plies.Push(pendingPromotionPly);
         isWhiteTurn = !isWhiteTurn;

@@ -84,8 +84,6 @@ public struct MovesHelper {
                 break;
 
         } 
-        Debug.Log(MagicBitboards.PrintBitBoard(CheckAttackBoard));
-        Debug.Log(MagicBitboards.PrintBitBoard(KingAttackBoard));
     }
 
     public ulong AddBishopCheckBoard(int attackingPos, int kingPos) {
