@@ -44,6 +44,10 @@ public class BoardManager : MonoBehaviour
             return;
         }
 
+        if(isCheckMate||isStaleMate) {
+            return;
+        }
+
         if(Input.GetKeyDown(KeyCode.Backspace)) {
             UndoPly();
         }
