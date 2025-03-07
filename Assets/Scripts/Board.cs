@@ -103,6 +103,8 @@ public struct Board
         SetupMoves();
     }
     
+    // Play any given ply.
+    // Sets stuff in the bitboards, and handles en passants and castles
     public void PlayPly(Ply ply) {
 
         AI ai = new AI();
@@ -201,6 +203,8 @@ public struct Board
         SetupMoves();
     }
     
+    // This function uses all pieces paralegal moves to determine checks, pins, etc.
+    // Then we precompute all legal moves for the AI and for checkmate/stalemate
     private void SetupMoves() {
         BlackHelper.ClearMoves();
         int bKingPos = GetLSBIndex(boards[(int)Piece.BKing]);
@@ -378,9 +382,10 @@ public struct Board
                 boards[(int)ply.Captured] = boards[(int)ply.Captured] | 1ul<<end_idx;
             }
         }
-        SetupMoves();
+        // SetupMoves();
     }
     
+    // Filters the paralegal moves into legal moves by accounting for checks and pins
     public ulong GetMoveLegal(int square, Piece type, Side side) {
         // CheckStatus cs = GetCheckStatus();
         if(side == Side.White) {

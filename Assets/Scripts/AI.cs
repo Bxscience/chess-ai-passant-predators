@@ -68,6 +68,7 @@ public class AI
      -1, -18,  -9,  10, -15, -25, -31, -50,
 };
 
+    // Evaluate function uses piece scores to determine who has material and spatial advantages, amoung other things.
     public int evaluate(Side side, Board board)
     {
         ulong[] boards = board.boards;
@@ -82,7 +83,6 @@ public class AI
                 {
                     int pos = Board.GetLSBIndex(curboard);
                    
-                    // Check pins for bpieces
                     if (i == (int)Piece.WBishop)
                     {
                         score += bishop;
@@ -133,7 +133,6 @@ public class AI
                     int pos = Board.GetLSBIndex(curboard);
 
                     int blackpos = 56 - pos + 2*(pos % 8);
-                    // Check pins for bpieces
                     if (i == (int)Piece.BBishop)
                     {
                         score += bishop;
@@ -194,6 +193,11 @@ public class AI
         return bestPly;
     }
 
+    // This nega max mostly works.
+    // Essentially, we test every move.
+    // The beauty is that if we negate the opposite sides evaluation, and we find the max of those negated scores, we are finding the minimum of the non negated scores
+    // That means that this is equivalent to minimax
+    // Board b is pass by value (well technically everything is but I mean that Board b is not a pointer), so the values other than the lists/arrays get copied.
     public int NegaMax(Side side, int depth, Board b, int alpha, int beta, bool canSet = true) {
         if( depth == 0 ) 
             return evaluate(side, BoardManager.instance.board);

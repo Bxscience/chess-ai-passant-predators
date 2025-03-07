@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+// This is just finding a hash function for each square for rooks and bishops
 public static class MagicBitboards {
     public static Magics[] RookMagics = new Magics[64];
     public static Magics[] BishopMagics = new Magics[64];

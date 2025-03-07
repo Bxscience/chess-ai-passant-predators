@@ -125,6 +125,7 @@ public class BoardManager : MonoBehaviour
         }
     }
     
+    // Plays the ply on the game objects
     private void VisualizeMove(Ply newPly, ChessPiece selected = null, ChessPiece pressed = null) {
         if(selected == null) selected = FindPiece(newPly.Type, newPly.Start);
         if(pressed == null) pressed = FindPiece(newPly.Captured, newPly.End);
