@@ -100,7 +100,7 @@ public struct Board
                 }
             }
         }
-        // SetupMoves();
+        SetupMoves();
     }
     
     public void PlayPly(Ply ply) {
