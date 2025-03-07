@@ -189,7 +189,7 @@ public class AI
     }
 
     public Ply GetPly(Side side) {
-        NegaMax(side, 5, BoardManager.instance.board, 0, 0);
+        NegaMax(side, 2, BoardManager.instance.board, 0, 0);
         Debug.Log(bestPly.Type + " " + bestPly.End);
         return bestPly;
     }
@@ -208,10 +208,10 @@ public class AI
                 if(canSet)
                     bestPly = ply;
                 max = score;
-                alpha = score;
+                // alpha = score;
             }
-            if(score >= beta)
-                break;
+            // if(score >= beta)
+            //     break;
         }
         return max;
     }

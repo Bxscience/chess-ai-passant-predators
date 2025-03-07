@@ -1,13 +1,16 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class BoardManager : MonoBehaviour
 {
     public Board board;
     bool isWhiteTurn = true;
+    bool isWhiteAI = false;
+    bool isBlackAI = true;
+    bool isCheckMate = false;
+    bool isStaleMate = false;
     bool isGrabbing;
     ChessPiece currentlySelected;
     ChessPiece enPassantable;
@@ -46,11 +49,36 @@ public class BoardManager : MonoBehaviour
         }
         
         if(isWhiteTurn) {
-            PlayerPly();
+            if(isWhiteAI)
+                VisualizeMove(blackAI.GetPly(Side.White));
+            else
+                PlayerPly();
+
+            if(board.WhiteHelper.Plies.Count==0) {
+                if(board.WhiteHelper.CheckAttackBoard>0) {
+                    Debug.Log("White loses to checkmate");
+                    isCheckMate = true;
+                } else {
+                    Debug.Log("Stalemate");
+                    isStaleMate = true;
+                }
+            }
         }
         else {
-            // PlayerPly();
-            VisualizeMove(blackAI.GetPly(Side.Black));
+            if(isBlackAI)
+                VisualizeMove(blackAI.GetPly(Side.Black));
+            else
+                PlayerPly();
+
+            if(board.BlackHelper.Plies.Count==0) {
+                if(board.BlackHelper.CheckAttackBoard>0) {
+                    Debug.Log("Black loses to checkmate");
+                    isCheckMate = true;
+                } else {
+                    Debug.Log("Stalemate");
+                    isStaleMate = true;
+                }
+            }
         }
     }
     
