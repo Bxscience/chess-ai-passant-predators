@@ -131,8 +131,6 @@ public class AI
                 while (curboard > 0)
                 {
                     int pos = Board.GetLSBIndex(curboard);
-                    ulong moveBoard = board.GetMoveParalegal(pos, (Piece)i, Side.Black);
-                    board.allBlackMovesPsuedolegal |= moveBoard;
 
                     int blackpos = 56 - pos + 2*(pos % 8);
                     // Check pins for bpieces
