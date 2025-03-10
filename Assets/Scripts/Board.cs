@@ -192,8 +192,6 @@ public struct Board
             passantCaptured = 1ul << end_idx;
         }
 
-        
-
         if (ply.Type == Piece.WPawn && ( (1ul<<end_idx) & rank8 ) != 0) {
             Promote(1ul<<end_idx, Side.White, (Piece)ply.PromoteType);
         }
@@ -220,8 +218,9 @@ public struct Board
                 allWhiteMovesPsuedolegal |= moveBoard;
 
                 // Check check for bking
-                if ((moveBoard & boards[(int)Piece.BKing]) != 0)
+                if ((moveBoard & boards[(int)Piece.BKing]) != 0) {
                     BlackHelper.AddCheckAttack((Piece)i, pos, bKingPos);
+                }
                 // Check pins for bpieces
                 if( i == (int)Piece.WBishop || i == (int)Piece.WQueen ) {
                     if(Math.Abs(pos/8-bKingPos/8) == Math.Abs(pos%8-bKingPos%8)) {
@@ -382,7 +381,7 @@ public struct Board
                 boards[(int)ply.Captured] = boards[(int)ply.Captured] | 1ul<<end_idx;
             }
         }
-        // SetupMoves();
+        SetupMoves();
     }
     
     // Filters the paralegal moves into legal moves by accounting for checks and pins
@@ -490,12 +489,10 @@ public struct Board
         // You can either move forward, or capture
         // The capture on the right can't be in file A, and the capture on the left can't be in file H
         ulong attacksWhite = (pos>>7 & ~fileA)
-            | (pos>>9 & ~fileH) | (pos>>7 & (passantTrack) & ~fileA) | (pos>>9 & passantTrack & ~fileH);
-            // | (( (pos & Board.rank2) == 0 || (pos>>8 & Pieces) != 0) ? 0 : pos>>16);
+            | (pos>>9 & ~fileH);
         
         ulong attacksBlack = (pos<<9 & ~fileA)
-            | (pos<<7 & ~fileH) | (pos << 9 & (passantTrack) & ~fileA) | (pos << 7 & passantTrack & ~fileH);
-            // | (( (pos & Board.rank7) == 0 || ((pos<<8 & Pieces) != 0)) ? 0 : pos<<16);
+            | (pos<<7 & ~fileH);
 
         if(side == Side.White) 
             return attacksWhite;

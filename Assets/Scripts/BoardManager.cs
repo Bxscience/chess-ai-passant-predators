@@ -48,41 +48,44 @@ public class BoardManager : MonoBehaviour
             return;
         }
 
+        if(board.WhiteHelper.Plies.Count==0) {
+            if(board.WhiteHelper.CheckAttackBoard>0) {
+                Debug.Log("White loses to checkmate");
+                isCheckMate = true;
+            } else {
+                Debug.Log("Stalemate");
+                isStaleMate = true;
+            }
+            return;
+        }
+        if(board.BlackHelper.Plies.Count==0) {
+            if(board.BlackHelper.CheckAttackBoard>0) {
+                Debug.Log(MagicBitboards.PrintBitBoard(board.BlackHelper.CheckAttackBoard));
+                Debug.Log("Black loses to checkmate");
+                isCheckMate = true;
+            } else {
+                Debug.Log("Stalemate");
+                isStaleMate = true;
+            }
+            return;
+        }
+
         if(Input.GetKeyDown(KeyCode.Backspace)) {
             UndoPly();
         }
         
         if(isWhiteTurn) {
             if(isWhiteAI)
-                VisualizeMove(blackAI.GetPly(Side.White));
+                VisualizeMove((Ply)blackAI.GetPly(Side.White));
             else
                 PlayerPly();
 
-            if(board.WhiteHelper.Plies.Count==0) {
-                if(board.WhiteHelper.CheckAttackBoard>0) {
-                    Debug.Log("White loses to checkmate");
-                    isCheckMate = true;
-                } else {
-                    Debug.Log("Stalemate");
-                    isStaleMate = true;
-                }
-            }
         }
         else {
             if(isBlackAI)
-                VisualizeMove(blackAI.GetPly(Side.Black));
+                VisualizeMove((Ply)blackAI.GetPly(Side.Black));
             else
                 PlayerPly();
-
-            if(board.BlackHelper.Plies.Count==0) {
-                if(board.BlackHelper.CheckAttackBoard>0) {
-                    Debug.Log("Black loses to checkmate");
-                    isCheckMate = true;
-                } else {
-                    Debug.Log("Stalemate");
-                    isStaleMate = true;
-                }
-            }
         }
     }
     
@@ -131,6 +134,7 @@ public class BoardManager : MonoBehaviour
         if(pressed == null) pressed = FindPiece(newPly.Captured, newPly.End);
 
         if(newPly.Captured != Piece.None) {
+            Debug.Log(newPly.End + " " + newPly.Captured);
             taken.Push(pressed);
             pressed.transform.position -= Vector3.up*12;
             pressed.idxBeforeDeath = pressed.idx;

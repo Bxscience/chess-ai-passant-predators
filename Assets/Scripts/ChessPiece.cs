@@ -36,6 +36,8 @@ public class ChessPiece : MonoBehaviour
             Piece.BQueen => BQueenMesh,
             _ => WQueenMesh
         };
+        SpawnPieces.instance.pieces[(int)type].Remove(this);
+        SpawnPieces.instance.pieces[(int)promoteType].Add(this);
     }
     // public PieceConfig pieceConfig => new PieceConfig(idx, type);
 }

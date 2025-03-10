@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class AI
 {
-    Ply bestPly;
+    Ply? bestPly;
   
     // Start is called before the first frame update
     public int[] mg_knight_table = {
@@ -67,13 +67,23 @@ public class AI
     -35,  -8,  11,   2,   8,  15,  -3,   1,
      -1, -18,  -9,  10, -15, -25, -31, -50,
 };
+    const int queen = 900, knight = 300, bishop = 310, pawn = 100, rook = 500, king = 2000;
+    public int GetPieceScore(Piece type) => type switch
+    {
+        Piece.WPawn or Piece.BPawn => pawn,
+        Piece.WBishop or Piece.BBishop => bishop,
+        Piece.WKnight or Piece.BKnight => knight,
+        Piece.WRook or Piece.BRook => rook,
+        Piece.WQueen or Piece.BQueen => queen,
+        Piece.WKing or Piece.BKing => king,
+        _ => 0
+    };
 
     // Evaluate function uses piece scores to determine who has material and spatial advantages, amoung other things.
     public int evaluate(Side side, Board board)
     {
         ulong[] boards = board.boards;
         int score = 0;
-        int queen = 900, knight = 300, bishop = 310, pawn = 100, rook = 500, king = 2000;
         if (side == Side.White)
         {
             for (int i = 0; i <= (int)Piece.WKing; i++) //pawns, bishop, knight, rook, q, k
@@ -187,11 +197,23 @@ public class AI
         return count;
     }
 
-    public Ply GetPly(Side side) {
-        NegaMax(side, 4, BoardManager.instance.board, 0, 0);
-        Debug.Log(bestPly.Type + " " + bestPly.End);
+    public Ply? GetPly(Side side) {
+        bestPly = null;
+        NegaMax(side, 3, BoardManager.instance.board, int.MinValue, int.MaxValue);
         return bestPly;
     }
+
+    // public int materialCount(Board b) {
+    //     int wCount = 0;
+    //     for(int i = (int)Piece.WPawn; i <= (int)Piece.WKing; i++) {
+    //         wCount+=countPieces(b.boards[i])*GetPieceScore((Piece)i);
+    //     }
+    //     int bCount = 0;
+    //     for(int i = (int)Piece.BPawn; i <= (int)Piece.BKing; i++) {
+    //         bCount+=countPieces(b.boards[i])*GetPieceScore((Piece)i);
+    //     }
+    //     return wCount - bCount;
+    // }
 
     // This nega max mostly works.
     // Essentially, we test every move.
@@ -200,14 +222,20 @@ public class AI
     // Board b is pass by value (well technically everything is but I mean that Board b is not a pointer), so the values other than the lists/arrays get copied.
     public int NegaMax(Side side, int depth, Board b, int alpha, int beta, bool canSet = true) {
         if( depth == 0 ) 
-            return evaluate(side, BoardManager.instance.board);
+            return 1;
+            // return evaluate(side, BoardManager.instance.board);
         int max = int.MinValue;
         List<Ply> plies = new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies);
         foreach(Ply ply in plies) {
             Board newB = b;
-            newB.PlayPly(ply);
+            Ply newPly = ply;
+            if(ply.Type == Piece.WPawn && ply.End.y == 7)
+                newPly.PromoteType = Piece.WQueen;
+            if(ply.Type == Piece.BPawn && ply.End.y == 0)
+                newPly.PromoteType = Piece.BQueen;
+            newB.PlayPly(newPly);
             int score = -NegaMax(side == Side.White ? Side.Black : Side.White, depth-1, newB, -beta, -alpha, false);
-            newB.UndoPly(ply);
+            newB.UndoPly(newPly);
             if(score > max) {
                 if(canSet)
                     bestPly = ply;
