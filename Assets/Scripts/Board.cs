@@ -108,7 +108,7 @@ public struct Board
     public void PlayPly(Ply ply) {
 
         AI ai = new AI();
-        // Debug.Log(ply.Side + ": " + ai.evaluate(ply.Side, this));
+        
         // the start coordinate, as an offset, starting from A1
         // If Start.y is 7, that should correlate with the 8th rank.   
         int start_idx = ply.Start.x + 8*(7-ply.Start.y); 
@@ -198,6 +198,7 @@ public struct Board
         else if(ply.Type == Piece.BPawn && ( (1ul<<end_idx) & rank1) != 0) {
             Promote(1ul<<end_idx, Side.Black, (Piece)ply.PromoteType);
         }
+        //Debug.Log(ply.Side + ": " + ai.evaluate(ply.Side, this));
         SetupMoves();
     }
     

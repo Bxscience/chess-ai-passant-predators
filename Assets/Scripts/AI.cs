@@ -84,6 +84,7 @@ public class AI
     {
         ulong[] boards = board.boards;
         int score = 0;
+        
         if (side == Side.White)
         {
             for (int i = 0; i <= (int)Piece.WKing; i++) //pawns, bishop, knight, rook, q, k
@@ -142,11 +143,12 @@ public class AI
                 {
                     int pos = Board.GetLSBIndex(curboard);
 
-                    int blackpos = 56 - pos + 2*(pos % 8);
+                    int blackpos = 56 - pos + (pos % 8);
+                    int blackpos2 = (7 - (pos / 8)) * 8 + (pos % 8);
                     if (i == (int)Piece.BBishop)
                     {
                         score += bishop;
-                        score += mg_bishop_table[blackpos];
+                        score += mg_bishop_table[blackpos]/2;
                         if (countPieces(curboard) == 2)
                         {
                             score += 25;
@@ -156,28 +158,28 @@ public class AI
                     else if (i == (int)Piece.BKnight)
                     {
                         score += knight;
-                        score += mg_knight_table[blackpos];
+                        score += mg_knight_table[blackpos]/2;
                     }
                     else if (i == (int)Piece.BRook)
                     {
                         score += rook;
-                        score += mg_rook_table[blackpos];
+                        score += mg_rook_table[blackpos]/2;
                     }
                     else if (i == (int)Piece.BQueen)
                     {
                         score += queen;
-                        score += mg_queen_table[blackpos];
+                        score += mg_queen_table[blackpos]/2;
                     }
                     else if (i == (int)Piece.BPawn)
                     {
 
                         score += pawn;
-                        score += mg_pawn_table[blackpos];
+                        score += mg_pawn_table[blackpos]/2;
                     }
                     else if (i == (int)Piece.BKing)
                     {
                         score += king;
-                        score += mg_king_table[blackpos];
+                        score += mg_king_table[blackpos]/2;
                     }
                     curboard &= ~(1ul << pos);
                 }
@@ -199,7 +201,7 @@ public class AI
 
     public Ply? GetPly(Side side) {
         bestPly = null;
-        NegaMax(side, 4, BoardManager.instance.board, int.MinValue, int.MaxValue);
+        NegaMax(side, 4, BoardManager.instance.board, -10000, 10000);
         return bestPly;
     }
 
@@ -222,7 +224,7 @@ public class AI
     // Board b is pass by value (well technically everything is but I mean that Board b is not a pointer), so the values other than the lists/arrays get copied.
     public int NegaMax(Side side, int depth, Board b, int alpha, int beta, bool canSet = true) {
         if( depth == 0 ) 
-            return evaluate(side, BoardManager.instance.board);
+            return evaluate(side, b);
         int max = int.MinValue;
         List<Ply> plies = new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies);
         foreach(Ply ply in plies) {
