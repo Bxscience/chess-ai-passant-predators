@@ -97,7 +97,7 @@ public class AI
                     if (i == (int)Piece.WBishop)
                     {
                         wscore += bishop;
-                        wscore += mg_bishop_table[pos] / 2;
+                        wscore += mg_bishop_table[pos];
                         if (countPieces(curboard) == 2)
                         {
                             wscore += 25;
@@ -107,28 +107,28 @@ public class AI
                     else if (i == (int)Piece.WKnight)
                     {
                         wscore += knight;
-                        wscore += mg_knight_table[pos] / 2;
+                        wscore += mg_knight_table[pos];
                     }
                     else if (i == (int)Piece.WRook)
                     {
                         wscore += rook;
-                        wscore += mg_rook_table[pos] / 2;
+                        wscore += mg_rook_table[pos];
                     }
                     else if(i == (int)Piece.WQueen)
                     {
                         wscore += queen;
-                        wscore += mg_queen_table[pos]/2;
+                        wscore += mg_queen_table[pos];
                     }
                     else if(i == (int)Piece.WPawn)
                     {
 
                         wscore += pawn;
-                        wscore += mg_pawn_table[pos]/2;
+                        wscore += mg_pawn_table[pos];
                     }
                     else if (i == (int)Piece.WKing)
                     {
                         wscore += king;
-                        wscore += mg_king_table[pos]/2;
+                        wscore += mg_king_table[pos];
                     }
                     curboard &= ~(1ul << pos);
                 }
@@ -156,28 +156,28 @@ public class AI
                     else if (i == (int)Piece.BKnight)
                     {
                         bscore += knight;
-                        bscore += mg_knight_table[blackpos]/2;
+                        bscore += mg_knight_table[blackpos];
                     }
                     else if (i == (int)Piece.BRook)
                     {
                         bscore += rook;
-                        bscore += mg_rook_table[blackpos]/2;
+                        bscore += mg_rook_table[blackpos];
                     }
                     else if (i == (int)Piece.BQueen)
                     {
                         bscore += queen;
-                        bscore += mg_queen_table[blackpos]/2;
+                        bscore += mg_queen_table[blackpos];
                     }
                     else if (i == (int)Piece.BPawn)
                     {
 
                         bscore += pawn;
-                        bscore += mg_pawn_table[blackpos]/2;
+                        bscore += mg_pawn_table[blackpos];
                     }
                     else if (i == (int)Piece.BKing)
                     {
                         bscore += king;
-                        bscore += mg_king_table[blackpos]/2;
+                        bscore += mg_king_table[blackpos];
                     }
                     curboard &= ~(1ul << pos);
                 }
