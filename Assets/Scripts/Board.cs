@@ -472,12 +472,12 @@ public struct Board
         ulong attacksWhite = (pos >> 8 & ~Pieces)
             | (pos>>7 & BlackPieces & ~fileA)
             | (pos>>9 & BlackPieces & ~fileH) | (pos>>7 & (passantTrack) & ~fileA) | (pos>>9 & passantTrack & ~fileH)
-            | (( (pos & rank2) > 0 && (pos>>8 & Pieces) == 0) ? pos>>16 : 0);
+            | (( (pos & rank2) > 0 && ((pos>>8 & Pieces) == 0) && ((pos>>16 & Pieces) == 0)) ? pos>>16 : 0);
         
         ulong attacksBlack = (pos << 8 & ~Pieces)
             | (pos<<9 & WhitePieces & ~fileA)
             | (pos<<7 & WhitePieces & ~fileH) | (pos << 9 & (passantTrack) & ~fileA) | (pos << 7 & passantTrack & ~fileH)
-            | (( (pos & rank7) > 0 && (pos<<8 & Pieces) == 0) ? pos<<16 : 0);
+            | (( (pos & rank7) > 0 && ((pos<<8 & Pieces) == 0) && ((pos<<16 & Pieces)==0)) ? pos<<16 : 0);
 
         if(side == Side.White) 
             return attacksWhite;
