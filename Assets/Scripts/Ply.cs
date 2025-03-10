@@ -25,4 +25,30 @@ public struct Ply
         Captured = captured;
         PromoteType = promoteType;
     }
+    public override string ToString()
+    {
+        // Convert coordinates to algebraic notation (e.g., (0, 0) -> "a1", (4, 7) -> "e8")
+        string startSquare = $"{(char)('a' + Start.x)}{Start.y + 1}";
+        string endSquare = $"{(char)('a' + End.x)}{End.y + 1}";
+
+        // Get the piece symbol (e.g., "N" for knight, "" for pawn)
+        string pieceSymbol = Type switch
+        {
+            Piece.WKnight or Piece.BKnight => "N",
+            Piece.WBishop or Piece.BBishop => "B",
+            Piece.WRook or Piece.BRook => "R",
+            Piece.WQueen or Piece.BQueen => "Q",
+            Piece.WKing or Piece.BKing => "K",
+            _ => "P" // Pawns don't get a symbol
+        };
+
+        // Add "x" for captures
+        string captureSymbol = Captured != Piece.None ? "x" : "";
+
+        // Add promotion notation (e.g., "=Q" for queen promotion)
+        string promotionSymbol = PromoteType.HasValue ? $"={PromoteType.Value}" : "";
+
+        // Combine everything (e.g., "Nf3", "exd5", "e8=Q")
+        return $"{pieceSymbol}{captureSymbol}{endSquare}{promotionSymbol}";
+    }
 }

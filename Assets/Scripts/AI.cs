@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -84,9 +85,8 @@ public class AI
     {
         ulong[] boards = board.boards;
         int score = 0;
-        
-        if (side == Side.White)
-        {
+        int wscore = 0;
+        int bscore = 0;
             for (int i = 0; i <= (int)Piece.WKing; i++) //pawns, bishop, knight, rook, q, k
             {
                 ulong curboard = boards[i];
@@ -96,46 +96,45 @@ public class AI
                    
                     if (i == (int)Piece.WBishop)
                     {
-                        score += bishop;
-                        score += mg_bishop_table[pos];
+                        wscore += bishop;
+                        wscore += mg_bishop_table[pos] / 2;
                         if (countPieces(curboard) == 2)
                         {
-                            score += 25;
+                            wscore += 25;
                         }
                         
                     }
                     else if (i == (int)Piece.WKnight)
                     {
-                        score += knight;
-                        score += mg_knight_table[pos];
+                        wscore += knight;
+                        wscore += mg_knight_table[pos] / 2;
                     }
                     else if (i == (int)Piece.WRook)
                     {
-                        score += rook;
-                        score += mg_rook_table[pos];
+                        wscore += rook;
+                        wscore += mg_rook_table[pos] / 2;
                     }
                     else if(i == (int)Piece.WQueen)
                     {
-                        score += queen;
-                        score += mg_queen_table[pos];
+                        wscore += queen;
+                        wscore += mg_queen_table[pos]/2;
                     }
                     else if(i == (int)Piece.WPawn)
                     {
 
-                        score += pawn;
-                        score += mg_pawn_table[pos];
+                        wscore += pawn;
+                        wscore += mg_pawn_table[pos]/2;
                     }
                     else if (i == (int)Piece.WKing)
                     {
-                        score += king;
-                        score += mg_king_table[pos];
+                        wscore += king;
+                        wscore += mg_king_table[pos]/2;
                     }
                     curboard &= ~(1ul << pos);
                 }
             }
-        }
-        else
-        {
+        
+        
             for (int i = 6; i <= (int)Piece.BKing; i++) //pawns, bishop, knight, rook, q, k
             {
                 ulong curboard = boards[i];
@@ -144,46 +143,52 @@ public class AI
                     int pos = Board.GetLSBIndex(curboard);
 
                     int blackpos = 56 - pos + (pos % 8);
-                    int blackpos2 = (7 - (pos / 8)) * 8 + (pos % 8);
                     if (i == (int)Piece.BBishop)
                     {
-                        score += bishop;
-                        score += mg_bishop_table[blackpos]/2;
+                        bscore += bishop;
+                        bscore += mg_bishop_table[blackpos]/2;
                         if (countPieces(curboard) == 2)
                         {
-                            score += 25;
+                            bscore += 25;
                         }
 
                     }
                     else if (i == (int)Piece.BKnight)
                     {
-                        score += knight;
-                        score += mg_knight_table[blackpos]/2;
+                        bscore += knight;
+                        bscore += mg_knight_table[blackpos]/2;
                     }
                     else if (i == (int)Piece.BRook)
                     {
-                        score += rook;
-                        score += mg_rook_table[blackpos]/2;
+                        bscore += rook;
+                        bscore += mg_rook_table[blackpos]/2;
                     }
                     else if (i == (int)Piece.BQueen)
                     {
-                        score += queen;
-                        score += mg_queen_table[blackpos]/2;
+                        bscore += queen;
+                        bscore += mg_queen_table[blackpos]/2;
                     }
                     else if (i == (int)Piece.BPawn)
                     {
 
-                        score += pawn;
-                        score += mg_pawn_table[blackpos]/2;
+                        bscore += pawn;
+                        bscore += mg_pawn_table[blackpos]/2;
                     }
                     else if (i == (int)Piece.BKing)
                     {
-                        score += king;
-                        score += mg_king_table[blackpos]/2;
+                        bscore += king;
+                        bscore += mg_king_table[blackpos]/2;
                     }
                     curboard &= ~(1ul << pos);
                 }
             }
+        if (side == Side.White)
+        {
+            score = wscore - bscore;
+        }
+        else
+        {
+            score = bscore - wscore;
         }
         return score;
     }
@@ -205,6 +210,37 @@ public class AI
         return bestPly;
     }
 
+
+    // This nega max mostly works.
+    // Essentially, we test every move.
+    // The beauty is that if we negate the opposite sides evaluation, and we find the max of those negated scores, we are finding the minimum of the non negated scores
+    // That means that this is equivalent to minimax
+    // Board b is pass by value (well technically everything is but I mean that Board b is not a pointer), so the values other than the lists/arrays get copied.
+    public int NegaMax(Side side, int depth, Board b, int alpha, int beta, bool canSet = true) {
+        if( depth == 0 ) 
+            return evaluate(side, b);
+        int max = -10000;
+        List<Ply> plies = new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies);
+        foreach(Ply ply in plies) {
+            Board newB = b.DeepCopy();
+            Ply newPly = ply;
+            if(ply.Type == Piece.WPawn && ply.End.y == 7)
+                newPly.PromoteType = Piece.WQueen;
+            if(ply.Type == Piece.BPawn && ply.End.y == 0)
+                newPly.PromoteType = Piece.BQueen;
+            newB.PlayPly(newPly);
+            int score = -NegaMax(side == Side.White ? Side.Black : Side.White, depth-1, newB, -beta, -alpha, false);
+            if(score > max) {
+                if(canSet)
+                    bestPly = newPly;
+                max = score;
+                alpha = Mathf.Max(alpha, score);
+            }
+            if (score >= beta)
+                break;
+        }
+        return max;
+    }    
     // public int materialCount(Board b) {
     //     int wCount = 0;
     //     for(int i = (int)Piece.WPawn; i <= (int)Piece.WKing; i++) {
@@ -217,38 +253,6 @@ public class AI
     //     return wCount - bCount;
     // }
 
-    // This nega max mostly works.
-    // Essentially, we test every move.
-    // The beauty is that if we negate the opposite sides evaluation, and we find the max of those negated scores, we are finding the minimum of the non negated scores
-    // That means that this is equivalent to minimax
-    // Board b is pass by value (well technically everything is but I mean that Board b is not a pointer), so the values other than the lists/arrays get copied.
-    public int NegaMax(Side side, int depth, Board b, int alpha, int beta, bool canSet = true) {
-        if( depth == 0 ) 
-            return evaluate(side, b);
-        int max = int.MinValue;
-        List<Ply> plies = new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies);
-        foreach(Ply ply in plies) {
-            Board newB = b;
-            Ply newPly = ply;
-            if(ply.Type == Piece.WPawn && ply.End.y == 7)
-                newPly.PromoteType = Piece.WQueen;
-            if(ply.Type == Piece.BPawn && ply.End.y == 0)
-                newPly.PromoteType = Piece.BQueen;
-            newB.PlayPly(newPly);
-            int score = -NegaMax(side == Side.White ? Side.Black : Side.White, depth-1, newB, -beta, -alpha, false);
-            newB.UndoPly(newPly);
-            if(score > max) {
-                if(canSet)
-                    bestPly = ply;
-                max = score;
-                if(score > alpha)
-                    alpha = score;
-            }
-            if(score >= beta)
-                break;
-        }
-        return max;
-    }
 }
 
 

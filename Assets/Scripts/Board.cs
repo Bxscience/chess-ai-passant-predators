@@ -102,7 +102,26 @@ public struct Board
         }
         SetupMoves();
     }
-    
+    public Board DeepCopy()
+    {
+        Board copy = new Board
+        {
+            // Copy primitive fields
+            boards = (ulong[])this.boards.Clone(), // Deep copy the bitboards array
+            passantTrack = this.passantTrack,
+            passantCaptured = this.passantCaptured,
+            allWhiteMovesPsuedolegal = this.allWhiteMovesPsuedolegal,
+            allBlackMovesPsuedolegal = this.allBlackMovesPsuedolegal,
+            castleTracker = this.castleTracker,
+
+            // Deep copy MovesHelper objects
+            WhiteHelper = this.WhiteHelper.DeepCopy(),
+            BlackHelper = this.BlackHelper.DeepCopy()
+        };
+
+        return copy;
+    }
+
     // Play any given ply.
     // Sets stuff in the bitboards, and handles en passants and castles
     public void PlayPly(Ply ply) {
