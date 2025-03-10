@@ -199,7 +199,7 @@ public class AI
 
     public Ply? GetPly(Side side) {
         bestPly = null;
-        NegaMax(side, 3, BoardManager.instance.board, int.MinValue, int.MaxValue);
+        NegaMax(side, 4, BoardManager.instance.board, int.MinValue, int.MaxValue);
         return bestPly;
     }
 
@@ -222,8 +222,7 @@ public class AI
     // Board b is pass by value (well technically everything is but I mean that Board b is not a pointer), so the values other than the lists/arrays get copied.
     public int NegaMax(Side side, int depth, Board b, int alpha, int beta, bool canSet = true) {
         if( depth == 0 ) 
-            return 1;
-            // return evaluate(side, BoardManager.instance.board);
+            return evaluate(side, BoardManager.instance.board);
         int max = int.MinValue;
         List<Ply> plies = new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies);
         foreach(Ply ply in plies) {
