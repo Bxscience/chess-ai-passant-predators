@@ -134,7 +134,6 @@ public class BoardManager : MonoBehaviour
         if(pressed == null) pressed = FindPiece(newPly.Captured, newPly.End);
 
         if(newPly.Captured != Piece.None) {
-            Debug.Log(newPly.End + " " + newPly.Captured);
             taken.Push(pressed);
             pressed.transform.position -= Vector3.up*12;
             pressed.idxBeforeDeath = pressed.idx;

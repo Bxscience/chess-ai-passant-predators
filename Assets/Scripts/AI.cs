@@ -205,9 +205,15 @@ public class AI
     }
 
     public Ply? GetPly(Side side) {
+        var watch = System.Diagnostics.Stopwatch.StartNew();
+        
+        // the code that you want to measure comes here
         bestPly = null;
         NegaMax(side, 4, BoardManager.instance.board, -10000, 10000);
         BoardManager.instance.board.SetupMoves();
+
+        watch.Stop();
+        Debug.Log(watch.ElapsedMilliseconds);
         return bestPly;
     }
 
