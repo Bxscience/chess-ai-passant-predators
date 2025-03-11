@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SocialPlatforms.Impl;
 
 public class AI
 {
@@ -234,7 +235,7 @@ public class AI
         
         // the code that you want to measure comes here
         bestPly = null;
-        NegaMax(side, 4, BoardManager.instance.board, -10000, 10000);
+        NegaMax(side, 5, BoardManager.instance.board, -10000, 10000, 4);
         BoardManager.instance.board.SetupMoves();
 
         watch.Stop();
@@ -248,12 +249,12 @@ public class AI
     // The beauty is that if we negate the opposite sides evaluation, and we find the max of those negated scores, we are finding the minimum of the non negated scores
     // That means that this is equivalent to minimax
     // Board b is pass by value (well technically everything is but I mean that Board b is not a pointer), so the values other than the lists/arrays get copied.
-    public int NegaMax(Side side, int depth, Board b, int alpha, int beta, bool canSet = true) {
+    public int NegaMax(Side side, int depth, Board b, int alpha, int beta , int maxdepth, bool canSet = true) {
         if( depth == 0 ) 
             return evaluate(side, b);
         int max = -10000;
         List<Ply> plies = new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies);
-        if(plies.Count == 0)
+        if (plies.Count == 0)
             return -100000;
         foreach(Ply ply in plies) {
             Board newB = b;
@@ -266,9 +267,10 @@ public class AI
             newB.WhiteHelper.PinBoards = new List<ulong>(newB.WhiteHelper.PinBoards);
             newB.boards = (ulong[])newB.boards.Clone();
             newB.PlayPly(newPly);
-            int score = -NegaMax(side == Side.White ? Side.Black : Side.White, depth-1, newB, -beta, -alpha, false);
-            if(score > max) {
-                if(canSet)
+        int score = -NegaMax(side == Side.White ? Side.Black : Side.White, depth-1, newB, -beta, -alpha, maxdepth, false);
+            if (score > max)
+            {
+                if (canSet)
                     bestPly = newPly;
                 max = score;
                 alpha = Mathf.Max(alpha, score);
