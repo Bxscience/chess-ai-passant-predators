@@ -1,9 +1,5 @@
-using System.Collections;
 using System;
-using System.Collections.Generic;
 using UnityEngine;
-using Unity.VisualScripting;
-using System.Drawing;
 
 public enum Piece {
     WPawn = 0, WBishop = 1, WKnight = 2, WRook = 3, WQueen = 4, WKing = 5,
@@ -27,11 +23,11 @@ public struct Board
     // 0-5 is White
     // 6-11 is Black 
     public ulong[] boards;
-    public ulong passantTrack;
-    public ulong passantCaptured;
     public ulong allWhiteMovesPsuedolegal;
     public ulong allBlackMovesPsuedolegal;
-    public int castleTracker;
+    public sbyte passantTrack;
+    public sbyte passantCaptured;
+    public sbyte castleTracker;
 
 
     public const ulong fileA = 0x0101010101010101;
@@ -102,32 +98,10 @@ public struct Board
         }
         SetupMoves();
     }
-    public Board DeepCopy()
-    {
-        Board copy = new Board
-        {
-            // Copy primitive fields
-            boards = (ulong[])this.boards.Clone(), // Deep copy the bitboards array
-            passantTrack = this.passantTrack,
-            passantCaptured = this.passantCaptured,
-            allWhiteMovesPsuedolegal = this.allWhiteMovesPsuedolegal,
-            allBlackMovesPsuedolegal = this.allBlackMovesPsuedolegal,
-            castleTracker = this.castleTracker,
-
-            // Deep copy MovesHelper objects
-            WhiteHelper = this.WhiteHelper.DeepCopy(),
-            BlackHelper = this.BlackHelper.DeepCopy()
-        };
-
-        return copy;
-    }
-
+    
     // Play any given ply.
     // Sets stuff in the bitboards, and handles en passants and castles
     public void PlayPly(Ply ply) {
-
-        AI ai = new AI();
-        
         // the start coordinate, as an offset, starting from A1
         // If Start.y is 7, that should correlate with the 8th rank.   
         int start_idx = ply.Start.x + 8*(7-ply.Start.y); 
@@ -140,8 +114,8 @@ public struct Board
         boards[(int)ply.Type] = boards[(int)ply.Type] | 1ul<<end_idx;
         
         if(ply.Captured != Piece.None) {
-            if((1ul<<end_idx & passantTrack) != 0) {
-                boards[(int)ply.Captured] = boards[(int)ply.Captured] & ~passantCaptured;
+            if(end_idx == passantTrack) {
+                boards[(int)ply.Captured] = boards[(int)ply.Captured] & ~(1ul<<passantCaptured);
             } else {
                 boards[(int)ply.Captured] = ~(~boards[(int)ply.Captured] | 1ul<<end_idx);
             }
@@ -202,13 +176,13 @@ public struct Board
 
         if (ply.Type == Piece.WPawn && ((ply.End-ply.Start) == new Vector2Int(0,2)))
         {
-            passantTrack = 1ul << end_idx << 8;
-            passantCaptured = 1ul << end_idx;
+            passantTrack = (sbyte)(end_idx + 8);
+            passantCaptured = (sbyte)end_idx;
         }
         if (ply.Type == Piece.BPawn && ((ply.End - ply.Start) == new Vector2Int(0, -2)))
         {
-            passantTrack = 1ul << end_idx >> 8;
-            passantCaptured = 1ul << end_idx;
+            passantTrack = (sbyte)(end_idx - 8);
+            passantCaptured = (sbyte)end_idx;
         }
 
         if (ply.Type == Piece.WPawn && ( (1ul<<end_idx) & rank8 ) != 0) {
@@ -223,7 +197,7 @@ public struct Board
     
     // This function uses all pieces paralegal moves to determine checks, pins, etc.
     // Then we precompute all legal moves for the AI and for checkmate/stalemate
-    private void SetupMoves() {
+    public void SetupMoves() {
         BlackHelper.ClearMoves();
         int bKingPos = GetLSBIndex(boards[(int)Piece.BKing]);
         // Lets find all paralegal moves
@@ -368,7 +342,7 @@ public struct Board
     
     public bool IsEnPassant(Vector2Int endPos) {
         int sq = endPos.x + (7-endPos.y)*8;
-        return (1ul<<sq & passantTrack) != 0;
+        return sq == passantTrack;
     }
 
     public void Promote(ulong pos, Side side, Piece promoteType)
@@ -395,8 +369,8 @@ public struct Board
         boards[(int)ply.Type] = boards[(int)ply.Type] | 1ul<<start_idx;
         
         if(ply.Captured != Piece.None) {
-            if((1ul<<end_idx & passantTrack) != 0) {
-                boards[(int)ply.Captured] = boards[(int)ply.Captured] | passantCaptured;
+            if(end_idx == passantTrack) {
+                boards[(int)ply.Captured] = boards[(int)ply.Captured] | (1ul<<passantCaptured);
             } else {
                 boards[(int)ply.Captured] = boards[(int)ply.Captured] | 1ul<<end_idx;
             }
@@ -491,12 +465,12 @@ public struct Board
         // The capture on the right can't be in file A, and the capture on the left can't be in file H
         ulong attacksWhite = (pos >> 8 & ~Pieces)
             | (pos>>7 & BlackPieces & ~fileA)
-            | (pos>>9 & BlackPieces & ~fileH) | (pos>>7 & (passantTrack) & ~fileA) | (pos>>9 & passantTrack & ~fileH)
+            | (pos>>9 & BlackPieces & ~fileH) | (pos>>7 & (1ul<<passantTrack) & ~fileA) | (pos>>9 & (1ul<<passantTrack) & ~fileH)
             | (( (pos & rank2) > 0 && ((pos>>8 & Pieces) == 0) && ((pos>>16 & Pieces) == 0)) ? pos>>16 : 0);
         
         ulong attacksBlack = (pos << 8 & ~Pieces)
             | (pos<<9 & WhitePieces & ~fileA)
-            | (pos<<7 & WhitePieces & ~fileH) | (pos << 9 & (passantTrack) & ~fileA) | (pos << 7 & passantTrack & ~fileH)
+            | (pos<<7 & WhitePieces & ~fileH) | (pos << 9 & (1ul<<passantTrack) & ~fileA) | (pos << 7 & (1ul<<passantTrack) & ~fileH)
             | (( (pos & rank7) > 0 && ((pos<<8 & Pieces) == 0) && ((pos<<16 & Pieces)==0)) ? pos<<16 : 0);
 
         if(side == Side.White) 

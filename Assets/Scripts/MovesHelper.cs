@@ -14,12 +14,12 @@ public struct MovesHelper {
     // Otherwise we are in check
     public ulong CheckAttackBoard;
     public ulong KingAttackBoard;
-    public int NumCheckers;
+    public sbyte NumCheckers;
 
     public MovesHelper(Side _side) {
-        Plies = new List<Ply>();
+        Plies = new List<Ply>(216);
         NumCheckers = 0;
-        PinBoards = new List<ulong>();
+        PinBoards = new List<ulong>(8);
         Pinned = 0ul;
         KingAttackBoard = 0;
         CheckAttackBoard = 0;
@@ -33,23 +33,6 @@ public struct MovesHelper {
         Plies.Clear();
         Pinned = 0ul;
         CheckAttackBoard = 0ul;
-    }
-    public MovesHelper DeepCopy()
-    {
-        MovesHelper copy = new MovesHelper
-        {
-            // Copy primitive fields
-            Pinned = this.Pinned,
-            CheckAttackBoard = this.CheckAttackBoard,
-            KingAttackBoard = this.KingAttackBoard,
-            NumCheckers = this.NumCheckers,
-
-            // Deep copy reference types (lists)
-            PinBoards = new List<ulong>(this.PinBoards), // Copy the contents of the list
-            Plies = new List<Ply>(this.Plies) // Copy the contents of the list
-        };
-
-        return copy;
     }
 
     public void AddCheckAttack(Piece typeAttacking, int attackingPos, int kingPos) {

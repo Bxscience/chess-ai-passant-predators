@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class AI
@@ -229,8 +230,15 @@ public class AI
     }
 
     public Ply? GetPly(Side side) {
+        var watch = System.Diagnostics.Stopwatch.StartNew();
+        
+        // the code that you want to measure comes here
         bestPly = null;
         NegaMax(side, 4, BoardManager.instance.board, -10000, 10000);
+        BoardManager.instance.board.SetupMoves();
+
+        watch.Stop();
+        Debug.Log(watch.ElapsedMilliseconds);
         return bestPly;
     }
 
@@ -245,15 +253,22 @@ public class AI
             return evaluate(side, b);
         int max = -10000;
         List<Ply> plies = new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies);
+<<<<<<< HEAD
         if(plies.Count == 0)
+=======
+        if (plies.Count == 0)
+>>>>>>> stackallocate
             return evaluate(side, b);
         foreach(Ply ply in plies) {
-            Board newB = b.DeepCopy();
+            Board newB = b;
             Ply newPly = ply;
             if(ply.Type == Piece.WPawn && ply.End.y == 7)
                 newPly.PromoteType = Piece.WQueen;
             if(ply.Type == Piece.BPawn && ply.End.y == 0)
                 newPly.PromoteType = Piece.BQueen;
+            newB.BlackHelper.PinBoards = new List<ulong>(newB.BlackHelper.PinBoards);
+            newB.WhiteHelper.PinBoards = new List<ulong>(newB.WhiteHelper.PinBoards);
+            newB.boards = (ulong[])newB.boards.Clone();
             newB.PlayPly(newPly);
             int score = -NegaMax(side == Side.White ? Side.Black : Side.White, depth-1, newB, -beta, -alpha, false);
             if(score > max) {
