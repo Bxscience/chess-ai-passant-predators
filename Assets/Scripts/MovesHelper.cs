@@ -17,9 +17,9 @@ public struct MovesHelper {
     public int NumCheckers;
 
     public MovesHelper(Side _side) {
-        Plies = new List<Ply>();
+        Plies = new List<Ply>(216);
         NumCheckers = 0;
-        PinBoards = new List<ulong>();
+        PinBoards = new List<ulong>(8);
         Pinned = 0ul;
         KingAttackBoard = 0;
         CheckAttackBoard = 0;

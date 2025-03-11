@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class AI
@@ -83,7 +84,7 @@ public class AI
     // Evaluate function uses piece scores to determine who has material and spatial advantages, amoung other things.
     public int evaluate(Side side, Board board)
     {
-        FakeBoardArr boards = board.boards;
+        ulong[] boards = board.boards;
         int score = 0;
         int wscore = 0;
         int bscore = 0;
@@ -239,6 +240,7 @@ public class AI
                 newPly.PromoteType = Piece.BQueen;
             newB.BlackHelper.PinBoards = new List<ulong>(newB.BlackHelper.PinBoards);
             newB.WhiteHelper.PinBoards = new List<ulong>(newB.WhiteHelper.PinBoards);
+            newB.boards = (ulong[])newB.boards.Clone();
             newB.PlayPly(newPly);
             int score = -NegaMax(side == Side.White ? Side.Black : Side.White, depth-1, newB, -beta, -alpha, false);
             if(score > max) {

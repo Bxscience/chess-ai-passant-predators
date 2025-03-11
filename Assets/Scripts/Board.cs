@@ -22,7 +22,7 @@ public struct Board
     public MovesHelper BlackHelper;
     // 0-5 is White
     // 6-11 is Black 
-    public FakeBoardArr boards;
+    public ulong[] boards;
     public ulong passantTrack;
     public ulong passantCaptured;
     public ulong allWhiteMovesPsuedolegal;
@@ -79,7 +79,7 @@ public struct Board
         allBlackMovesPsuedolegal = 0;
         castleTracker = 0b1111;
         //castleTracker = castleTracker & ~castleTrack.wQueen for example
-        boards = new FakeBoardArr();
+        boards = new ulong[12];
         passantTrack = 0;
         passantCaptured = 0;
         string[] fen_parts = fen.Split(" ");
