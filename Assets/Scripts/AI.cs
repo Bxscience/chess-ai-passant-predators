@@ -161,7 +161,7 @@ public class AI
                     if (i == (int)Piece.BBishop)
                     {
                         bscore += bishop;
-                        bscore += mg_bishop_table[blackpos]/2;
+                        bscore += mg_bishop_table[blackpos];
                         if (countPieces(curboard) == 2)
                         {
                             bscore += 25;
