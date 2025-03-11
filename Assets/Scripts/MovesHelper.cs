@@ -14,7 +14,7 @@ public struct MovesHelper {
     // Otherwise we are in check
     public ulong CheckAttackBoard;
     public ulong KingAttackBoard;
-    public int NumCheckers;
+    public sbyte NumCheckers;
 
     public MovesHelper(Side _side) {
         Plies = new List<Ply>(216);

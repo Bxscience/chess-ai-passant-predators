@@ -23,11 +23,11 @@ public struct Board
     // 0-5 is White
     // 6-11 is Black 
     public ulong[] boards;
-    public ulong passantTrack;
-    public ulong passantCaptured;
     public ulong allWhiteMovesPsuedolegal;
     public ulong allBlackMovesPsuedolegal;
-    public int castleTracker;
+    public sbyte passantTrack;
+    public sbyte passantCaptured;
+    public sbyte castleTracker;
 
 
     public const ulong fileA = 0x0101010101010101;
@@ -114,8 +114,8 @@ public struct Board
         boards[(int)ply.Type] = boards[(int)ply.Type] | 1ul<<end_idx;
         
         if(ply.Captured != Piece.None) {
-            if((1ul<<end_idx & passantTrack) != 0) {
-                boards[(int)ply.Captured] = boards[(int)ply.Captured] & ~passantCaptured;
+            if(end_idx == passantTrack) {
+                boards[(int)ply.Captured] = boards[(int)ply.Captured] & ~(1ul<<passantCaptured);
             } else {
                 boards[(int)ply.Captured] = ~(~boards[(int)ply.Captured] | 1ul<<end_idx);
             }
@@ -176,13 +176,13 @@ public struct Board
 
         if (ply.Type == Piece.WPawn && ((ply.End-ply.Start) == new Vector2Int(0,2)))
         {
-            passantTrack = 1ul << end_idx << 8;
-            passantCaptured = 1ul << end_idx;
+            passantTrack = (sbyte)(end_idx + 8);
+            passantCaptured = (sbyte)end_idx;
         }
         if (ply.Type == Piece.BPawn && ((ply.End - ply.Start) == new Vector2Int(0, -2)))
         {
-            passantTrack = 1ul << end_idx >> 8;
-            passantCaptured = 1ul << end_idx;
+            passantTrack = (sbyte)(end_idx - 8);
+            passantCaptured = (sbyte)end_idx;
         }
 
         if (ply.Type == Piece.WPawn && ( (1ul<<end_idx) & rank8 ) != 0) {
@@ -342,7 +342,7 @@ public struct Board
     
     public bool IsEnPassant(Vector2Int endPos) {
         int sq = endPos.x + (7-endPos.y)*8;
-        return (1ul<<sq & passantTrack) != 0;
+        return sq == passantTrack;
     }
 
     public void Promote(ulong pos, Side side, Piece promoteType)
@@ -369,8 +369,8 @@ public struct Board
         boards[(int)ply.Type] = boards[(int)ply.Type] | 1ul<<start_idx;
         
         if(ply.Captured != Piece.None) {
-            if((1ul<<end_idx & passantTrack) != 0) {
-                boards[(int)ply.Captured] = boards[(int)ply.Captured] | passantCaptured;
+            if(end_idx == passantTrack) {
+                boards[(int)ply.Captured] = boards[(int)ply.Captured] | (1ul<<passantCaptured);
             } else {
                 boards[(int)ply.Captured] = boards[(int)ply.Captured] | 1ul<<end_idx;
             }
@@ -465,12 +465,12 @@ public struct Board
         // The capture on the right can't be in file A, and the capture on the left can't be in file H
         ulong attacksWhite = (pos >> 8 & ~Pieces)
             | (pos>>7 & BlackPieces & ~fileA)
-            | (pos>>9 & BlackPieces & ~fileH) | (pos>>7 & (passantTrack) & ~fileA) | (pos>>9 & passantTrack & ~fileH)
+            | (pos>>9 & BlackPieces & ~fileH) | (pos>>7 & (1ul<<passantTrack) & ~fileA) | (pos>>9 & (1ul<<passantTrack) & ~fileH)
             | (( (pos & rank2) > 0 && ((pos>>8 & Pieces) == 0) && ((pos>>16 & Pieces) == 0)) ? pos>>16 : 0);
         
         ulong attacksBlack = (pos << 8 & ~Pieces)
             | (pos<<9 & WhitePieces & ~fileA)
-            | (pos<<7 & WhitePieces & ~fileH) | (pos << 9 & (passantTrack) & ~fileA) | (pos << 7 & passantTrack & ~fileH)
+            | (pos<<7 & WhitePieces & ~fileH) | (pos << 9 & (1ul<<passantTrack) & ~fileA) | (pos << 7 & (1ul<<passantTrack) & ~fileH)
             | (( (pos & rank7) > 0 && ((pos<<8 & Pieces) == 0) && ((pos<<16 & Pieces)==0)) ? pos<<16 : 0);
 
         if(side == Side.White) 
