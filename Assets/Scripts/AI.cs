@@ -84,6 +84,9 @@ public class AI
     public int evaluate(Side side, Board board)
     {
         ulong[] boards = board.boards;
+        ulong whiteDefended = 0;
+        ulong blackDefended = 0;
+        
         int score = 0;
         int wscore = 0;
         int bscore = 0;
