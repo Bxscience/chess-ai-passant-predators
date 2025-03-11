@@ -253,12 +253,8 @@ public class AI
             return evaluate(side, b);
         int max = -10000;
         List<Ply> plies = new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies);
-<<<<<<< HEAD
         if(plies.Count == 0)
-=======
-        if (plies.Count == 0)
->>>>>>> stackallocate
-            return evaluate(side, b);
+            return -100000;
         foreach(Ply ply in plies) {
             Board newB = b;
             Ply newPly = ply;
