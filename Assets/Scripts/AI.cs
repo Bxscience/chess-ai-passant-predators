@@ -84,9 +84,8 @@ public class AI
     public int evaluate(Side side, Board board)
     {
         ulong[] boards = board.boards;
-        ulong whiteDefended = board.allWhiteMovesPsuedolegal & board.WhitePieces;
-        ulong whitePawns = boards[0];
-        ulong blackDefended = board.allBlackMovesPsuedolegal & board.BlackPieces;
+        //ulong whiteDefended = board.allWhiteMovesPsuedolegal & board.WhitePieces;
+        //ulong blackDefended = board.allBlackMovesPsuedolegal & board.BlackPieces;
         //ideally i want o have all fully legal moves but for now I am gonna do paralegal bc idk how exactly
        
         int score = 0;
@@ -133,6 +132,10 @@ public class AI
                         if ((posbit <<7 & boards[0]) != 0 || (posbit<<9 & boards[0]) != 0) //if pawn is connected
                         {  
                             wscore += 25;
+                        }
+                        if ((posbit << 8 & boards[0]) != 0) //basic punishment for doubled pawns
+                        {
+                            wscore -= 50;
                         }
                     }
                     else if (i == (int)Piece.WKing)
@@ -189,6 +192,11 @@ public class AI
                         {
                             bscore += 25;
                         }
+                       if ((posbit >> 8 & boards[6]) != 0) //basic punishment for doubled pawns
+                        {
+                        bscore -= 50;
+                        }
+                  
                     }
                     else if (i == (int)Piece.BKing)
                     {
