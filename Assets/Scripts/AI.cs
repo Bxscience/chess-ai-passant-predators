@@ -84,9 +84,11 @@ public class AI
     public int evaluate(Side side, Board board)
     {
         ulong[] boards = board.boards;
-        ulong whiteDefended = 0;
-        ulong blackDefended = 0;
-        
+        ulong whiteDefended = board.allWhiteMovesPsuedolegal & board.WhitePieces;
+        ulong whitePawns = boards[0];
+        ulong blackDefended = board.allBlackMovesPsuedolegal & board.BlackPieces;
+        //ideally i want o have all fully legal moves but for now I am gonna do paralegal bc idk how exactly
+       
         int score = 0;
         int wscore = 0;
         int bscore = 0;
@@ -96,6 +98,7 @@ public class AI
                 while (curboard > 0) 
                 {
                     int pos = Board.GetLSBIndex(curboard);
+                    ulong posbit = 1ul << pos;
                    
                     if (i == (int)Piece.WBishop)
                     {
@@ -127,13 +130,18 @@ public class AI
 
                         wscore += pawn;
                         wscore += mg_pawn_table[pos];
+                        if ((posbit <<7 & boards[0]) != 0 || (posbit<<9 & boards[0]) != 0) //if pawn is connected
+                        {  
+                            wscore += 25;
+                        }
                     }
                     else if (i == (int)Piece.WKing)
                     {
                         wscore += king;
                         wscore += mg_king_table[pos];
                     }
-                    curboard &= ~(1ul << pos);
+                
+                curboard &= ~(1ul << pos);
                 }
             }
         
@@ -144,8 +152,9 @@ public class AI
                 while (curboard > 0)
                 {
                     int pos = Board.GetLSBIndex(curboard);
+                ulong posbit = 1ul << pos;
 
-                    int blackpos = 56 - pos + (pos % 8);
+                int blackpos = 56 - pos + (pos % 8);
                     if (i == (int)Piece.BBishop)
                     {
                         bscore += bishop;
@@ -176,6 +185,10 @@ public class AI
 
                         bscore += pawn;
                         bscore += mg_pawn_table[blackpos];
+                        if ((posbit >> 7 & boards[6]) != 0 || (posbit >> 9 & boards[6]) != 0) //if pawn is connected
+                        {
+                            bscore += 25;
+                        }
                     }
                     else if (i == (int)Piece.BKing)
                     {
