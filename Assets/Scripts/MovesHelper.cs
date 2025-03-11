@@ -34,23 +34,6 @@ public struct MovesHelper {
         Pinned = 0ul;
         CheckAttackBoard = 0ul;
     }
-    public MovesHelper DeepCopy()
-    {
-        MovesHelper copy = new MovesHelper
-        {
-            // Copy primitive fields
-            Pinned = this.Pinned,
-            CheckAttackBoard = this.CheckAttackBoard,
-            KingAttackBoard = this.KingAttackBoard,
-            NumCheckers = this.NumCheckers,
-
-            // Deep copy reference types (lists)
-            PinBoards = new List<ulong>(this.PinBoards), // Copy the contents of the list
-            Plies = new List<Ply>(this.Plies) // Copy the contents of the list
-        };
-
-        return copy;
-    }
 
     public void AddCheckAttack(Piece typeAttacking, int attackingPos, int kingPos) {
         // Find out how this type is attacking the king

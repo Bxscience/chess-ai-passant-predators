@@ -1,9 +1,5 @@
-using System.Collections;
 using System;
-using System.Collections.Generic;
 using UnityEngine;
-using Unity.VisualScripting;
-using System.Drawing;
 
 public enum Piece {
     WPawn = 0, WBishop = 1, WKnight = 2, WRook = 3, WQueen = 4, WKing = 5,
@@ -26,7 +22,7 @@ public struct Board
     public MovesHelper BlackHelper;
     // 0-5 is White
     // 6-11 is Black 
-    public ulong[] boards;
+    public FakeBoardArr boards;
     public ulong passantTrack;
     public ulong passantCaptured;
     public ulong allWhiteMovesPsuedolegal;
@@ -83,7 +79,7 @@ public struct Board
         allBlackMovesPsuedolegal = 0;
         castleTracker = 0b1111;
         //castleTracker = castleTracker & ~castleTrack.wQueen for example
-        boards = new ulong[12];
+        boards = new FakeBoardArr();
         passantTrack = 0;
         passantCaptured = 0;
         string[] fen_parts = fen.Split(" ");
@@ -102,32 +98,10 @@ public struct Board
         }
         SetupMoves();
     }
-    public Board DeepCopy()
-    {
-        Board copy = new Board
-        {
-            // Copy primitive fields
-            boards = (ulong[])this.boards.Clone(), // Deep copy the bitboards array
-            passantTrack = this.passantTrack,
-            passantCaptured = this.passantCaptured,
-            allWhiteMovesPsuedolegal = this.allWhiteMovesPsuedolegal,
-            allBlackMovesPsuedolegal = this.allBlackMovesPsuedolegal,
-            castleTracker = this.castleTracker,
-
-            // Deep copy MovesHelper objects
-            WhiteHelper = this.WhiteHelper.DeepCopy(),
-            BlackHelper = this.BlackHelper.DeepCopy()
-        };
-
-        return copy;
-    }
-
+    
     // Play any given ply.
     // Sets stuff in the bitboards, and handles en passants and castles
     public void PlayPly(Ply ply) {
-
-        AI ai = new AI();
-        
         // the start coordinate, as an offset, starting from A1
         // If Start.y is 7, that should correlate with the 8th rank.   
         int start_idx = ply.Start.x + 8*(7-ply.Start.y); 
@@ -223,7 +197,7 @@ public struct Board
     
     // This function uses all pieces paralegal moves to determine checks, pins, etc.
     // Then we precompute all legal moves for the AI and for checkmate/stalemate
-    private void SetupMoves() {
+    public void SetupMoves() {
         BlackHelper.ClearMoves();
         int bKingPos = GetLSBIndex(boards[(int)Piece.BKing]);
         // Lets find all paralegal moves

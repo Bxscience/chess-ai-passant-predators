@@ -83,7 +83,7 @@ public class AI
     // Evaluate function uses piece scores to determine who has material and spatial advantages, amoung other things.
     public int evaluate(Side side, Board board)
     {
-        ulong[] boards = board.boards;
+        FakeBoardArr boards = board.boards;
         int score = 0;
         int wscore = 0;
         int bscore = 0;
@@ -207,6 +207,7 @@ public class AI
     public Ply? GetPly(Side side) {
         bestPly = null;
         NegaMax(side, 4, BoardManager.instance.board, -10000, 10000);
+        BoardManager.instance.board.SetupMoves();
         return bestPly;
     }
 
@@ -221,8 +222,10 @@ public class AI
             return evaluate(side, b);
         int max = -10000;
         List<Ply> plies = new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies);
+        if (plies.Count == 0)
+            return evaluate(side, b);
         foreach(Ply ply in plies) {
-            Board newB = b.DeepCopy();
+            Board newB = b;
             Ply newPly = ply;
             if(ply.Type == Piece.WPawn && ply.End.y == 7)
                 newPly.PromoteType = Piece.WQueen;
@@ -230,6 +233,7 @@ public class AI
                 newPly.PromoteType = Piece.BQueen;
             newB.PlayPly(newPly);
             int score = -NegaMax(side == Side.White ? Side.Black : Side.White, depth-1, newB, -beta, -alpha, false);
+            b.SetupMoves();
             if(score > max) {
                 if(canSet)
                     bestPly = newPly;
