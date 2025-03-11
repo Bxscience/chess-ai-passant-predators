@@ -221,6 +221,8 @@ public class AI
             return evaluate(side, b);
         int max = -10000;
         List<Ply> plies = new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies);
+        if(plies.Count == 0)
+            return evaluate(side, b);
         foreach(Ply ply in plies) {
             Board newB = b.DeepCopy();
             Ply newPly = ply;
