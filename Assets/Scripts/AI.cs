@@ -231,9 +231,10 @@ public class AI
                 newPly.PromoteType = Piece.WQueen;
             if(ply.Type == Piece.BPawn && ply.End.y == 0)
                 newPly.PromoteType = Piece.BQueen;
+            newB.BlackHelper.PinBoards = new List<ulong>(newB.BlackHelper.PinBoards);
+            newB.WhiteHelper.PinBoards = new List<ulong>(newB.WhiteHelper.PinBoards);
             newB.PlayPly(newPly);
             int score = -NegaMax(side == Side.White ? Side.Black : Side.White, depth-1, newB, -beta, -alpha, false);
-            b.SetupMoves();
             if(score > max) {
                 if(canSet)
                     bestPly = newPly;
