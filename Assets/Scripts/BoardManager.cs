@@ -28,7 +28,10 @@ public class BoardManager : MonoBehaviour
 
     private bool isPromoting = false;
     private Ply pendingPromotionPly;
-
+    //Standard Fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
+    //Mate in 1 I think: "8/8/8/8/8/8/rr6/k1K5 w - - 0 1"
+    //Black 2 rooks vs white king: "8/8/8/8/4K3/8/rr6/k7 w - - 0 1"
+    //using other fen seems to break the game
     void Start()
     {
         instance = this;

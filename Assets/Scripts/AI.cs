@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using Unity.VisualScripting.Dependencies.NCalc;
 using UnityEngine;
 using UnityEngine.SocialPlatforms.Impl;
 
@@ -70,7 +71,7 @@ public class AI
     -35,  -8,  11,   2,   8,  15,  -3,   1,
      -1, -18,  -9,  10, -15, -25, -31, -50,
 };
-    const int queen = 900, knight = 300, bishop = 310, pawn = 100, rook = 500, king = 2000;
+    const int queen = 900, knight = 300, bishop = 310, pawn = 100, rook = 500, king = 2000;  //4000+2000+1600+1240+1200+1800
     public int GetPieceScore(Piece type) => type switch
     {
         Piece.WPawn or Piece.BPawn => pawn,
@@ -93,6 +94,7 @@ public class AI
         int score = 0;
         int wscore = 0;
         int bscore = 0;
+        int endgamescore = (1180 - materialCount(board)/100);
             for (int i = 0; i <= (int)Piece.WKing; i++) //pawns, bishop, knight, rook, q, k
             {
                 ulong curboard = boards[i];
@@ -216,6 +218,8 @@ public class AI
         {
             score = bscore - wscore;
         }
+        score += forceKingToCornerEval(board, side, endgamescore);
+
         return score;
     }
     public int countPieces(ulong pieces)
@@ -280,17 +284,51 @@ public class AI
         }
         return max;
     }    
-    // public int materialCount(Board b) {
-    //     int wCount = 0;
-    //     for(int i = (int)Piece.WPawn; i <= (int)Piece.WKing; i++) {
-    //         wCount+=countPieces(b.boards[i])*GetPieceScore((Piece)i);
-    //     }
-    //     int bCount = 0;
-    //     for(int i = (int)Piece.BPawn; i <= (int)Piece.BKing; i++) {
-    //         bCount+=countPieces(b.boards[i])*GetPieceScore((Piece)i);
-    //     }
-    //     return wCount - bCount;
-    // }
+    public int forceKingToCornerEval(Board board, Side side, int endGameWeight)
+    {
+        int oppKing, friendlyKing;
+        int eval = 14;
+        if (side == Side.White)
+        {
+            friendlyKing = Board.GetLSBIndex(board.boards[5]);
+            oppKing = Board.GetLSBIndex(board.boards[11]);
+        }
+        else
+        {
+            friendlyKing = Board.GetLSBIndex(board.boards[11]);
+            oppKing = Board.GetLSBIndex(board.boards[5]);
+        }
+        int oppKingRank = oppKing / 8;
+        int oppKingFile = oppKing % 8;
+        int oppKingToCenterFile = Math.Max(3 - oppKingFile, oppKingFile - 4);
+        int oppKingToCenterRank = Math.Max(3 - oppKingRank, oppKingRank - 4);
+        eval += oppKingToCenterFile;
+        eval += oppKingToCenterRank;
+
+        int friendlyRank = friendlyKing / 8;
+        int friendlyFile = friendlyKing % 8;
+
+        int fileDiff = Math.Abs(oppKingToCenterFile - friendlyFile);
+        int rankDiff = Math.Abs(oppKingToCenterRank - friendlyRank);
+        int dist = fileDiff + rankDiff;
+
+        eval -= dist;
+
+        return (eval * endGameWeight / 10);
+    }
+    public int materialCount(Board b)
+    {
+        int count = 0;
+        for (int i = (int)Piece.WPawn; i <= (int)Piece.WKing; i++)
+        {
+            count += countPieces(b.boards[i]) * GetPieceScore((Piece)i);
+        }
+        for (int i = (int)Piece.BPawn; i <= (int)Piece.BKing; i++)
+        {
+            count += countPieces(b.boards[i]) * GetPieceScore((Piece)i);
+        }
+        return count;
+    }
 
 }
 
