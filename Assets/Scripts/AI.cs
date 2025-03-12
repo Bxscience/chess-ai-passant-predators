@@ -94,7 +94,8 @@ public class AI
         int score = 0;
         int wscore = 0;
         int bscore = 0;
-        int endgamescore = (1180 - materialCount(board)/100);
+        int endgamescore = (11840 - materialCount(board))/100;
+        //Debug.Log("EndScore: " + endgamescore);
             for (int i = 0; i <= (int)Piece.WKing; i++) //pawns, bishop, knight, rook, q, k
             {
                 ulong curboard = boards[i];
@@ -218,7 +219,11 @@ public class AI
         {
             score = bscore - wscore;
         }
-        score += forceKingToCornerEval(board, side, endgamescore);
+        if(endgamescore > 50)
+        {
+            score += forceKingToCornerEval(board, side, endgamescore);
+        }
+            
 
         return score;
     }
@@ -239,7 +244,7 @@ public class AI
         
         // the code that you want to measure comes here
         bestPly = null;
-        NegaMax(side, 5, BoardManager.instance.board, -10000, 10000, 4);
+        NegaMax(side, 4, BoardManager.instance.board, -10000, 10000, 4);
         BoardManager.instance.board.SetupMoves();
 
         watch.Stop();
@@ -283,7 +288,7 @@ public class AI
                 break;
         }
         return max;
-    }    
+    }
     public int forceKingToCornerEval(Board board, Side side, int endGameWeight)
     {
         int oppKing, friendlyKing;
@@ -313,7 +318,6 @@ public class AI
         int dist = fileDiff + rankDiff;
 
         eval -= dist;
-
         return (eval * endGameWeight / 10);
     }
     public int materialCount(Board b)
