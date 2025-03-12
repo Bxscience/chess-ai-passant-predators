@@ -21,7 +21,7 @@ public class BoardManager : MonoBehaviour
     AI blackAI = new AI();
     
     public static BoardManager instance;
-    public event Action PlayedPly;
+    public event Action<Ply> PlayedPly;
 
     public ChessPiece[] pieceBoard = new ChessPiece[64];
    
@@ -189,6 +189,10 @@ public class BoardManager : MonoBehaviour
 
         board.PlayPly(newPly);
         plies.Push(newPly);
+        PlayedPly?.Invoke(newPly);
+        if(!Help()) {
+            // Debug.Log(MagicBitBoards.PrintBitBoard(board.boards     ))
+        }
         isWhiteTurn = !isWhiteTurn;
     }
     
@@ -214,6 +218,24 @@ public class BoardManager : MonoBehaviour
             realivePiece.idx = realivePiece.idxBeforeDeath;
         }
         isWhiteTurn = !isWhiteTurn;
+    }
+
+    private bool Help() {
+        ulong[] fakeboard = new ulong[12];
+        for(int i = 0; i < 12; i++) {
+            List<ChessPiece> currentPieces = SpawnPieces.instance.pieces[i];
+            foreach(ChessPiece p in currentPieces) {
+                if(p.idx == Vector2Int.one*-1) continue;
+                int sq = p.idx.x + 8*(7-p.idx.y);
+                fakeboard[i] |= 1ul<<sq;
+            }
+            if(fakeboard[i] != board.boards[i]) {
+                Debug.LogWarning(MagicBitboards.PrintBitBoard(board.boards[i]));
+                Debug.LogWarning(MagicBitboards.PrintBitBoard(fakeboard[i]));
+                return false;
+            }
+        }
+        return true;
     }
 
     private void HandlePromotionInput() {
