@@ -36,7 +36,11 @@ public class BoardManager : MonoBehaviour
     {
         instance = this;
         MagicBitboards.GenerateMagicNumbers();
-        board = new Board("8/8/8/8/8/8/rr6/k1K5 w - - 0 1");
+        string fen = "8/8/8/8/8/8/rr6/k1K5 b - - 0 1";
+        board = new Board(fen);
+        if(fen.Split(" ")[1][0] == 'w')
+            isWhiteTurn = true;
+        else isWhiteTurn = false;
         Debug.Log(MagicBitboards.PrintBitBoard(board.boards[(int)Piece.BKing]));
         Debug.Log(board.BlackHelper.Plies.Count);
     }
