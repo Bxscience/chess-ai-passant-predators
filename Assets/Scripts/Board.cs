@@ -456,7 +456,7 @@ public struct Board
             // Leaping
             Piece.WPawn or Piece.BPawn => PawnMovesParalegalForCheck(pos, side),
             Piece.WKnight or Piece.BKnight => KnightMovesParalegal(pos, side),
-            Piece.WKing or Piece.BKing => KingMovesParalegal(pos, side),
+            Piece.WKing or Piece.BKing => KingImmediateMoves(pos, side),
             
             // Sliding (not yet implemented)
             Piece.WBishop or Piece.BBishop => BishopMovesParalegal(square, side),
