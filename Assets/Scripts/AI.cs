@@ -261,7 +261,7 @@ public class AI
     public int NegaMax(Side side, int depth, Board b, int alpha, int beta , int maxdepth, bool canSet = true) {
         if( depth == 0 ) 
             return evaluate(side, b);
-        int max = -10000;
+        int max = -1000000;
         List<Ply> plies = new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies);
         if (plies.Count == 0)
             return -100000;
@@ -276,7 +276,7 @@ public class AI
             newB.WhiteHelper.PinBoards = new List<ulong>(newB.WhiteHelper.PinBoards);
             newB.boards = (ulong[])newB.boards.Clone();
             newB.PlayPly(newPly);
-        int score = -NegaMax(side == Side.White ? Side.Black : Side.White, depth-1, newB, -beta, -alpha, maxdepth, false);
+            int score = -NegaMax(side == Side.White ? Side.Black : Side.White, depth-1, newB, -beta, -alpha, maxdepth, false);
             if (score > max)
             {
                 if (canSet)

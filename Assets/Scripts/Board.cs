@@ -238,7 +238,7 @@ public struct Board
                 // Check pins for bpieces
                 if( i == (int)Piece.WBishop || i == (int)Piece.WQueen ) {
                     if(Math.Abs(pos/8-bKingPos/8) == Math.Abs(pos%8-bKingPos%8)) {
-                        ulong pinnRay = BlackHelper.AddBishopCheckBoard(pos, bKingPos);
+                        ulong pinnRay = BlackHelper.FindBishopPinRay(pos, bKingPos);
                         ulong intersect = pinnRay & (BlackPieces&~(1ul<<bKingPos));
                         // Essentially, if there is an intersection, then check if that has more than 2 bits
                         // by clearing the first lsb and checking it its == 0
@@ -251,7 +251,7 @@ public struct Board
                 }
                 if( i == (int)Piece.WRook || i == (int)Piece.WQueen ) {
                     if(pos%8 == bKingPos%8 || pos/8 == bKingPos/8) {
-                        ulong pinnRay = BlackHelper.AddRookCheckBoard(pos, bKingPos);
+                        ulong pinnRay = BlackHelper.FindRookPinRay(pos, bKingPos);
                         ulong intersect = pinnRay & (BlackPieces&~(1ul<<bKingPos));
                         // Essentially, if there is an intersection, then check if that has more than 2 bits
                         // by clearing the first lsb and checking it its == 0
@@ -281,11 +281,11 @@ public struct Board
 
                 // Check check for wking
                 if ((moveBoard & boards[(int)Piece.WKing]) != 0)
-                    BlackHelper.AddCheckAttack((Piece)i, pos, GetLSBIndex(boards[(int)Piece.WKing]));
+                    WhiteHelper.AddCheckAttack((Piece)i, pos, GetLSBIndex(boards[(int)Piece.WKing]));
                 // Check pins for wpieces
                 if( i == (int)Piece.BBishop || i == (int)Piece.BQueen ) {
                     if(Math.Abs(pos/8-wKingPos/8) == Math.Abs(pos%8-wKingPos%8)) {
-                        ulong pinnRay = WhiteHelper.AddBishopCheckBoard(pos, wKingPos);
+                        ulong pinnRay = WhiteHelper.FindBishopPinRay(pos, wKingPos);
                         ulong intersect = pinnRay & (WhitePieces&~(1ul<<wKingPos));
                         // Essentially, if there is an intersection, then check if that has more than 2 bits
                         // by clearing the first lsb and checking it its == 0
@@ -298,7 +298,7 @@ public struct Board
                 }
                 if( i == (int)Piece.BRook || i == (int)Piece.BQueen ) {
                     if(pos%8 == wKingPos%8 || pos/8 == wKingPos/8) {
-                        ulong pinnRay = WhiteHelper.AddRookCheckBoard(pos, wKingPos);
+                        ulong pinnRay = WhiteHelper.FindRookPinRay(pos, wKingPos);
                         ulong intersect = pinnRay & (WhitePieces&~(1ul<<wKingPos));
                         // Essentially, if there is an intersection, then check if that has more than 2 bits
                         // by clearing the first lsb and checking it its == 0
