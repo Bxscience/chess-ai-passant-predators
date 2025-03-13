@@ -277,7 +277,6 @@ public struct Board
             {
                 int pos = GetLSBIndex(board);
                 ulong moveBoard = GetMoveParalegalForChecks(pos, (Piece)i, Side.Black);
-                Debug.Log("AHHH: "+(Piece)i + " " + pos + " " + MagicBitboards.PrintBitBoard(moveBoard));
                 allBlackMovesPsuedolegal |= moveBoard;
 
                 // Check check for wking
@@ -320,7 +319,6 @@ public struct Board
             while (board > 0) {
                 int pos = GetLSBIndex(board);
                 ulong moveBoard = GetMoveLegal(pos, (Piece)i, Side.White);
-                Debug.Log((Piece)i + " " + pos + " " + MagicBitboards.PrintBitBoard(moveBoard));
                 while(moveBoard>0) {
                     int movePos = GetLSBIndex(moveBoard);
                     Ply newPly = new Ply(new Vector2Int(pos%8, 7-pos/8), new Vector2Int(movePos%8, 7-movePos/8), (Piece)i);
@@ -343,7 +341,6 @@ public struct Board
             while (board > 0) {
                 int pos = GetLSBIndex(board);
                 ulong moveBoard = GetMoveLegal(pos, (Piece)i, Side.Black);
-                Debug.Log((Piece)i + " " + pos + " " + MagicBitboards.PrintBitBoard(moveBoard));
                 while(moveBoard>0) {
                     int movePos = GetLSBIndex(moveBoard);
                     Ply newPly = new Ply(new Vector2Int(pos%8, 7-pos/8), new Vector2Int(movePos%8, 7-movePos/8), (Piece)i);
