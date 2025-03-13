@@ -249,6 +249,8 @@ public class AI
 
         watch.Stop();
         Debug.Log(watch.ElapsedMilliseconds);
+        Debug.Log("EndGame Score: " + ((11840 - materialCount(BoardManager.instance.board)) / 100));
+        Debug.Log(forceKingToCornerEval(BoardManager.instance.board, side, (11840 - materialCount(BoardManager.instance.board)) / 100));
         return bestPly;
     }
 
@@ -277,15 +279,15 @@ public class AI
             newB.boards = (ulong[])newB.boards.Clone();
             newB.PlayPly(newPly);
             int score = -NegaMax(side == Side.White ? Side.Black : Side.White, depth-1, newB, -beta, -alpha, maxdepth, false);
-            if (score > max)
-            {
+            if (score > max) { 
                 if (canSet)
                     bestPly = newPly;
                 max = score;
                 alpha = Mathf.Max(alpha, score);
             }
-            if (score >= beta)
-                break;
+        if (score >= beta) {
+            break;
+        }
         }
         return max;
     }
@@ -318,7 +320,7 @@ public class AI
         int dist = fileDiff + rankDiff;
 
         eval -= dist;
-        return (eval * endGameWeight / 10);
+        return (eval * endGameWeight / 50);
     }
     public int materialCount(Board b)
     {
