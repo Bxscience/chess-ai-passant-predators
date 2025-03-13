@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.43668723, g: 0.4842785, b: 0.5645291, a: 1}
+  m_IndirectSpecularColor: {r: 0.4366756, g: 0.48427135, b: 0.56452316, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -503,6 +503,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1410207834}
   - component: {fileID: 1410207835}
+  - component: {fileID: 1410207836}
   m_Layer: 0
   m_Name: SpawnPieces
   m_TagString: Untagged
@@ -550,6 +551,20 @@ MonoBehaviour:
   BlackRook: {fileID: 3283454688993143902, guid: 606c296584e9afc97b0885edcbf0112a, type: 3}
   BlackQueen: {fileID: 4784529825658059094, guid: 3e561a1920bf92beeacfd207e526a210, type: 3}
   BlackKing: {fileID: 5117897005374513054, guid: 6db8cabf4dcb528f5b650829cd587a9f, type: 3}
+--- !u!114 &1410207836
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1410207833}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4212aa45da53c4982b33b85a24a5157d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  highlightPrefab: {fileID: 387056351529908595, guid: 1d0cad7a225e646f38d0b4f4ad45eb3c, type: 3}
+  lessHighlightPrefab: {fileID: 9077156114511209574, guid: 0e103a7fac4844b84925c2c2c0512264, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
