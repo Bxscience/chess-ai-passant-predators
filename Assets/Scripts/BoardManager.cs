@@ -8,7 +8,7 @@ public class BoardManager : MonoBehaviour
     public Board board;
     bool isWhiteTurn = true;
     bool isWhiteAI = false;
-    bool isBlackAI = true;
+    bool isBlackAI = false;
     bool isCheckMate = false;
     bool isStaleMate = false;
     bool isGrabbing;
@@ -28,7 +28,7 @@ public class BoardManager : MonoBehaviour
 
     private bool isPromoting = false;
     private Ply pendingPromotionPly;
-    //Standard Fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
+    //Standard Fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
     //Mate in 1 I think: "8/8/8/8/8/8/rr6/k1K5 w - - 0 1"
     //Black 2 rooks vs white king: "8/8/8/8/4K3/8/rr6/k7 w - - 0 1"
     //using other fen seems to break the game
@@ -36,7 +36,9 @@ public class BoardManager : MonoBehaviour
     {
         instance = this;
         MagicBitboards.GenerateMagicNumbers();
-        board = new Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
+        board = new Board("8/8/8/8/8/8/rr6/k1K5 w - - 0 1");
+        Debug.Log(MagicBitboards.PrintBitBoard(board.boards[(int)Piece.BKing]));
+        Debug.Log(board.BlackHelper.Plies.Count);
     }
 
     void Update()

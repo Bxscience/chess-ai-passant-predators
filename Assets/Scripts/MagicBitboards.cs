@@ -107,12 +107,12 @@ public static class MagicBitboards {
     }
     
     public static string PrintBitBoard(ulong u) {
-        string s = "White\n";
+        string s = "";
         for(int i = 63; i>=0; i--) {
-            s+=(u&(1ul<<i))>>i;
-            if(i % 8 == 0) s += '\n';
+            s=((u&(1ul<<i))>>i)+s;
+            if(i % 8 == 0) s = '\n'+s;
         }
-        s+="\nBlack";
+        s="Black"+s+"\nWhite";
         return s;
     }
     

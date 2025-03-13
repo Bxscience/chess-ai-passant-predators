@@ -77,7 +77,8 @@ public struct Board
 
         allWhiteMovesPsuedolegal = 0;
         allBlackMovesPsuedolegal = 0;
-        castleTracker = 0b1111;
+        // castleTracker = 0b1111;
+        castleTracker = 0b0000;
         //castleTracker = castleTracker & ~castleTrack.wQueen for example
         boards = new ulong[12];
         passantTrack = 0;
@@ -94,6 +95,25 @@ public struct Board
                 if(char.IsNumber(c)) {
                     idx += c - 48;
                 }
+            }
+        }
+        for(int i = 0; i < fen_parts[2].Length; i++) {
+            char c = fen_parts[2][i];
+            if(c == '-') {
+                castleTracker = 0b0000;
+                break;
+            }
+            if(c == 'K') {
+                castleTracker |= (int)CastleTrack.wKing;
+            }
+            if(c == 'Q') {
+                castleTracker |= (int)CastleTrack.wQueen;
+            }
+            if(c == 'k') {
+                castleTracker |= (int)CastleTrack.bKing;
+            }
+            if(c == 'q') {
+                castleTracker |= (int)CastleTrack.bQueen;
             }
         }
         SetupMoves();
@@ -257,6 +277,7 @@ public struct Board
             {
                 int pos = GetLSBIndex(board);
                 ulong moveBoard = GetMoveParalegalForChecks(pos, (Piece)i, Side.Black);
+                Debug.Log("AHHH: "+(Piece)i + " " + pos + " " + MagicBitboards.PrintBitBoard(moveBoard));
                 allBlackMovesPsuedolegal |= moveBoard;
 
                 // Check check for wking
@@ -299,6 +320,7 @@ public struct Board
             while (board > 0) {
                 int pos = GetLSBIndex(board);
                 ulong moveBoard = GetMoveLegal(pos, (Piece)i, Side.White);
+                Debug.Log((Piece)i + " " + pos + " " + MagicBitboards.PrintBitBoard(moveBoard));
                 while(moveBoard>0) {
                     int movePos = GetLSBIndex(moveBoard);
                     Ply newPly = new Ply(new Vector2Int(pos%8, 7-pos/8), new Vector2Int(movePos%8, 7-movePos/8), (Piece)i);
@@ -321,6 +343,7 @@ public struct Board
             while (board > 0) {
                 int pos = GetLSBIndex(board);
                 ulong moveBoard = GetMoveLegal(pos, (Piece)i, Side.Black);
+                Debug.Log((Piece)i + " " + pos + " " + MagicBitboards.PrintBitBoard(moveBoard));
                 while(moveBoard>0) {
                     int movePos = GetLSBIndex(moveBoard);
                     Ply newPly = new Ply(new Vector2Int(pos%8, 7-pos/8), new Vector2Int(movePos%8, 7-movePos/8), (Piece)i);
