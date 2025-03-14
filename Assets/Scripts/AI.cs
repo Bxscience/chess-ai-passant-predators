@@ -265,8 +265,8 @@ public class AI
     // Board b is pass by value (well technically everything is but I mean that Board b is not a pointer), so the values other than the lists/arrays get copied.
     public int NegaMax(Side side, int depth, Board b, int alpha, int beta , int maxdepth, bool canSet = true) {
         if( depth == 0 ) 
-            return evaluateCaptures(b, side, alpha, beta); //Finishes evaluating until all captures resolved
-            //return evaluate(side, b);
+            //return evaluateCaptures(b, side, alpha, beta); //Finishes evaluating until all captures resolved
+            return evaluate(side, b);
         int max = -1000000;
         List<Ply> plies = new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies);
         if (plies.Count == 0) {
@@ -376,7 +376,7 @@ public class AI
             newB.WhiteHelper.PinBoards = new List<ulong>(newB.WhiteHelper.PinBoards);
             newB.boards = (ulong[])newB.boards.Clone();
             newB.PlayPly(newPly);
-            newEval = -evaluateCaptures(newB, side == Side.White ? Side.Black : Side.White, -alpha, -beta);
+            newEval = -evaluateCaptures(newB, side == Side.White ? Side.Black : Side.White, -beta, -alpha);
         }
         eval = Math.Max(eval, newEval);
         if (eval >= beta)
