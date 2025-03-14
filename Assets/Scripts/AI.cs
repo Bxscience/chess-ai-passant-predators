@@ -386,7 +386,21 @@ public class AI
         alpha = Math.Max(alpha, eval);
             
     return alpha;
+     }
+
+    public List<Ply> orderMoves(List<Ply> plies)
+    {
+        List<Ply> result = new List<Ply>();
+        foreach (Ply ply in plies)
+        {
+            int value = 0;
+            if(ply.Captured != Piece.None)
+            {
+                value = GetPieceScore(ply.Captured) - GetPieceScore(ply.Type);
+            }
         }
+        return result;
+    }
 }
 
 
