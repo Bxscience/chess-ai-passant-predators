@@ -351,36 +351,39 @@ public class AI
             {
                 return beta;
             }
-            List<Ply> plies = new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies);//.Where(ply => ply.Captured != Piece.None).ToList();
-        for (int i = plies.Count - 1; i >= 0; i--)
-        {
-            if (plies[i].Captured == Piece.None)
-            {
-                plies.RemoveAt(i);
-            }
-        }
+            List<Ply> plies = new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies).Where(ply => ply.Captured != Piece.None).ToList();
+        //for (int i = plies.Count - 1; i >= 0; i--)
+        //{
+        //    if (plies[i].Captured == Piece.None)
+        //    {
+        //        plies.RemoveAt(i);
+        //    }
+        //}
         if (plies.Count == 0)
             {
                 return eval;
             }
-            else
-            {
                 foreach (Ply ply in plies)
                 {
                     Board newB = b;
                     Ply newPly = ply;
+                    if (ply.Type == Piece.WPawn && ply.End.y == 7)
+                        newPly.PromoteType = Piece.WQueen;
+                    if (ply.Type == Piece.BPawn && ply.End.y == 0)
+                        newPly.PromoteType = Piece.BQueen;
                     newB.BlackHelper.PinBoards = new List<ulong>(newB.BlackHelper.PinBoards);
                     newB.WhiteHelper.PinBoards = new List<ulong>(newB.WhiteHelper.PinBoards);
                     newB.boards = (ulong[])newB.boards.Clone();
                     newB.PlayPly(newPly);
-                    eval -= -evaluateCaptures(newB, side == Side.White ? Side.Black : Side.White, -alpha, -beta);
+                    int newEval = -evaluateCaptures(newB, side == Side.White ? Side.Black : Side.White, -alpha, -beta);
                 }
+                eval = Math.Max(eval, newEval);
                 if (eval >= beta)
                 {
                     return eval;
                 }
                 alpha = Math.Max(alpha, eval);
-            }
+            
             return alpha;
         }
 }
