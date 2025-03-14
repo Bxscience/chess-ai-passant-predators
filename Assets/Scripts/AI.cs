@@ -265,7 +265,6 @@ public class AI
     public int NegaMax(Side side, int depth, Board b, int alpha, int beta , int maxdepth, bool canSet = true) {
         if( depth == 0 ) 
             return evaluateCaptures(b, side, alpha, beta); //Finishes evaluating until all captures resolved
-            //return evaluate(side, b);
         int max = -1000000;
         List<Ply> plies = orderMoves(new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies));
         if (plies.Count == 0) {
