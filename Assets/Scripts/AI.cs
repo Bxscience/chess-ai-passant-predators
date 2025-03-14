@@ -7,6 +7,7 @@ using Unity.VisualScripting.Dependencies.NCalc;
 using UnityEngine;
 using UnityEngine.SocialPlatforms.Impl;
 using System.Linq;
+using System.Drawing;
 
 public class AI
 {
@@ -265,6 +266,7 @@ public class AI
     public int NegaMax(Side side, int depth, Board b, int alpha, int beta , int maxdepth, bool canSet = true) {
         if( depth == 0 ) 
             return evaluateCaptures(b, side, alpha, beta); //Finishes evaluating until all captures resolved
+            //return evaluate(side, b);
         int max = -1000000;
         List<Ply> plies = new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies);
         if (plies.Count == 0) {
@@ -342,38 +344,46 @@ public class AI
     }
     public int evaluateCaptures(Board b, Side side, int alpha, int beta)
     {
-        int eval = evaluate(side, b);
-        if (eval >= beta)
+       
+        
+            int eval = evaluate(side, b);
+            if (eval >= beta)
+            {
+                return beta;
+            }
+            List<Ply> plies = new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies);//.Where(ply => ply.Captured != Piece.None).ToList();
+        for (int i = plies.Count - 1; i >= 0; i--)
         {
-            return beta;
+            if (plies[i].Captured == Piece.None)
+            {
+                plies.RemoveAt(i);
+            }
         }
-        List<Ply> plies = new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies).Where(ply => ply.Captured != Piece.None)
-    .ToList(); ; //I wanna get only captures but I dont know how so i just remove them after if theres a way to do it shad can you add itd make it more efficient
-        //foreach (Ply ply in plies)
-        //{
-        //    if (ply.Captured == Piece.None)
-        //    {
-        //        plies.Remove(ply);
-        //    }
-        //}
-        foreach(Ply ply in plies)
-        {
-            Board newB = b;
-            Ply newPly = ply;
-            newB.BlackHelper.PinBoards = new List<ulong>(newB.BlackHelper.PinBoards);
-            newB.WhiteHelper.PinBoards = new List<ulong>(newB.WhiteHelper.PinBoards);
-            newB.boards = (ulong[])newB.boards.Clone();
-            newB.PlayPly(newPly);
-            eval -= -evaluateCaptures(b, side == Side.White ? Side.Black : Side.White, - beta, -alpha);
+        if (plies.Count == 0)
+            {
+                return eval;
+            }
+            else
+            {
+                foreach (Ply ply in plies)
+                {
+                    Board newB = b;
+                    Ply newPly = ply;
+                    newB.BlackHelper.PinBoards = new List<ulong>(newB.BlackHelper.PinBoards);
+                    newB.WhiteHelper.PinBoards = new List<ulong>(newB.WhiteHelper.PinBoards);
+                    newB.boards = (ulong[])newB.boards.Clone();
+                    newB.PlayPly(newPly);
+                    eval -= -evaluateCaptures(newB, side == Side.White ? Side.Black : Side.White, -beta, -alpha);
+                }
+                if (eval >= beta)
+                {
+                    return eval;
+                }
+                alpha = Math.Max(alpha, eval);
+            }
+            return alpha;
         }
-        if (eval >= beta)
-        {
-            return eval;
-        }
-        alpha = Math.Max(alpha, eval);
-        return alpha;
-    }
-
+    
 }
 
 
