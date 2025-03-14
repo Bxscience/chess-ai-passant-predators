@@ -265,8 +265,10 @@ public class AI
             return evaluate(side, b);
         int max = -1000000;
         List<Ply> plies = new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies);
-        if (plies.Count == 0)
+        if (plies.Count == 0) {
+            Debug.LogWarning("AHHH " + MagicBitboards.PrintBitBoard(b.Pieces));            
             return -100000;
+        }
         foreach(Ply ply in plies) {
             Board newB = b;
             Ply newPly = ply;
@@ -280,8 +282,9 @@ public class AI
             newB.PlayPly(newPly);
             int score = -NegaMax(side == Side.White ? Side.Black : Side.White, depth-1, newB, -beta, -alpha, maxdepth, false);
             if (score > max) { 
-                if (canSet)
+                if (canSet) {
                     bestPly = newPly;
+                }
                 max = score;
                 alpha = Mathf.Max(alpha, score);
             }

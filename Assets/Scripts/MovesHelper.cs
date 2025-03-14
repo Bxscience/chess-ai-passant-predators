@@ -72,7 +72,6 @@ public struct MovesHelper {
             case Piece.WRook:
                 KingAttackBoard |= 1ul << attackingPos;
                 CheckAttackBoard |= FindRookCheckAttack(attackingPos, kingPos, allPieces);
-                Debug.Log(MagicBitboards.PrintBitBoard(CheckAttackBoard));
 
                 NumCheckers++;
                 break;
