@@ -233,7 +233,7 @@ public struct Board
 
                 // Check check for bking
                 if ((moveBoard & boards[(int)Piece.BKing]) != 0) {
-                    BlackHelper.AddCheckAttack((Piece)i, pos, bKingPos);
+                    BlackHelper.AddCheckAttack((Piece)i, pos, bKingPos, Pieces);
                 }
                 // Check pins for bpieces
                 if( i == (int)Piece.WBishop || i == (int)Piece.WQueen ) {
@@ -281,7 +281,7 @@ public struct Board
 
                 // Check check for wking
                 if ((moveBoard & boards[(int)Piece.WKing]) != 0)
-                    WhiteHelper.AddCheckAttack((Piece)i, pos, GetLSBIndex(boards[(int)Piece.WKing]));
+                    WhiteHelper.AddCheckAttack((Piece)i, pos, GetLSBIndex(boards[(int)Piece.WKing]), Pieces);
                 // Check pins for wpieces
                 if( i == (int)Piece.BBishop || i == (int)Piece.BQueen ) {
                     if(Math.Abs(pos/8-wKingPos/8) == Math.Abs(pos%8-wKingPos%8)) {

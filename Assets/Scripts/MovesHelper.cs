@@ -35,7 +35,7 @@ public struct MovesHelper {
         CheckAttackBoard = 0ul;
     }
 
-    public void AddCheckAttack(Piece typeAttacking, int attackingPos, int kingPos) {
+    public void AddCheckAttack(Piece typeAttacking, int attackingPos, int kingPos, ulong allPieces) {
         // Find out how this type is attacking the king
         // Add to the check attack board
         // So for a sliding piece, its the row/col/diag that they would go to attack
@@ -62,7 +62,7 @@ public struct MovesHelper {
             // This doesn't account for pinned pieces, which is where Pinned comes into play.
             case Piece.BBishop:
             case Piece.WBishop:
-                CheckAttackBoard |= FindBishopPinRay(attackingPos, kingPos);
+                CheckAttackBoard |= FindBishopCheckAttack(attackingPos, kingPos, allPieces);
                 KingAttackBoard |= 1ul << attackingPos;
 
                 NumCheckers++;
@@ -70,16 +70,15 @@ public struct MovesHelper {
             case Piece.BRook:
             case Piece.WRook:
                 KingAttackBoard |= 1ul << attackingPos;
-                CheckAttackBoard |= FindRookPinRay(attackingPos, kingPos);
-                Debug.Log("Rook move board" + MagicBitboards.PrintBitBoard(FindRookPinRay(attackingPos, kingPos)));
+                CheckAttackBoard |= FindRookCheckAttack(attackingPos, kingPos, allPieces);
 
                 NumCheckers++;
                 break;
             case Piece.BQueen:
             case Piece.WQueen:
                 KingAttackBoard |= 1ul << attackingPos;
-                if ((kingPos % 8 == attackingPos % 8) || (kingPos / 8 == attackingPos / 8)) CheckAttackBoard |= FindRookPinRay(attackingPos, kingPos);
-                else CheckAttackBoard |= FindBishopPinRay(attackingPos, kingPos);
+                if ((kingPos % 8 == attackingPos % 8) || (kingPos / 8 == attackingPos / 8)) CheckAttackBoard |= FindRookCheckAttack(attackingPos, kingPos, allPieces);
+                else CheckAttackBoard |= FindBishopCheckAttack(attackingPos, kingPos, allPieces);
 
                 NumCheckers++;
                 break;
@@ -87,11 +86,33 @@ public struct MovesHelper {
         } 
     }
 
-    public ulong FindRookCheckAttack(int attackingPos, int kingPos) {
+    public ulong FindRookCheckAttack(int attackingPos, int kingPos, ulong allPieces) {
         ulong ray = 0;
         // If not equal, then it should be different rows?
         int increment = ((kingPos / 8 != attackingPos / 8) ? 8 : 1) * Math.Sign(kingPos - attackingPos);
-        for (int i = attackingPos; i != kingPos; i += increment)
+        ulong allPiecesNoKing = allPieces & ~(1ul<<kingPos) & ~(1ul<<attackingPos);
+        // Stop when you hit a piece or the edge
+        for (int i = attackingPos; (allPiecesNoKing & (1ul<<i)) == 0 && i%8 >= 0 && i%8 <= 7 && i/8 >= 0 && i/8<=7; i += increment) {
+            ray |= 1ul << i;
+        }
+        return ray;
+    }
+
+    public ulong FindBishopCheckAttack(int attackingPos, int kingPos, ulong allPieces) {
+        ulong ray = 0;
+        int increment = 0;
+        // If king is under attackingPos
+        if (kingPos > attackingPos)
+            // If kingPos is further right of attackingPos, then shift 9
+            // Assuming king is under us
+            increment = (kingPos % 8 > attackingPos % 8) ? 9 : 7;
+        else
+            // If kingPos is further right of attackingPos, then shift 7
+            // Assuming king is above us
+            increment = -((kingPos % 8 > attackingPos % 8) ? 7 : 9);
+
+        ulong allPiecesNoKing = allPieces & ~(1ul<<kingPos) & ~(1ul<<attackingPos);
+        for (int i = attackingPos; (allPiecesNoKing & (1ul<<i)) == 0 && i%8 >= 0 && i%8 <= 7 && i/8 >= 0 && i/8<=7; i += increment)
             ray |= 1ul << i;
         return ray;
     }
