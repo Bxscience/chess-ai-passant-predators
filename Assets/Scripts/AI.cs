@@ -373,7 +373,7 @@ public class AI
                     newB.WhiteHelper.PinBoards = new List<ulong>(newB.WhiteHelper.PinBoards);
                     newB.boards = (ulong[])newB.boards.Clone();
                     newB.PlayPly(newPly);
-                    eval -= -evaluateCaptures(newB, side == Side.White ? Side.Black : Side.White, -beta, -alpha);
+                    eval -= -evaluateCaptures(newB, side == Side.White ? Side.Black : Side.White, -alpha, -beta);
                 }
                 if (eval >= beta)
                 {
@@ -383,7 +383,6 @@ public class AI
             }
             return alpha;
         }
-    
 }
 
 
