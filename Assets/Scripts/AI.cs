@@ -6,7 +6,6 @@ using Unity.VisualScripting;
 using Unity.VisualScripting.Dependencies.NCalc;
 using UnityEngine;
 using UnityEngine.SocialPlatforms.Impl;
-using System.Linq;
 using System.Drawing;
 
 public class AI
@@ -265,10 +264,10 @@ public class AI
     // Board b is pass by value (well technically everything is but I mean that Board b is not a pointer), so the values other than the lists/arrays get copied.
     public int NegaMax(Side side, int depth, Board b, int alpha, int beta , int maxdepth, bool canSet = true) {
         if( depth == 0 ) 
-            //return evaluateCaptures(b, side, alpha, beta); //Finishes evaluating until all captures resolved
-            return evaluate(side, b);
+            return evaluateCaptures(b, side, alpha, beta); //Finishes evaluating until all captures resolved
+            //return evaluate(side, b);
         int max = -1000000;
-        List<Ply> plies = new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies);
+        List<Ply> plies = orderMoves(new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies));
         if (plies.Count == 0) {
             Debug.LogWarning("AHHH " + MagicBitboards.PrintBitBoard(b.Pieces));            
             return -100000;
@@ -344,62 +343,61 @@ public class AI
     }
     public int evaluateCaptures(Board b, Side side, int alpha, int beta)
     {
-       
-        
-            int eval = evaluate(side, b);
+            int eval = evaluate(side, b); //eval is stand_pat
+        int best_val = eval;
             if (eval >= beta)
             {
                 return beta;
             }
-            List<Ply> plies = new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies).Where(ply => ply.Captured != Piece.None).ToList();
-        //for (int i = plies.Count - 1; i >= 0; i--)
-        //{
-        //    if (plies[i].Captured == Piece.None)
-        //    {
-        //        plies.RemoveAt(i);
-        //    }
-        //}
-        int newEval = eval;
-        if (plies.Count == 0)
+            if (alpha < eval)
+        {
+            alpha = eval;
+        }
+            List<Ply> plies = orderMoves(new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies).Where(ply => ply.Captured != Piece.None).ToList());
+ 
+            int newEval = eval;
+            if (plies.Count == 0)
+                {
+                    return eval;
+                }
+            foreach (Ply ply in plies)
             {
-                return eval;
+                Board newB = b;
+                Ply newPly = ply;
+                if (ply.Type == Piece.WPawn && ply.End.y == 7)
+                    newPly.PromoteType = Piece.WQueen;
+                if (ply.Type == Piece.BPawn && ply.End.y == 0)
+                    newPly.PromoteType = Piece.BQueen;
+                newB.BlackHelper.PinBoards = new List<ulong>(newB.BlackHelper.PinBoards);
+                newB.WhiteHelper.PinBoards = new List<ulong>(newB.WhiteHelper.PinBoards);
+                newB.boards = (ulong[])newB.boards.Clone();
+                newB.PlayPly(newPly);
+                newEval = -evaluateCaptures(newB, side == Side.White ? Side.Black : Side.White, -beta, -alpha);
+                if (newEval >= beta)
+                {
+                    return newEval;
+                }
+                if (newEval > best_val)
+                {
+                    best_val = newEval;
+                }
+                if (newEval > alpha)
+                {
+                    alpha = newEval;
+                }
             }
-        foreach (Ply ply in plies)
-        {
-            Board newB = b;
-            Ply newPly = ply;
-            if (ply.Type == Piece.WPawn && ply.End.y == 7)
-                newPly.PromoteType = Piece.WQueen;
-            if (ply.Type == Piece.BPawn && ply.End.y == 0)
-                newPly.PromoteType = Piece.BQueen;
-            newB.BlackHelper.PinBoards = new List<ulong>(newB.BlackHelper.PinBoards);
-            newB.WhiteHelper.PinBoards = new List<ulong>(newB.WhiteHelper.PinBoards);
-            newB.boards = (ulong[])newB.boards.Clone();
-            newB.PlayPly(newPly);
-            newEval = -evaluateCaptures(newB, side == Side.White ? Side.Black : Side.White, -beta, -alpha);
-        }
-        eval = Math.Max(eval, newEval);
-        if (eval >= beta)
-        {
-            return eval;
-        }
-        alpha = Math.Max(alpha, eval);
-            
-    return alpha;
+        return best_val;
      }
 
     public List<Ply> orderMoves(List<Ply> plies)
     {
-        List<Ply> result = new List<Ply>();
-        foreach (Ply ply in plies)
+        plies.Sort((ply1, ply2) =>
         {
-            int value = 0;
-            if(ply.Captured != Piece.None)
-            {
-                value = GetPieceScore(ply.Captured) - GetPieceScore(ply.Type);
-            }
-        }
-        return result;
+            int value1 = (ply1.Captured != Piece.None) ? GetPieceScore(ply1.Captured) - GetPieceScore(ply1.Type) : 0;
+            int value2 = (ply2.Captured != Piece.None) ? GetPieceScore(ply2.Captured) - GetPieceScore(ply2.Type) : 0;
+            return value2.CompareTo(value1); // Sort in descending order
+        });
+        return plies;
     }
 }
 
