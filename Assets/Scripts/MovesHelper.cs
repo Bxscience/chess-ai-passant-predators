@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Net.Mail;
 using UnityEngine;
 
 // This is per-side
@@ -71,6 +72,7 @@ public struct MovesHelper {
             case Piece.WRook:
                 KingAttackBoard |= 1ul << attackingPos;
                 CheckAttackBoard |= FindRookCheckAttack(attackingPos, kingPos, allPieces);
+                Debug.Log(MagicBitboards.PrintBitBoard(CheckAttackBoard));
 
                 NumCheckers++;
                 break;
@@ -182,7 +184,7 @@ public struct MovesHelper {
             ) {
                 removeCastleFromKing |= 1ul<<2;
             }
-            return moveBoard & ~enemyAttacking & ~removeCastleFromKing;
+            return moveBoard & ~enemyAttacking & ~removeCastleFromKing & ~(CheckAttackBoard&~KingAttackBoard);
         } 
         if(NumCheckers > 1) {
             // More than two pieces checking the king means that only the king can move out of check
