@@ -380,21 +380,70 @@ public struct Board
     public void UndoPly(Ply ply) {
         // the start coordinate, as an offset, starting from A1
         // If Start.y is 7, that should correlate with the 8th rank.   
-        int start_idx = ply.Start.x + 8*(7-ply.Start.y); 
-        int end_idx = ply.End.x + 8*(7-ply.End.y); 
-        
-        // This sets the end pos to 0
-        boards[(int)ply.Type] = ~(~boards[(int)ply.Type] | 1ul<<end_idx);
-        // This sets the start pos to 1
-        boards[(int)ply.Type] = boards[(int)ply.Type] | 1ul<<start_idx;
-        
-        if(ply.Captured != Piece.None) {
-            if(end_idx == passantTrack) {
-                boards[(int)ply.Captured] = boards[(int)ply.Captured] | (1ul<<passantCaptured);
-            } else {
-                boards[(int)ply.Captured] = boards[(int)ply.Captured] | 1ul<<end_idx;
+        int start_idx = ply.Start.x + 8 * (7 - ply.Start.y);
+        int end_idx = ply.End.x + 8 * (7 - ply.End.y);
+        boards[(int)ply.Type] &= ~(1ul << end_idx);
+        // Set the start position
+        boards[(int)ply.Type] |= 1ul << start_idx;
+
+        // Handle captured pieces
+        if (ply.Captured != Piece.None)
+        {
+            if ((ply.Type == Piece.WPawn && ((ply.End - ply.Start) == new Vector2Int(0, 2))) | (ply.Type == Piece.BPawn && ((ply.End - ply.Start) == new Vector2Int(0, -2))))
+            {
+                // Handle en passant capture: restore the captured pawn to its original position
+                boards[(int)ply.Captured] |= 1ul << passantCaptured;
+                passantTrack = 0;
+                passantCaptured = 0;
+            }
+            else
+            {
+                boards[(int)ply.Captured] |= 1ul << end_idx; //restore captured piece to position
             }
         }
+        // Handle castling
+        if ((ply.Type == Piece.WKing || ply.Type == Piece.BKing) & Math.Abs(ply.End.x - ply.Start.x)>=2)
+        {
+            // Determine the rook's start and end positions
+            int rookStartIdx, rookEndIdx;
+            if (ply.End.x > ply.Start.x)
+            { // Kingside castling
+                rookStartIdx = 7 + 8 * (7 - ply.Start.y); // H file
+                rookEndIdx = 5 + 8 * (7 - ply.Start.y); // F file
+                if (ply.Side == Side.White)
+                {
+                    castleTracker |= (int)CastleTrack.wKing;
+                }
+                else
+                {
+                    castleTracker |= (int)CastleTrack.bKing;
+                }
+            }
+            else
+            { // Queenside castling
+                rookStartIdx = 0 + 8 * (7 - ply.Start.y); // A file
+                rookEndIdx = 3 + 8 * (7 - ply.Start.y); // D file
+                if (ply.Side == Side.White)
+                {
+                    castleTracker |= (int)CastleTrack.wQueen;
+                }
+                else
+                {
+                    castleTracker |= (int)CastleTrack.bQueen;
+                }
+            }
+
+            // Move the rook back to its original position
+            boards[(int)(ply.Side == Side.White ? Piece.WRook : Piece.BRook)] &= ~(1ul << rookEndIdx); // Clear the rook's end position
+            boards[(int)(ply.Side == Side.White ? Piece.WRook : Piece.BRook)] |= 1ul << rookStartIdx; // Set the rook's start position
+        }
+        if (ply.PromoteType != null)
+        {
+            // Revert the promoted pawn back to a pawn
+            boards[(int)ply.PromoteType] &= ~(1ul << end_idx); // Clear the promoted piece
+            boards[(int)ply.Type] |= 1ul << end_idx; // Set the pawn back
+        }
+
         SetupMoves();
     }
     

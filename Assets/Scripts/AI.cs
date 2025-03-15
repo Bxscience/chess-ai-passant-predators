@@ -272,24 +272,26 @@ public class AI
             return -100000;
         }
         foreach(Ply ply in plies) {
-            Board newB = b;
-            Ply newPly = ply;
-            if(ply.Type == Piece.WPawn && ply.End.y == 7)
-                newPly.PromoteType = Piece.WQueen;
-            if(ply.Type == Piece.BPawn && ply.End.y == 0)
-                newPly.PromoteType = Piece.BQueen;
-            newB.BlackHelper.PinBoards = new List<ulong>(newB.BlackHelper.PinBoards);
-            newB.WhiteHelper.PinBoards = new List<ulong>(newB.WhiteHelper.PinBoards);
-            newB.boards = (ulong[])newB.boards.Clone();
-            newB.PlayPly(newPly);
-            int score = -NegaMax(side == Side.White ? Side.Black : Side.White, depth-1, newB, -beta, -alpha, maxdepth, false);
+            //Board newB = b;
+            //Ply newPly = ply;
+            //if(ply.Type == Piece.WPawn && ply.End.y == 7)
+            //    newPly.PromoteType = Piece.WQueen;
+            //if(ply.Type == Piece.BPawn && ply.End.y == 0)
+            //    newPly.PromoteType = Piece.BQueen;
+            //newB.BlackHelper.PinBoards = new List<ulong>(newB.BlackHelper.PinBoards);
+            //newB.WhiteHelper.PinBoards = new List<ulong>(newB.WhiteHelper.PinBoards);
+            //newB.boards = (ulong[])newB.boards.Clone();
+            //newB.PlayPly(newPly);
+            b.PlayPly(ply);
+            int score = -NegaMax(side == Side.White ? Side.Black : Side.White, depth-1, b , -beta, -alpha, maxdepth, false); //b -> newB
             if (score > max) { 
                 if (canSet) {
-                    bestPly = newPly;
+                    bestPly = ply; //ply -> newPly
                 }
                 max = score;
                 alpha = Mathf.Max(alpha, score);
             }
+            b.UndoPly(ply);
         if (score >= beta) {
             break;
         }
@@ -343,6 +345,7 @@ public class AI
     public int evaluateCaptures(Board b, Side side, int alpha, int beta)
     {
             int eval = evaluate(side, b); //eval is stand_pat
+        return eval;
         int best_val = eval;
             if (eval >= beta)
             {
