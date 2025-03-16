@@ -344,7 +344,7 @@ public class AI
     public int evaluateCaptures(Board b, Side side, int alpha, int beta)
     {
             int eval = evaluate(side, b); //eval is stand_pat
-        return eval;
+      
         int best_val = eval;
             if (eval >= beta)
             {
