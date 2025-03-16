@@ -268,7 +268,6 @@ public class AI
         int max = -1000000;
         List<Ply> plies = orderMoves(new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies));
         if (plies.Count == 0) {
-            Debug.LogWarning("AHHH " + MagicBitboards.PrintBitBoard(b.Pieces));            
             return -100000;
         }
         foreach(Ply ply in plies) {
