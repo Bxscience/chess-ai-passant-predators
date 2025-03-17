@@ -91,11 +91,12 @@ public struct MovesHelper {
         ulong ray = 0;
         // If not equal, then it should be different rows?
         int increment = ((kingPos / 8 != attackingPos / 8) ? 8 : 1) * Math.Sign(kingPos - attackingPos);
-        ulong allPiecesNoKing = allPieces & ~(1ul<<kingPos) & ~(1ul<<attackingPos);
+        ulong allPiecesNoAttacker = allPieces & ~(1ul<<attackingPos);
         // Stop when you hit a piece or the edge
-        for (int i = attackingPos; (allPiecesNoKing & (1ul<<i)) == 0 && i%8 >= 0 && i%8 <= 7 && i/8 >= 0 && i/8<=7; i += increment) {
+        for (int i = attackingPos; (allPiecesNoAttacker & (1ul<<i)) == 0 && i%8 >= 0 && i%8 <= 7 && i/8 >= 0 && i/8<=7; i += increment) {
             ray |= 1ul << i;
         }
+        ray |= 1ul << kingPos;
         return ray;
     }
 
@@ -112,9 +113,10 @@ public struct MovesHelper {
             // Assuming king is above us
             increment = -((kingPos % 8 > attackingPos % 8) ? 7 : 9);
 
-        ulong allPiecesNoKing = allPieces & ~(1ul<<kingPos) & ~(1ul<<attackingPos);
-        for (int i = attackingPos; (allPiecesNoKing & (1ul<<i)) == 0 && i%8 >= 0 && i%8 <= 7 && i/8 >= 0 && i/8<=7; i += increment)
+        ulong allPiecesNoAttacker = allPieces & ~(1ul<<attackingPos);
+        for (int i = attackingPos; (allPiecesNoAttacker & (1ul<<i)) == 0 && i%8 >= 0 && i%8 <= 7 && i/8 >= 0 && i/8<=7; i += increment)
             ray |= 1ul << i;
+        ray |= 1ul << kingPos;
         return ray;
     }
 
