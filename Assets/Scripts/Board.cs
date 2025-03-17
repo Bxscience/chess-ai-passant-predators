@@ -333,8 +333,11 @@ public struct Board
                             newPly.Captured = (Piece)j;
                             break;
                         }
-                    if(newPly.Type == Piece.WPawn && ((1ul<<pos)&rank8)>0)
+                    if(newPly.Type == Piece.WPawn && ((1ul<<movePos)&rank8)>0) {
                         newPly.PromoteType = Piece.WQueen;
+                        WhiteHelper.Plies.Add(newPly);
+                        newPly.PromoteType = Piece.WKnight;
+                    }
                     WhiteHelper.Plies.Add(newPly);
                     moveBoard &= ~(1ul << movePos);
                 }
@@ -356,8 +359,11 @@ public struct Board
                             break;
                         }
                     }
-                    if(newPly.Type == Piece.BPawn && ((1ul<<pos)&rank1)>0)
+                    if(newPly.Type == Piece.BPawn && ((1ul<<movePos)&rank1)>0) {
                         newPly.PromoteType = Piece.BQueen;
+                        BlackHelper.Plies.Add(newPly);
+                        newPly.PromoteType = Piece.BKnight;
+                    }
                     BlackHelper.Plies.Add(newPly);
                     moveBoard &= ~(1ul << movePos);
                 }
@@ -447,7 +453,7 @@ public struct Board
         {
             // Revert the promoted pawn back to a pawn
             boards[(int)ply.PromoteType] &= ~(1ul << end_idx); // Clear the promoted piece
-            boards[(int)ply.Type] |= 1ul << end_idx; // Set the pawn back
+            boards[(int)ply.Type] |= 1ul << start_idx; // Set the pawn back
         }
 
         SetupMoves();

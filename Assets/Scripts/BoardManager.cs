@@ -7,7 +7,7 @@ public class BoardManager : MonoBehaviour
 {
     public Board board;
     bool isWhiteTurn = true;
-    bool isWhiteAI = false;
+    bool isWhiteAI = true;
     bool isBlackAI = true;
     bool isCheckMate = false;
     bool isStaleMate = false;
@@ -36,7 +36,7 @@ public class BoardManager : MonoBehaviour
     {
         instance = this;
         MagicBitboards.GenerateMagicNumbers();
-        string fen = "kq6/8/4b3/8/8/P7/K7/R7 w - - 0 1";
+        string fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
         board = new Board(fen);
         if(fen.Split(" ")[1][0] == 'w')
             isWhiteTurn = true;
@@ -136,6 +136,7 @@ public class BoardManager : MonoBehaviour
     
     // Plays the ply on the game objects
     private void VisualizeMove(Ply newPly, ChessPiece selected = null, ChessPiece pressed = null) {
+        Debug.Log("Move: " + newPly.ToString());
         if(selected == null) selected = FindPiece(newPly.Type, newPly.Start);
         if(pressed == null) pressed = FindPiece(newPly.Captured, newPly.End);
 
@@ -233,7 +234,7 @@ public class BoardManager : MonoBehaviour
                 fakeboard[i] |= 1ul<<sq;
             }
             if(fakeboard[i] != board.boards[i]) {
-                Debug.LogWarning(MagicBitboards.PrintBitBoard(board.boards[i]));
+                Debug.LogWarning((Piece)i + " " + MagicBitboards.PrintBitBoard(board.boards[i]));
                 Debug.LogWarning(MagicBitboards.PrintBitBoard(fakeboard[i]));
                 return false;
             }

@@ -272,11 +272,6 @@ public class AI
         }
         foreach(Ply ply in plies) {
             //Board newB = b;
-            //Ply newPly = ply;
-            //if(ply.Type == Piece.WPawn && ply.End.y == 7)
-            //    newPly.PromoteType = Piece.WQueen;
-            //if(ply.Type == Piece.BPawn && ply.End.y == 0)
-            //    newPly.PromoteType = Piece.BQueen;
             //newB.BlackHelper.PinBoards = new List<ulong>(newB.BlackHelper.PinBoards);
             //newB.WhiteHelper.PinBoards = new List<ulong>(newB.WhiteHelper.PinBoards);
             //newB.boards = (ulong[])newB.boards.Clone();
@@ -291,9 +286,9 @@ public class AI
                 alpha = Mathf.Max(alpha, score);
             }
             b.UndoPly(ply);
-        if (score >= beta) {
-            break;
-        }
+            if (score >= beta) {
+                break;
+            }
         }
         return max;
     }
