@@ -456,7 +456,7 @@ public struct Board
             boards[(int)ply.Type] |= 1ul << start_idx; // Set the pawn back
         }
 
-        SetupMoves();
+        //SetupMoves();
     }
     
     // Filters the paralegal moves into legal moves by accounting for checks and pins
