@@ -455,8 +455,6 @@ public struct Board
             boards[(int)ply.PromoteType] &= ~(1ul << end_idx); // Clear the promoted piece
             boards[(int)ply.Type] |= 1ul << start_idx; // Set the pawn back
         }
-
-        //SetupMoves();
     }
     
     // Filters the paralegal moves into legal moves by accounting for checks and pins
