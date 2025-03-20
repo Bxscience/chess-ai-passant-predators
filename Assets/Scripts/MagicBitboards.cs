@@ -56,7 +56,7 @@ public static class MagicBitboards {
     }
     
     public static bool FillTable(ref Magics magic, int pos, bool isRook = true) {
-        ulong test_magic = RandU64()&RandU64()&RandU64();
+        ulong test_magic = ZobristMap.RandomU64()&ZobristMap.RandomU64()&ZobristMap.RandomU64();
 
         Dictionary<ulong, ulong> testBoard = new Dictionary<ulong, ulong>();
         ulong mask = magic.movementMask;
@@ -122,16 +122,6 @@ public static class MagicBitboards {
             if((mask&(1ul<<i)) > 0) b++;
         }
         return b;
-    }
-    
-    public static ulong RandU64() {
-        System.Random random = new System.Random();
-        // byte[] bytes = new byte[8];
-        // random.NextBytes(bytes);
-        // return BitConverter.ToUInt64(bytes);
-        uint a = (uint)random.Next();
-        uint b = (uint)random.Next();
-        return (((ulong)a)<<32)|((ulong)b);
     }
     
     public static ulong FindMovesRook(int pos, ulong allPieces) {
