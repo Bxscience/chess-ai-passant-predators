@@ -375,6 +375,7 @@ public class AI
             if (score > max) { 
                 if (canSet) {
                     bestPly = ply; //ply -> newPly
+                    tTable.AddTransposition(b.boards, b.castleTracker, b.passantTrack, side == Side.White, score, alpha, beta);
                 }
                 max = score;
                 alpha = Mathf.Max(alpha, score);
