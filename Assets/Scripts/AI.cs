@@ -11,6 +11,7 @@ using System.Drawing;
 public class AI
 {
     Ply? bestPly;
+    ZobristMap tTable;
 
     // Start is called before the first frame update
      static public int[] mg_knight_table = {
@@ -374,6 +375,7 @@ public class AI
             if (score > max) { 
                 if (canSet) {
                     bestPly = ply; //ply -> newPly
+                    tTable.AddTransposition(b.boards, b.castleTracker, b.passantTrack, side == Side.White, score, alpha, beta);
                 }
                 max = score;
                 alpha = Mathf.Max(alpha, score);

@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 
 public class ZobristMap {
@@ -55,11 +56,40 @@ public class ZobristMap {
     /* -------------------End------------------- */
 
     /* -------------------Begin Non Static Transposition tables------------------- */
+    public ZobristData[] TranspositionTable;
+
+    public ZobristMap(int mb) {
+        TranspositionTable = new ZobristData[mb*1024*1024/Marshal.SizeOf<ZobristData>()];
+        for(int i = 0; i < TranspositionTable.Length; i++) {
+            TranspositionTable[i] = new ZobristData();
+            TranspositionTable[i].Init = false;
+        }
+    }
     
+    public ZobristData this[ulong key] {
+        get => TranspositionTable[key%(ulong)TranspositionTable.Length];
+    }
+
+    public bool hasKey(ulong zKey) {
+        return this[zKey].Init;
+    }
+
+    public void AddTransposition(ulong[] boards, sbyte castleRights, sbyte enPassantSq, bool isWhite, Ply bestMove, int eval, int alpha, int beta) {
+        ulong zKey = ZobristMap.getZKey(boards, castleRights, enPassantSq, isWhite);
+        if(!hasKey(zKey)) TranspositionTable[zKey%(ulong)TranspositionTable.Length] = new ZobristData(bestMove, eval, alpha, beta, true);
+    }
 }
 
 public struct ZobristData {
     public Ply BestMove;
     public int Eval;
-    public int alpha, beta;
+    public int Alpha, Beta;
+    public bool Init;
+    public ZobristData(Ply bestMove, int eval, int alpha, int beta, bool init) {
+        BestMove = bestMove;
+        Eval = eval;
+        Alpha = alpha;
+        Beta = beta;
+        Init = init;
+    }
 }
