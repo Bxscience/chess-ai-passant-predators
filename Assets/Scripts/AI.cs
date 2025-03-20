@@ -11,6 +11,7 @@ using System.Drawing;
 public class AI
 {
     Ply? bestPly;
+    ZobristMap tTable;
 
     // Start is called before the first frame update
      static public int[] mg_knight_table = {
