@@ -8,7 +8,7 @@ public class BoardManager : MonoBehaviour
     public Board board;
     bool isWhiteTurn = true;
     bool isWhiteAI = false;
-    bool isBlackAI = true;
+    bool isBlackAI = false;
     bool isCheckMate = false;
     bool isStaleMate = false;
     bool isGrabbing;
@@ -198,6 +198,10 @@ public class BoardManager : MonoBehaviour
             // Debug.Log(MagicBitBoards.PrintBitBoard(board.boards     ))
         }
         isWhiteTurn = !isWhiteTurn;
+        if (board.isThreefold())
+        {
+            isStaleMate = true;
+        }
     }
     
     public ChessPiece FindPiece(Piece type, Vector2Int idx) {

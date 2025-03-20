@@ -1,5 +1,7 @@
 using System;
 using UnityEngine;
+using System.Collections.Generic;
+using System.Drawing;
 
 public enum Piece {
     WPawn = 0, WBishop = 1, WKnight = 2, WRook = 3, WQueen = 4, WKing = 5,
@@ -28,6 +30,7 @@ public struct Board
     public sbyte passantTrack;
     public sbyte passantCaptured;
     public sbyte castleTracker;
+    public List<ulong> threefoldplies;
 
 
     public const ulong fileA = 0x0101010101010101;
@@ -74,7 +77,7 @@ public struct Board
     public Board(string fen) {
         WhiteHelper = new MovesHelper(Side.White);
         BlackHelper = new MovesHelper(Side.Black);
-
+        threefoldplies = new List<ulong>();
         allWhiteMovesPsuedolegal = 0;
         allBlackMovesPsuedolegal = 0;
         // castleTracker = 0b1111;
@@ -217,10 +220,29 @@ public struct Board
         else if(ply.Type == Piece.BPawn && ( (1ul<<end_idx) & rank1) != 0) {
             Promote(1ul<<end_idx, Side.Black, (Piece)ply.PromoteType);
         }
-        //Debug.Log(ply.Side + ": " + ai.evaluate(ply.Side, this));
+        
         SetupMoves();
+        ulong zMap = ZobristMap.getZKey(boards, castleTracker, passantTrack, ply.Side == Side.White);
+        if (ply.isIrreversible()) {
+            threefoldplies.Clear();
+        }
+        threefoldplies.Add(zMap);
     }
-    
+    public bool isThreefold()
+    {
+        int count;
+        for (int i = threefoldplies.Count - 1; i >=0; i -= 2)
+        {
+            ulong target = threefoldplies[i]; 
+            count = threefoldplies.FindAll(x => x.Equals(target)).Count;
+            if (count >= 3)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     // This function uses all pieces paralegal moves to determine checks, pins, etc.
     // Then we precompute all legal moves for the AI and for checkmate/stalemate
     public void SetupMoves() {
@@ -507,7 +529,8 @@ public struct Board
         } & ~sameSide;
     }
 
-    private ulong GetMoveParalegalForChecks(int square, Piece type, Side side) {
+    private ulong GetMoveParalegalForChecks(int square, Piece type, Side side)
+    {
         // if idx.y == 7, then its in the first few bits, because we start fropm A8
         ulong pos = 1ul << square;
         return type switch
@@ -516,17 +539,16 @@ public struct Board
             Piece.WPawn or Piece.BPawn => PawnMovesParalegalForCheck(pos, side),
             Piece.WKnight or Piece.BKnight => KnightMovesParalegal(pos, side),
             Piece.WKing or Piece.BKing => KingImmediateMoves(pos, side),
-            
+
             // Sliding (not yet implemented)
             Piece.WBishop or Piece.BBishop => BishopMovesParalegal(square, side),
             Piece.WRook or Piece.BRook => RookMovesParalegal(square, side),
             Piece.WQueen or Piece.BQueen => QueenMovesParalegal(square, side),
-            
+
             // Can't move nothing
             _ => 0ul,
         };
     }
-
     public ulong KnightMovesParalegal(ulong pos, Side side) { 
         // Explained well in the ameye.dev link Ms. Qiu gave us
         // We are just bitshifting to the correct position
