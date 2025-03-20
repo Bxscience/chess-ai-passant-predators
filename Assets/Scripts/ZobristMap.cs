@@ -2,9 +2,11 @@ using System;
 using System.Security.Cryptography;
 
 public class ZobristMap {
+    /* -------------------All the static data stuff related to Zobrist keys------------------- */
     static ulong[,] zArr = new ulong[12,64];
     static ulong[] zEnPassant = new ulong[8];
     static ulong[] zCastleRights = new ulong[4];
+    static ulong isBlackTurn = 0;
 
     public static ulong RandomU64() {
         Span<byte> data = stackalloc byte[8];
@@ -24,9 +26,10 @@ public class ZobristMap {
         }
         for(int i = 0; i < 8; i++) zEnPassant[i] = RandomU64();
         for(int i = 0; i < 4; i++) zCastleRights[i] = RandomU64();
+        isBlackTurn = RandomU64();
     }
     
-    public static ulong getZKey(ulong[] boards, sbyte castleRights, sbyte enPassantSq) {
+    public static ulong getZKey(ulong[] boards, sbyte castleRights, sbyte enPassantSq, bool isWhite) {
         ulong retZKey = 0;
         
         for(int i = 0; i < boards.Length; i++) {
@@ -44,9 +47,15 @@ public class ZobristMap {
         if((castleRights & 0b0100) > 0) retZKey ^= zCastleRights[2];
         if((castleRights & 0b1000) > 0) retZKey ^= zCastleRights[3];
         if(enPassantSq > 0) retZKey ^= zEnPassant[enPassantSq%8];
+        
+        if(!isWhite) retZKey ^= isBlackTurn;
 
         return retZKey;
     }
+    /* -------------------End------------------- */
+
+    /* -------------------Begin Non Static Transposition tables------------------- */
+    
 }
 
 public struct ZobristData {
