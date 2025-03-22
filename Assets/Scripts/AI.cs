@@ -356,6 +356,7 @@ public class AI
     // That means that this is equivalent to minimax
     // Board b is pass by value (well technically everything is but I mean that Board b is not a pointer), so the values other than the lists/arrays get copied.
     public int NegaMax(Side side, int depth, Board b, int alpha, int beta , bool canSet = true) {
+        int originalAlpha = alpha;
         ulong zKey = ZobristMap.GetZKey(b.boards, b.castleTracker, b.passantTrack, side == Side.White);
         if (tTable.ProbeTable(zKey, depth, alpha, beta, out int eval, out Ply? prevBestPly) && !canSet) {
             // Will either be a good score, or get pruned
@@ -376,13 +377,8 @@ public class AI
             return -100000;
         }
         Ply localBestPly = new();
-        int ttType = ZobristMap.TUPPER;
+
         foreach(Ply ply in plies) {
-            //Board newB = b;
-            //newB.BlackHelper.PinBoards = new List<ulong>(newB.BlackHelper.PinBoards);
-            //newB.WhiteHelper.PinBoards = new List<ulong>(newB.WhiteHelper.PinBoards);
-            //newB.boards = (ulong[])newB.boards.Clone();
-            //newB.PlayPly(newPly);
             b.PlayPly(ply);
             int score = -NegaMax(side == Side.White ? Side.Black : Side.White, depth-1, b , -beta, -alpha, false); //b -> newB
             if (score > max) { 
@@ -392,18 +388,20 @@ public class AI
                 localBestPly = ply;
                 max = score;
                 
-                // alpha = Mathf.Max(alpha, score);
                 if(score > alpha) {
                     alpha = score;
-                    ttType = ZobristMap.TEXACT;
                 }
             }
             b.UndoPly(ply);
             if (score >= beta) {
-                ttType = ZobristMap.TLOWER;
                 break;
             }
         }
+
+        int ttType;
+        if (max <= originalAlpha) ttType = ZobristMap.TUPPER;
+        else if(max >= beta) ttType = ZobristMap.TLOWER;
+        else ttType = ZobristMap.TEXACT;
         tTable.AddTransposition(b.boards, b.castleTracker, b.passantTrack, side == Side.White, localBestPly, max, depth, ttType);
         return max;
     }
