@@ -222,7 +222,7 @@ public struct Board
         }
         
         SetupMoves();
-        ulong zMap = ZobristMap.getZKey(boards, castleTracker, passantTrack, ply.Side == Side.White);
+        ulong zMap = ZobristMap.GetZKey(boards, castleTracker, passantTrack, ply.Side == Side.White);
         if (ply.isIrreversible()) {
             threefoldplies.Clear();
         }
