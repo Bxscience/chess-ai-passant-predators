@@ -358,7 +358,7 @@ public class AI
         ulong zKey = ZobristMap.GetZKey(b.boards, b.castleTracker, b.passantTrack, side == Side.White);
         if (tTable.ProbeTable(zKey, depth, alpha, beta, out int eval, out Ply? prevBestPly) && !canSet) {
             // Will either be a good score, or get pruned
-            return eval;
+            // return eval;
         }
 
         if (depth == 0)
@@ -371,6 +371,7 @@ public class AI
             plies = orderMoves(new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies), (Ply)prevBestPly);
         } else plies = orderMoves(new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies));
         // plies = orderMoves(new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies));
+        // plies = new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies);
 
         if (plies.Count == 0) {
             return -100000;
