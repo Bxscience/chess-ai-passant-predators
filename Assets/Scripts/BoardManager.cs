@@ -7,8 +7,8 @@ public class BoardManager : MonoBehaviour
 {
     public Board board;
     bool isWhiteTurn = true;
-    bool isWhiteAI = false;
-    bool isBlackAI = false;
+    bool isWhiteAI = true;
+    bool isBlackAI = true;
     bool isCheckMate = false;
     bool isStaleMate = false;
     bool isGrabbing;
