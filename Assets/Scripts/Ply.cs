@@ -19,7 +19,8 @@ public struct Ply
 
     public bool isIrreversible()
     {
-        if (this.Type == Piece.WPawn || this.Type == Piece.BPawn || this.PromoteType != Piece.None || ((this.Type == Piece.WKing || this.Type == Piece.BKing) && Mathf.Abs(this.Start.x - this.End.x) > 1))
+        if (this.Type == Piece.WPawn || this.Type == Piece.BPawn || this.PromoteType != null || ((this.Type == Piece.WKing || this.Type == Piece.BKing) && Mathf.Abs(this.Start.x - this.End.x) > 1))
+            
         {
             return true;
         }

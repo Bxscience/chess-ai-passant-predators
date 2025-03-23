@@ -202,6 +202,7 @@ public class BoardManager : MonoBehaviour
         isWhiteTurn = !isWhiteTurn;
         if (board.isThreefold)
         {
+            Debug.Log("THREEFOLD");
             isStaleMate = true;
         }
     }
