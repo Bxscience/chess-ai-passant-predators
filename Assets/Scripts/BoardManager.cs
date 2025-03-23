@@ -197,7 +197,7 @@ public class BoardManager : MonoBehaviour
         if(!Help()) {
             // Debug.Log(MagicBitBoards.PrintBitBoard(board.boards     ))
         }
-        
+        isWhiteTurn = !isWhiteTurn;
         if (board.isThreefold)
         {
             isStaleMate = true;
