@@ -126,7 +126,7 @@ public struct Board
     
     // Play any given ply.
     // Sets stuff in the bitboards, and handles en passants and castles
-    public void PlayPly(Ply ply) {
+    public void PlayPly(Ply ply, bool isAI = false) {
         // the start coordinate, as an offset, starting from A1
         // If Start.y is 7, that should correlate with the 8th rank.   
         int start_idx = ply.Start.x + 8*(7-ply.Start.y); 
@@ -224,8 +224,8 @@ public struct Board
         }
         
         SetupMoves();
+        if(!isAI) return;
         ulong zMap = ZobristMap.GetZKey(boards, castleTracker, passantTrack, ply.Side == Side.White);
-        // Debug.Log(zMap);
         if (ply.isIrreversible()) {
             threefoldplies.Clear();
             isThreefold = false;

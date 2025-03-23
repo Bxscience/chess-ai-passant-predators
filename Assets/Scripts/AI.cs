@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using System.Runtime.InteropServices;
 
 public class AI
 {
@@ -10,7 +9,6 @@ public class AI
     ZobristMap tTable;
     
     public AI() {
-        ZobristMap.FillZorbistKeys();
         tTable = new ZobristMap(6);
         // Debug.Log(Marshal.SizeOf<TTEntry>()*tTable.TranspositionTable.Length/1024/1024 + "mb");
     }
@@ -357,7 +355,6 @@ public class AI
     // That means that this is equivalent to minimax
     // Board b is pass by value (well technically everything is but I mean that Board b is not a pointer), so the values other than the lists/arrays get copied.
     public int NegaMax(Side side, int depth, Board b, int alpha, int beta , bool canSet = true) {
-        int originalAlpha = alpha;
         ulong zKey = ZobristMap.GetZKey(b.boards, b.castleTracker, b.passantTrack, side == Side.White);
         if (tTable.ProbeTable(zKey, depth, alpha, beta, out int eval, out Ply? prevBestPly) && !canSet) {
             // Will either be a good score, or get pruned
@@ -370,25 +367,26 @@ public class AI
         
         // Move order based on if the TTable has a best move for this tree already, given the depth was too low to use
         List<Ply> plies;
-        // if(prevBestPly != null) {
-        //     plies = orderMoves(new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies), (Ply)prevBestPly);
-        // } else plies = orderMoves(new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies));
-        plies = orderMoves(new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies));
+        if(prevBestPly != null) {
+            plies = orderMoves(new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies), (Ply)prevBestPly);
+        } else plies = orderMoves(new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies));
+        // plies = orderMoves(new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies));
 
         if (plies.Count == 0) {
             return -100000;
         }
-        Ply localBestPly = new();
 
+        Ply ttPly = new();
         int ttType = ZobristMap.TUPPER;
+
         foreach(Ply ply in plies) {
-            b.PlayPly(ply);
+            b.PlayPly(ply, true);
             int score = -NegaMax(side == Side.White ? Side.Black : Side.White, depth-1, b , -beta, -alpha, false); //b -> newB
             if (score > max) { 
                 if (canSet) {
                     bestPly = ply; //ply -> newPly
                 }
-                localBestPly = ply;
+                ttPly = ply;
                 max = score;
                 
                 if(score > alpha) {
@@ -403,7 +401,7 @@ public class AI
             }
         }
 
-        tTable.AddTransposition(zKey, localBestPly, max, depth, ttType);
+        tTable.AddTransposition(zKey, ttPly, max, depth, ttType);
         return max;
     }
     public int forceKingToCornerEval(Board board, Side side, int endGameWeight)
