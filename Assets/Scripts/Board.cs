@@ -225,10 +225,7 @@ public struct Board
         
         SetupMoves();
         ulong zMap = ZobristMap.GetZKey(boards, castleTracker, passantTrack, ply.Side == Side.White);
-<<<<<<< HEAD
-=======
-        // Debug.Log(zMap);
->>>>>>> 930bf49046b7cf531c29468fb8b060baaa9a6189
+
         if (ply.isIrreversible()) {
             threefoldplies.Clear();
             isThreefold = false;
