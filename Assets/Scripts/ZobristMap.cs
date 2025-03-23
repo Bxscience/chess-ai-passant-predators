@@ -89,7 +89,7 @@ public class ZobristMap {
                         score = entry.Eval;
                         return true;
                     case TUPPER:
-                        if(entry.Eval > alpha) {
+                        if(entry.Eval <= alpha) {
                             score = alpha;
                             return true;
                         }

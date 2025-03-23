@@ -360,6 +360,7 @@ public class AI
         ulong zKey = ZobristMap.GetZKey(b.boards, b.castleTracker, b.passantTrack, side == Side.White);
         if (tTable.ProbeTable(zKey, depth, alpha, beta, out int eval, out Ply? prevBestPly) && !canSet) {
             // Will either be a good score, or get pruned
+            Debug.Log($"Probed at depth={depth} with flag {tTable[zKey].Type}");
             return eval;
         }
 
@@ -369,15 +370,17 @@ public class AI
         
         // Move order based on if the TTable has a best move for this tree already, given the depth was too low to use
         List<Ply> plies;
-        if(prevBestPly != null) {
-            plies = orderMoves(new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies), (Ply)prevBestPly);
-        } else plies = orderMoves(new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies));
+        // if(prevBestPly != null) {
+        //     plies = orderMoves(new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies), (Ply)prevBestPly);
+        // } else plies = orderMoves(new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies));
+        plies = orderMoves(new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies));
 
         if (plies.Count == 0) {
             return -100000;
         }
         Ply localBestPly = new();
 
+        int ttType = ZobristMap.TUPPER;
         foreach(Ply ply in plies) {
             b.PlayPly(ply);
             int score = -NegaMax(side == Side.White ? Side.Black : Side.White, depth-1, b , -beta, -alpha, false); //b -> newB
@@ -390,18 +393,17 @@ public class AI
                 
                 if(score > alpha) {
                     alpha = score;
+                    ttType = ZobristMap.TEXACT;
                 }
             }
             b.UndoPly(ply);
             if (score >= beta) {
+                localBestPly = ply;
+                ttType = ZobristMap.TLOWER;
                 break;
             }
         }
 
-        int ttType;
-        if (max <= originalAlpha) ttType = ZobristMap.TUPPER;
-        else if(max >= beta) ttType = ZobristMap.TLOWER;
-        else ttType = ZobristMap.TEXACT;
         tTable.AddTransposition(b.boards, b.castleTracker, b.passantTrack, side == Side.White, localBestPly, max, depth, ttType);
         return max;
     }
