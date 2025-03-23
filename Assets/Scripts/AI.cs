@@ -10,6 +10,7 @@ public class AI
     ZobristMap tTable;
     
     public AI() {
+        ZobristMap.FillZorbistKeys();
         tTable = new ZobristMap(6);
         // Debug.Log(Marshal.SizeOf<TTEntry>()*tTable.TranspositionTable.Length/1024/1024 + "mb");
     }
@@ -360,7 +361,6 @@ public class AI
         ulong zKey = ZobristMap.GetZKey(b.boards, b.castleTracker, b.passantTrack, side == Side.White);
         if (tTable.ProbeTable(zKey, depth, alpha, beta, out int eval, out Ply? prevBestPly) && !canSet) {
             // Will either be a good score, or get pruned
-            Debug.Log($"Probed at depth={depth} with flag {tTable[zKey].Type}");
             return eval;
         }
 
@@ -404,7 +404,7 @@ public class AI
             }
         }
 
-        tTable.AddTransposition(b.boards, b.castleTracker, b.passantTrack, side == Side.White, localBestPly, max, depth, ttType);
+        tTable.AddTransposition(zKey, localBestPly, max, depth, ttType);
         return max;
     }
     public int forceKingToCornerEval(Board board, Side side, int endGameWeight)

@@ -67,20 +67,24 @@ public class ZobristMap {
         get => TranspositionTable[key%(ulong)TranspositionTable.Length];
     }
 
-    public bool hasKey(ulong zKey) {
+    public bool HasKey(ulong zKey) {
         return this[zKey].Type != 0;
     }
 
     public void AddTransposition(ulong[] boards, sbyte castleRights, sbyte enPassantSq, bool isWhite, Ply bestMove, int eval, int depth, int tType) {
         ulong zKey = GetZKey(boards, castleRights, enPassantSq, isWhite);
-        if(!hasKey(zKey) || this[zKey].ZKey != zKey) TranspositionTable[zKey%(ulong)TranspositionTable.Length] = new TTEntry(bestMove, eval, zKey, depth, tType);
+        if(!HasKey(zKey) || this[zKey].ZKey != zKey) TranspositionTable[zKey%(ulong)TranspositionTable.Length] = new TTEntry(bestMove, eval, zKey, depth, tType);
+    }
+
+    public void AddTransposition(ulong zKey, Ply bestMove, int eval, int depth, int tType) {
+        if(!HasKey(zKey) || this[zKey].ZKey != zKey) TranspositionTable[zKey%(ulong)TranspositionTable.Length] = new TTEntry(bestMove, eval, zKey, depth, tType);
     }
     
     // Returns true if the depth of the entry is greater than the current depth in search. Therefore we can use the evaluated score, or prune the branch
     // Otherwise, the bestPly is still probably the ply we should check first, improving our move ordering
     public bool ProbeTable(ulong zKey, int depth, int alpha, int beta, out int score, out Ply? bestPly) {
         bestPly = null;
-        if(hasKey(zKey)) {
+        if(HasKey(zKey)) {
             TTEntry entry = this[zKey];
             bestPly = entry.BestMove;
             if(entry.Depth >= depth) {
