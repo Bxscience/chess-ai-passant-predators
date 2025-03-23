@@ -30,7 +30,8 @@ public struct Board
     public sbyte passantTrack;
     public sbyte passantCaptured;
     public sbyte castleTracker;
-    public List<ulong> threefoldplies;
+    public Dictionary<ulong, int> threefoldplies;
+    public bool isThreefold;
 
 
     public const ulong fileA = 0x0101010101010101;
@@ -75,9 +76,10 @@ public struct Board
     };
 
     public Board(string fen) {
+        isThreefold = false;
         WhiteHelper = new MovesHelper(Side.White);
         BlackHelper = new MovesHelper(Side.Black);
-        threefoldplies = new List<ulong>();
+        threefoldplies = new Dictionary<ulong, int>();
         allWhiteMovesPsuedolegal = 0;
         allBlackMovesPsuedolegal = 0;
         // castleTracker = 0b1111;
@@ -225,24 +227,22 @@ public struct Board
         ulong zMap = ZobristMap.GetZKey(boards, castleTracker, passantTrack, ply.Side == Side.White);
         if (ply.isIrreversible()) {
             threefoldplies.Clear();
+            isThreefold = false;
         }
-        threefoldplies.Add(zMap);
-    }
-    public bool isThreefold()
-    {
-        int count;
-        for (int i = threefoldplies.Count - 1; i >=0; i -= 2)
+        if (threefoldplies.ContainsKey(zMap))
         {
-            ulong target = threefoldplies[i]; 
-            count = threefoldplies.FindAll(x => x.Equals(target)).Count;
-            if (count >= 3)
+            threefoldplies[zMap]++;
+            if (threefoldplies[zMap] >= 3)
             {
-                return true;
+                isThreefold = true;
             }
         }
-        return false;
+        else
+        {
+            threefoldplies.Add(zMap, 1);
+        }
     }
-
+    
     // This function uses all pieces paralegal moves to determine checks, pins, etc.
     // Then we precompute all legal moves for the AI and for checkmate/stalemate
     public void SetupMoves() {
