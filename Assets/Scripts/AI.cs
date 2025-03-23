@@ -398,7 +398,6 @@ public class AI
             }
             b.UndoPly(ply);
             if (score >= beta) {
-                localBestPly = ply;
                 ttType = ZobristMap.TLOWER;
                 break;
             }
