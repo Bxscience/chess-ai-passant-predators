@@ -371,10 +371,10 @@ public class AI
         
         // Move order based on if the TTable has a best move for this tree already, given the depth was too low to use
         List<Ply> plies;
-        // if(prevBestPly != null) {
-        //     plies = orderMoves(new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies), (Ply)prevBestPly);
-        // } else plies = orderMoves(new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies));
-        plies = orderMoves(new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies));
+        if(prevBestPly != null) {
+            plies = orderMoves(new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies), (Ply)prevBestPly);
+        } else plies = orderMoves(new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies));
+        // plies = orderMoves(new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies));
         // plies = new List<Ply>((side == Side.White) ? b.WhiteHelper.Plies : b.BlackHelper.Plies);
 
         if (plies.Count == 0) {
