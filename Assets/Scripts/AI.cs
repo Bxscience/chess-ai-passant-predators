@@ -7,6 +7,9 @@ using UnityEngine;
 public class AI
 {
     Ply? bestPly;
+
+    private int difficultyDepth = 3; // Default depth for medium difficulty
+
     ZobristMap tTable;
     
     public AI() {
@@ -354,7 +357,7 @@ public class AI
         int endgamescore = (11840 - materialCount(BoardManager.instance.board))/100;
         float endgamefloat = endgamescore / 118;
         endgamefloat *= endgamefloat * endgamefloat;
-        NegaMax(side, (int)(5*(1-endgamefloat) + 9*endgamefloat), BoardManager.instance.board, -10000, 10000);
+        NegaMax(side, (int)(difficultyDepth*(1-endgamefloat) + (difficultyDepth+4)*endgamefloat), BoardManager.instance.board, -10000, 10000);
         BoardManager.instance.board.SetupMoves();
 
         watch.Stop();
@@ -534,6 +537,25 @@ public class AI
             return value2.CompareTo(value1); // Sort in descending order
         });
         return plies;
+    }
+    public void SetDifficulty(string difficulty)
+    {
+        switch (difficulty.ToLower())
+        {
+            case "easy":
+                difficultyDepth = 2; // Lower depth for easier AI
+                break;
+            case "medium":
+                difficultyDepth = 3; // Default depth
+                break;
+            case "hard":
+                difficultyDepth = 5; // Higher depth for harder AI
+                break;
+            default:
+                Debug.LogWarning("Invalid difficulty level. Setting to medium.");
+                difficultyDepth = 3;
+                break;
+        }
     }
 }
 

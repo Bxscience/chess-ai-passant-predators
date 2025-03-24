@@ -6,9 +6,9 @@ using UnityEngine;
 public class BoardManager : MonoBehaviour
 {
     public Board board;
-    bool isWhiteTurn = true;
-    bool isWhiteAI = true;
-    bool isBlackAI = true;
+    public bool isWhiteTurn = true;
+    public bool isWhiteAI = false;
+    public bool isBlackAI = false;
     bool isCheckMate = false;
     bool isStaleMate = false;
     bool isGrabbing;
@@ -272,4 +272,11 @@ public class BoardManager : MonoBehaviour
         isWhiteTurn = !isWhiteTurn;
         isPromoting = false;
     }
+
+    public void resign(Side resigningSide)
+{
+    string winner = resigningSide == Side.White ? "Black" : "White";
+    Debug.Log($"{resigningSide} resigns. {winner} wins!");
+    isCheckMate = true; 
+}
 }
