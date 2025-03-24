@@ -24,7 +24,6 @@ public class ChessPiece : MonoBehaviour
     };
     
     public void Promote(Piece promoteType) {
-        type = promoteType;
         meshFilter.mesh = promoteType switch {
             Piece.WKnight => WKnightMesh,
             Piece.BKnight => BKnightMesh,
@@ -38,6 +37,7 @@ public class ChessPiece : MonoBehaviour
         };
         SpawnPieces.instance.pieces[(int)type].Remove(this);
         SpawnPieces.instance.pieces[(int)promoteType].Add(this);
+        type = promoteType;
     }
     // public PieceConfig pieceConfig => new PieceConfig(idx, type);
 }

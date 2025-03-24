@@ -142,7 +142,7 @@ public struct Board
             if(end_idx == passantTrack) {
                 boards[(int)ply.Captured] = boards[(int)ply.Captured] & ~(1ul<<passantCaptured);
             } else {
-                boards[(int)ply.Captured] = ~(~boards[(int)ply.Captured] | 1ul<<end_idx);
+                boards[(int)ply.Captured] = boards[(int)ply.Captured] & ~(1ul<<end_idx);
             }
         }
 
