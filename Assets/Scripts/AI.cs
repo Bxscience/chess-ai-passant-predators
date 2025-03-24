@@ -341,7 +341,10 @@ public class AI
         
         // the code that you want to measure comes here
         bestPly = null;
-        NegaMax(side, 4, BoardManager.instance.board, -10000, 10000);
+        int endgamescore = (11840 - materialCount(BoardManager.instance.board))/100;
+        float endgamefloat = endgamescore / 118;
+        endgamefloat *= endgamefloat * endgamefloat;
+        NegaMax(side, (int)(5*(1-endgamefloat) + 9*endgamefloat), BoardManager.instance.board, -10000, 10000);
         BoardManager.instance.board.SetupMoves();
 
         watch.Stop();
@@ -359,7 +362,7 @@ public class AI
         ulong zKey = ZobristMap.GetZKey(b.boards, b.castleTracker, b.passantTrack, side == Side.White);
         if (tTable.ProbeTable(zKey, depth, alpha, beta, out int eval, out Ply? prevBestPly) && !canSet) {
             // Will either be a good score, or get pruned
-            // return eval;
+            return eval;
         }
 
         if (depth == 0)
