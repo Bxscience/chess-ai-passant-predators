@@ -180,134 +180,134 @@ public class AI
         //ulong whiteDefended = board.allWhiteMovesPsuedolegal & board.WhitePieces;
         //ulong blackDefended = board.allBlackMovesPsuedolegal & board.BlackPieces;
         //ideally i want o have all fully legal moves but for now I am gonna do paralegal bc idk how exactly
-       
+
         int score = 0;
         int wscore = 0;
         int bscore = 0;
-        int endgamescore = (11840 - materialCount(board))/100;
+        int endgamescore = (11840 - materialCount(board)) / 100;
         float endgamefloat = endgamescore / 118;
         endgamefloat *= endgamefloat;
         //Debug.Log("EndScore: " + endgamescore);
-            for (int i = 0; i <= (int)Piece.WKing; i++) //pawns, bishop, knight, rook, q, k
+        for (int i = 0; i <= (int)Piece.WKing; i++) //pawns, bishop, knight, rook, q, k
+        {
+            ulong curboard = boards[i];
+            while (curboard > 0)
             {
-                ulong curboard = boards[i];
-                while (curboard > 0) 
-                {
-                    int pos = Board.GetLSBIndex(curboard);
-                    ulong posbit = 1ul << pos;
-                   
-                    if (i == (int)Piece.WBishop)
-                    {
-                        wscore += bishop;
-                        wscore += (int)( mg_bishop_table[pos]*(1-endgamefloat) + (endgamefloat)*eg_bishop_table[pos]);
-                        if (countPieces(curboard) == 2)
-                        {
-                            wscore += 25;
-                        }
-                        
-                    }
-                    else if (i == (int)Piece.WKnight)
-                    {
-                        wscore += knight;
-                        wscore += (int)(mg_knight_table[pos] * (1 - endgamefloat) + (endgamefloat) * eg_knight_table[pos]);
-                    }
-                    else if (i == (int)Piece.WRook)
-                    {
-                        wscore += rook;
-                        wscore += (int)(mg_rook_table[pos] * (1 - endgamefloat) + (endgamefloat) * eg_rook_table[pos]);
-                    }
-                    else if(i == (int)Piece.WQueen)
-                    {
-                        wscore += queen;
-                        wscore += (int)(mg_queen_table[pos] * (1 - endgamefloat) + (endgamefloat) * eg_queen_table[pos]);
-                }
-                    else if(i == (int)Piece.WPawn)
-                    {
+                int pos = Board.GetLSBIndex(curboard);
+                ulong posbit = 1ul << pos;
 
-                        wscore += pawn;
-                        wscore += (int)(mg_pawn_table[pos] * (1 - endgamefloat) + (endgamefloat) * eg_pawn_table[pos]);
-                    if ((posbit <<7 & boards[0]) != 0 || (posbit<<9 & boards[0]) != 0) //if pawn is connected
-                        {  
-                            wscore += 25;
-                        }
-                        if ((posbit << 8 & boards[0]) != 0) //basic punishment for doubled pawns
-                        {
-                            wscore -= 50;
-                        }
-                    }
-                    else if (i == (int)Piece.WKing)
-                    {
-                        wscore += king;
-                        wscore += (int)(mg_king_table[pos] * (1 - endgamefloat) + (endgamefloat) * eg_king_table[pos]);
-                }
-                
-                curboard &= ~(1ul << pos);
-                }
-            }
-        
-        
-            for (int i = 6; i <= (int)Piece.BKing; i++) //pawns, bishop, knight, rook, q, k
-            {
-                ulong curboard = boards[i];
-                while (curboard > 0)
+                if (i == (int)Piece.WBishop)
                 {
-                    int pos = Board.GetLSBIndex(curboard);
-                    ulong posbit = 1ul << pos;
+                    wscore += bishop;
+                    wscore += (int)(mg_bishop_table[pos] * (1 - endgamefloat) + (endgamefloat) * eg_bishop_table[pos]);
+                    if (countPieces(curboard) == 2)
+                    {
+                        wscore += 25;
+                    }
+
+                }
+                else if (i == (int)Piece.WKnight)
+                {
+                    wscore += knight;
+                    wscore += (int)(mg_knight_table[pos] * (1 - endgamefloat) + (endgamefloat) * eg_knight_table[pos]);
+                }
+                else if (i == (int)Piece.WRook)
+                {
+                    wscore += rook;
+                    wscore += (int)(mg_rook_table[pos] * (1 - endgamefloat) + (endgamefloat) * eg_rook_table[pos]);
+                }
+                else if (i == (int)Piece.WQueen)
+                {
+                    wscore += queen;
+                    wscore += (int)(mg_queen_table[pos] * (1 - endgamefloat) + (endgamefloat) * eg_queen_table[pos]);
+                }
+                else if (i == (int)Piece.WPawn)
+                {
+
+                    wscore += pawn;
+                    wscore += (int)(mg_pawn_table[pos] * (1 - endgamefloat) + (endgamefloat) * eg_pawn_table[pos]);
+                    if ((posbit << 7 & boards[0]) != 0 || (posbit << 9 & boards[0]) != 0) //if pawn is connected
+                    {
+                        wscore += 25;
+                    }
+                    if ((posbit << 8 & boards[0]) != 0) //basic punishment for doubled pawns
+                    {
+                        wscore -= 50;
+                    }
+                }
+                else if (i == (int)Piece.WKing)
+                {
+                    wscore += king;
+                    wscore += (int)(mg_king_table[pos] * (1 - endgamefloat) + (endgamefloat) * eg_king_table[pos]);
+                }
+
+                curboard &= ~(1ul << pos);
+            }
+        }
+
+
+        for (int i = 6; i <= (int)Piece.BKing; i++) //pawns, bishop, knight, rook, q, k
+        {
+            ulong curboard = boards[i];
+            while (curboard > 0)
+            {
+                int pos = Board.GetLSBIndex(curboard);
+                ulong posbit = 1ul << pos;
 
                 int blackpos = 56 - pos + (pos % 8);
-                    if (i == (int)Piece.BBishop)
-                    {
-                        bscore += bishop;
-                        bscore += (int)(mg_bishop_table[blackpos] * (1 - endgamefloat) + (endgamefloat) * eg_bishop_table[blackpos]);
+                if (i == (int)Piece.BBishop)
+                {
+                    bscore += bishop;
+                    bscore += (int)(mg_bishop_table[blackpos] * (1 - endgamefloat) + (endgamefloat) * eg_bishop_table[blackpos]);
                     if (countPieces(curboard) == 2)
-                        {
-                            bscore += 25;
-                        }
-
-                    }
-                    else if (i == (int)Piece.BKnight)
                     {
-                        bscore += knight;
-                        bscore += (int)(mg_knight_table[blackpos] * (1 - endgamefloat) + (endgamefloat) * eg_knight_table[blackpos]);
+                        bscore += 25;
+                    }
+
+                }
+                else if (i == (int)Piece.BKnight)
+                {
+                    bscore += knight;
+                    bscore += (int)(mg_knight_table[blackpos] * (1 - endgamefloat) + (endgamefloat) * eg_knight_table[blackpos]);
 
                 }
                 else if (i == (int)Piece.BRook)
-                    {
-                        bscore += rook;
-                        bscore += (int)(mg_rook_table[blackpos] * (1 - endgamefloat) + (endgamefloat) * eg_rook_table[blackpos]);
+                {
+                    bscore += rook;
+                    bscore += (int)(mg_rook_table[blackpos] * (1 - endgamefloat) + (endgamefloat) * eg_rook_table[blackpos]);
 
                 }
                 else if (i == (int)Piece.BQueen)
-                    {
-                        bscore += queen;
-                        bscore += (int)(mg_queen_table[blackpos] * (1 - endgamefloat) + (endgamefloat) * eg_queen_table[blackpos]);
+                {
+                    bscore += queen;
+                    bscore += (int)(mg_queen_table[blackpos] * (1 - endgamefloat) + (endgamefloat) * eg_queen_table[blackpos]);
 
                 }
                 else if (i == (int)Piece.BPawn)
-                    {
+                {
 
-                        bscore += pawn;
-                        bscore += (int)(mg_pawn_table[blackpos] * (1 - endgamefloat) + (endgamefloat) * eg_pawn_table[blackpos]);
+                    bscore += pawn;
+                    bscore += (int)(mg_pawn_table[blackpos] * (1 - endgamefloat) + (endgamefloat) * eg_pawn_table[blackpos]);
 
                     if ((posbit >> 7 & boards[6]) != 0 || (posbit >> 9 & boards[6]) != 0) //if pawn is connected
-                        {
-                            bscore += 25;
-                        }
-                       if ((posbit >> 8 & boards[6]) != 0) //basic punishment for doubled pawns
-                        {
-                        bscore -= 50;
-                        }
-                  
-                    }
-                    else if (i == (int)Piece.BKing)
                     {
-                        bscore += king;
-                        bscore += (int)(mg_king_table[blackpos] * (1 - endgamefloat) + (endgamefloat) * eg_king_table[blackpos]);
+                        bscore += 25;
+                    }
+                    if ((posbit >> 8 & boards[6]) != 0) //basic punishment for doubled pawns
+                    {
+                        bscore -= 50;
+                    }
+
+                }
+                else if (i == (int)Piece.BKing)
+                {
+                    bscore += king;
+                    bscore += (int)(mg_king_table[blackpos] * (1 - endgamefloat) + (endgamefloat) * eg_king_table[blackpos]);
 
                 }
                 curboard &= ~(1ul << pos);
-                }
             }
+        }
         if (side == Side.White)
         {
             score = wscore - bscore;
@@ -316,11 +316,11 @@ public class AI
         {
             score = bscore - wscore;
         }
-        if(endgamescore > 50)
+        if (endgamescore > 50)
         {
             score += forceKingToCornerEval(board, side, endgamescore);
         }
-            
+
 
         return score;
     }
