@@ -307,7 +307,7 @@ public class AI
                     ulong pawnFile = Board.fileA << (pos%8);
                     ulong fileMask = pawnFile | Math.Max(0, Board.fileA<<((pos-1)%8)) | Math.Min(7, Board.fileA<<((pos+1)%8)); 
                     ulong finalMask = ~(ulong.MaxValue << (8* (pos/8))) & fileMask;
-                    if((board.boards[(int)Piece.BPawn] & finalMask) > 0) wscore += 10;
+                    if((board.boards[(int)Piece.WPawn] & finalMask) > 0) wscore += 10;
                 }
                 else if (i == (int)Piece.BKing)
                 {
