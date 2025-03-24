@@ -8,7 +8,7 @@ public class BoardManager : MonoBehaviour
     public Board board;
     public bool isWhiteTurn = true;
     public bool isWhiteAI = false;
-    public bool isBlackAI = false;
+    public bool isBlackAI = true;
     bool isCheckMate = false;
     bool isStaleMate = false;
     bool isGrabbing;
@@ -47,6 +47,7 @@ public class BoardManager : MonoBehaviour
 
     void Update()
     {
+        isBlackAI = true;
         if (isPromoting)
         {
             HandlePromotionInput();
