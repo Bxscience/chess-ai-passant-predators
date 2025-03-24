@@ -310,7 +310,7 @@ public struct Board
 
                 // Check check for wking
                 if ((moveBoard & boards[(int)Piece.WKing]) != 0)
-                    WhiteHelper.AddCheckAttack((Piece)i, pos, GetLSBIndex(boards[(int)Piece.WKing]), Pieces);
+                    WhiteHelper.AddCheckAttack((Piece)i, pos, wKingPos, Pieces);
                 // Check pins for wpieces
                 if( i == (int)Piece.BBishop || i == (int)Piece.BQueen ) {
                     if(Math.Abs(pos/8-wKingPos/8) == Math.Abs(pos%8-wKingPos%8)) {

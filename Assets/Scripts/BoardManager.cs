@@ -7,7 +7,7 @@ public class BoardManager : MonoBehaviour
 {
     public Board board;
     bool isWhiteTurn = true;
-    bool isWhiteAI = true;
+    bool isWhiteAI = false;
     bool isBlackAI = true;
     bool isCheckMate = false;
     bool isStaleMate = false;
@@ -38,7 +38,7 @@ public class BoardManager : MonoBehaviour
         instance = this;
         MagicBitboards.GenerateMagicNumbers();
         ZobristMap.FillZorbistKeys();
-        string fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+        string fen = "3p4/2P5/8/8/8/8/512/K312k w - - 0 1";
         board = new Board(fen);
         if(fen.Split(" ")[1][0] == 'w')
             isWhiteTurn = true;
@@ -85,13 +85,14 @@ public class BoardManager : MonoBehaviour
         if(isWhiteTurn) {
             if(isWhiteAI)
                 VisualizeMove((Ply)whiteAI.GetPly(Side.White));
-            else
+            else {
                 PlayerPly();
-
+            }
         }
         else {
-            if(isBlackAI)
+            if(isBlackAI) {
                 VisualizeMove((Ply)blackAI.GetPly(Side.Black));
+            }
             else
                 PlayerPly();
         }
