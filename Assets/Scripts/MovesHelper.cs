@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Net.Mail;
 using UnityEngine;
 
 // This is per-side
@@ -15,6 +14,7 @@ public struct MovesHelper {
     // Otherwise we are in check
     public ulong CheckAttackBoard;
     public ulong KingAttackBoard;
+    public ulong KingFleeBoard;
     public sbyte NumCheckers;
 
     public MovesHelper(Side _side) {
@@ -22,8 +22,9 @@ public struct MovesHelper {
         NumCheckers = 0;
         PinBoards = new List<ulong>(8);
         Pinned = 0ul;
-        KingAttackBoard = 0;
-        CheckAttackBoard = 0;
+        KingAttackBoard = 0ul;
+        CheckAttackBoard = 0ul;
+        KingFleeBoard = 0ul;
         // LegalMoves = new ulong[64];
         // this.side = side;
     }
@@ -63,23 +64,31 @@ public struct MovesHelper {
             // This doesn't account for pinned pieces, which is where Pinned comes into play.
             case Piece.BBishop:
             case Piece.WBishop:
-                CheckAttackBoard |= FindBishopCheckAttack(attackingPos, kingPos, allPieces);
+                KingFleeBoard |= FindBishopCheckAttack(attackingPos, kingPos, allPieces);
+                CheckAttackBoard |= FindBishopPinRay(attackingPos, kingPos) | (1ul<<kingPos);
                 KingAttackBoard |= 1ul << attackingPos;
 
                 NumCheckers++;
                 break;
             case Piece.BRook:
             case Piece.WRook:
+                KingFleeBoard |= FindRookCheckAttack(attackingPos, kingPos, allPieces);
+                CheckAttackBoard |= FindRookPinRay(attackingPos, kingPos) | (1ul<<kingPos);
                 KingAttackBoard |= 1ul << attackingPos;
-                CheckAttackBoard |= FindRookCheckAttack(attackingPos, kingPos, allPieces);
 
                 NumCheckers++;
                 break;
             case Piece.BQueen:
             case Piece.WQueen:
                 KingAttackBoard |= 1ul << attackingPos;
-                if ((kingPos % 8 == attackingPos % 8) || (kingPos / 8 == attackingPos / 8)) CheckAttackBoard |= FindRookCheckAttack(attackingPos, kingPos, allPieces);
-                else CheckAttackBoard |= FindBishopCheckAttack(attackingPos, kingPos, allPieces);
+                if ((kingPos % 8 == attackingPos % 8) || (kingPos / 8 == attackingPos / 8)) {
+                    KingFleeBoard |= FindRookCheckAttack(attackingPos, kingPos, allPieces);
+                    CheckAttackBoard |= FindRookPinRay(attackingPos, kingPos) | (1ul<<kingPos);
+                }
+                else {
+                    KingFleeBoard |= FindBishopCheckAttack(attackingPos, kingPos, allPieces);
+                    CheckAttackBoard |= FindBishopPinRay(attackingPos, kingPos) | (1ul<<kingPos);
+                }
 
                 NumCheckers++;
                 break;
@@ -91,7 +100,7 @@ public struct MovesHelper {
         ulong ray = 0;
         // If not equal, then it should be different rows?
         int increment = ((kingPos / 8 != attackingPos / 8) ? 8 : 1) * Math.Sign(kingPos - attackingPos);
-        ulong allPiecesNoAttacker = allPieces & ~(1ul<<attackingPos);
+        ulong allPiecesNoAttacker = allPieces & ~(1ul<<attackingPos) & ~(1ul<<kingPos);
         // Stop when you hit a piece or the edge
         for (int i = attackingPos; (allPiecesNoAttacker & (1ul<<i)) == 0 && i%8 >= 0 && i%8 <= 7 && i/8 >= 0 && i/8<=7; i += increment) {
             ray |= 1ul << i;
@@ -113,7 +122,7 @@ public struct MovesHelper {
             // Assuming king is above us
             increment = -((kingPos % 8 > attackingPos % 8) ? 7 : 9);
 
-        ulong allPiecesNoAttacker = allPieces & ~(1ul<<attackingPos);
+        ulong allPiecesNoAttacker = allPieces & ~(1ul<<attackingPos) & ~(1ul<<kingPos);
         for (int i = attackingPos; (allPiecesNoAttacker & (1ul<<i)) == 0 && i%8 >= 0 && i%8 <= 7 && i/8 >= 0 && i/8<=7; i += increment)
             ray |= 1ul << i;
         ray |= 1ul << kingPos;
@@ -185,7 +194,7 @@ public struct MovesHelper {
             ) {
                 removeCastleFromKing |= 1ul<<2;
             }
-            return moveBoard & ~enemyAttacking & ~removeCastleFromKing & ~(CheckAttackBoard&~KingAttackBoard);
+            return moveBoard & ~enemyAttacking & ~removeCastleFromKing & ~(KingFleeBoard&~KingAttackBoard);
         } 
         if(NumCheckers > 1) {
             // More than two pieces checking the king means that only the king can move out of check
@@ -196,7 +205,7 @@ public struct MovesHelper {
             // The king moved off of the checkers board
             // Rn I'm just doing moving off the CheckAttackBoard
             // This might not run
-            return moveBoard & ~CheckAttackBoard;
+            return moveBoard & ~KingFleeBoard;
         }
 
         if( CheckAttackBoard == 0 ) {
