@@ -18,8 +18,8 @@ public class BoardManager : MonoBehaviour
     Stack<ChessPiece> taken = new Stack<ChessPiece>();
     Stack<ChessPiece> moved = new Stack<ChessPiece>();
 
-    AI blackAI = new AI();
-    AI whiteAI = new AI();
+    public AI blackAI = new AI();
+    public AI whiteAI = new AI();
     
     public static BoardManager instance;
     public event Action<Ply> PlayedPly;

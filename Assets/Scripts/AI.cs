@@ -538,7 +538,7 @@ public class AI
         });
         return plies;
     }
-    public void SetDifficulty(string difficulty)
+    public void setDifficulty(string difficulty)
     {
         switch (difficulty.ToLower())
         {
