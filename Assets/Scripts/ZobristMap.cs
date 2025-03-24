@@ -77,7 +77,7 @@ public class ZobristMap {
     }
 
     public void AddTransposition(ulong zKey, Ply bestMove, int eval, int depth, int tType) {
-        if(!HasKey(zKey) || this[zKey].ZKey != zKey) TranspositionTable[zKey%(ulong)TranspositionTable.Length] = new TTEntry(bestMove, eval, zKey, depth, tType);
+        if(!HasKey(zKey)) TranspositionTable[zKey%(ulong)TranspositionTable.Length] = new TTEntry(bestMove, eval, zKey, depth, tType);
     }
     
     // Returns true if the depth of the entry is greater than the current depth in search. Therefore we can use the evaluated score, or prune the branch
