@@ -35,6 +35,7 @@ public struct MovesHelper {
         Plies.Clear();
         Pinned = 0ul;
         CheckAttackBoard = 0ul;
+        KingFleeBoard = 0ul;
     }
 
     public void AddCheckAttack(Piece typeAttacking, int attackingPos, int kingPos, ulong allPieces) {
@@ -205,7 +206,7 @@ public struct MovesHelper {
             // The king moved off of the checkers board
             // Rn I'm just doing moving off the CheckAttackBoard
             // This might not run
-            return moveBoard & ~KingFleeBoard;
+            return moveBoard & ~(KingFleeBoard&~KingAttackBoard);
         }
 
         if( CheckAttackBoard == 0 ) {
