@@ -48,7 +48,7 @@ public class BoardManager : MonoBehaviour
     void Update()
     {
         isBlackAI = true;
-        // isWhiteAI = true;
+        isWhiteAI = true;
         if (isPromoting)
         {
             HandlePromotionInput();
@@ -61,6 +61,7 @@ public class BoardManager : MonoBehaviour
 
         if(board.WhiteHelper.Plies.Count==0) {
             if(board.WhiteHelper.CheckAttackBoard>0) {
+                Debug.Log(MagicBitboards.PrintBitBoard(board.WhiteHelper.CheckAttackBoard));
                 Debug.Log("White loses to checkmate");
                 isCheckMate = true;
             } else {
@@ -71,6 +72,7 @@ public class BoardManager : MonoBehaviour
         }
         if(board.BlackHelper.Plies.Count==0) {
             if(board.BlackHelper.CheckAttackBoard>0) {
+                Debug.Log(MagicBitboards.PrintBitBoard(board.BlackHelper.CheckAttackBoard));
                 Debug.Log("Black loses to checkmate");
                 isCheckMate = true;
             } else {
