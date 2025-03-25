@@ -62,6 +62,8 @@ public class BoardManager : MonoBehaviour
         if(board.WhiteHelper.Plies.Count==0) {
             if(board.WhiteHelper.CheckAttackBoard>0) {
                 Debug.Log(MagicBitboards.PrintBitBoard(board.WhiteHelper.CheckAttackBoard));
+                Debug.Log(MagicBitboards.PrintBitBoard(board.WhiteHelper.KingFleeBoard));
+                Debug.Log(MagicBitboards.PrintBitBoard(board.WhiteHelper.KingAttackBoard));
                 Debug.Log("White loses to checkmate");
                 isCheckMate = true;
             } else {
@@ -73,6 +75,8 @@ public class BoardManager : MonoBehaviour
         if(board.BlackHelper.Plies.Count==0) {
             if(board.BlackHelper.CheckAttackBoard>0) {
                 Debug.Log(MagicBitboards.PrintBitBoard(board.BlackHelper.CheckAttackBoard));
+                Debug.Log(MagicBitboards.PrintBitBoard(board.BlackHelper.KingFleeBoard));
+                Debug.Log(MagicBitboards.PrintBitBoard(board.BlackHelper.KingAttackBoard));
                 Debug.Log("Black loses to checkmate");
                 isCheckMate = true;
             } else {
