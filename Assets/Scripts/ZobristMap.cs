@@ -82,7 +82,7 @@ public class ZobristMap {
         if(!HasKey(zKey)) { 
             TranspositionTable[zKey%(ulong)TranspositionTable.Length] = new TTEntry(bestMove, eval, zKey, depth, tType);
         }
-        if(HasKey(zKey) && this[zKey].ZKey != zKey && this[zKey].Depth <= depth) {
+        else if(this[zKey].ZKey != zKey && this[zKey].Depth <= depth) {
             TranspositionTable[zKey%(ulong)TranspositionTable.Length] = new TTEntry(bestMove, eval, zKey, depth, tType);
         }
     }
