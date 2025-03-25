@@ -122,20 +122,26 @@ public struct MovesHelper {
 
     public ulong FindBishopCheckAttack(int attackingPos, int kingPos, ulong allPieces) {
         ulong ray = 0;
-        int increment = 0;
+        int increment;
         // If king is under attackingPos
-        if (kingPos > attackingPos)
+        if (kingPos > attackingPos) {
             // If kingPos is further right of attackingPos, then shift 9
             // Assuming king is under us
             increment = (kingPos % 8 > attackingPos % 8) ? 9 : 7;
-        else
+        } else {
             // If kingPos is further right of attackingPos, then shift 7
             // Assuming king is above us
             increment = -((kingPos % 8 > attackingPos % 8) ? 7 : 9);
+        }
 
         ulong allPiecesNoAttacker = allPieces & ~(1ul<<attackingPos) & ~(1ul<<kingPos);
-        for (int i = attackingPos; (allPiecesNoAttacker & (1ul<<i)) == 0 && i%8 >= 0 && i%8 <= 7 && i/8 >= 0 && i/8<=7; i += increment)
-            ray |= 1ul << i;
+        // Further to the right
+        if(kingPos%8 > attackingPos%8)
+            for (int i = attackingPos; (allPiecesNoAttacker & (1ul<<i)) == 0 && i%8 <= 7 && i%8 >= attackingPos%8 && i/8<=7; i += increment)
+                ray |= 1ul << i;
+        else // Further left
+            for (int i = attackingPos; (allPiecesNoAttacker & (1ul<<i)) == 0 && i%8 >= 0 && i%8 <= attackingPos%8 && i/8 >= 0; i += increment)
+                ray |= 1ul << i;
         ray |= 1ul << kingPos;
         return ray;
     }

@@ -533,8 +533,11 @@ public class AI
             int value1 = (ply1.Captured != Piece.None) ? GetPieceScore(ply1.Captured) - GetPieceScore(ply1.Type) : 0;
             int value2 = (ply2.Captured != Piece.None) ? GetPieceScore(ply2.Captured) - GetPieceScore(ply2.Type) : 0;
             //Move order by the best previous move;
-            if(ply1.Start == bestMove.Start && ply1.End == bestMove.End) value1 = 1000;
-            if(ply2.Start == bestMove.Start && ply2.End == bestMove.End) value2 = 1000;
+            if(ply1.Start == bestMove.Start && ply1.End == bestMove.End) value1 += 1000;
+            if(ply2.Start == bestMove.Start && ply2.End == bestMove.End) value2 += 1000;
+            // Also by promotions
+            if(ply1.PromoteType != null) value1 += 100;
+            if(ply2.PromoteType != null) value2 += 100;
             return value2.CompareTo(value1); // Sort in descending order
         });
         return plies;
