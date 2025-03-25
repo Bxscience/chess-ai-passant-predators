@@ -48,6 +48,7 @@ public class BoardManager : MonoBehaviour
     void Update()
     {
         isBlackAI = true;
+        // isWhiteAI = true;
         if (isPromoting)
         {
             HandlePromotionInput();
