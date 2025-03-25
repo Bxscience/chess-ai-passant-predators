@@ -354,8 +354,8 @@ public class AI
         bestPly = null;
         int endgamescore = (11840 - materialCount(BoardManager.instance.board))/100;
         float endgamefloat = endgamescore / 118;
-        endgamefloat *= endgamefloat * endgamefloat;
-        NegaMax(side, (int)(difficultyDepth*(1-endgamefloat) + (difficultyDepth+4)*endgamefloat), BoardManager.instance.board, -10000, 10000);
+        endgamefloat *= endgamefloat * endgamefloat * endgamefloat;
+        NegaMax(side, (int)(difficultyDepth*(1-endgamefloat) + (difficultyDepth+6)*endgamefloat), BoardManager.instance.board, -10000, 10000);
         BoardManager.instance.board.SetupMoves();
 
         watch.Stop();
