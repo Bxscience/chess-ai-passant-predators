@@ -7,7 +7,7 @@ public class AI
 {
     Ply? bestPly;
 
-    private int difficultyDepth = 3; // Default depth for medium difficulty
+    private int difficultyDepth = 4;// Default depth for medium difficulty
 
     ZobristMap tTable;
     public AI() {
@@ -404,11 +404,11 @@ public class AI
             {
                 if (score < 0)
                 {
-                    score += 100;
+                    score+= (int)(score*0.5f);
                 }
                 else
                 {
-                    score -= 1000;
+                    score -= (int)(score * 0.5f); 
                 }
             }
             if (score > max) { 
