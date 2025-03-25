@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
+using UnityEngine;
 
 public class ZobristMap {
     /* -------------------All the static data stuff related to Zobrist keys------------------- */
@@ -59,8 +60,9 @@ public class ZobristMap {
     public TTEntry[] TranspositionTable;
     public const int TEXACT = 1, TUPPER = 2, TLOWER = 3;
 
-    public ZobristMap(int mb) {
-        TranspositionTable = new TTEntry[mb*1024*1024/Marshal.SizeOf<TTEntry>()];
+    public ZobristMap() {
+        // Power of 2, 2^21
+        TranspositionTable = new TTEntry[2097152];
     }
     
     public TTEntry this[ulong key] {
@@ -77,7 +79,16 @@ public class ZobristMap {
     }
 
     public void AddTransposition(ulong zKey, Ply bestMove, int eval, int depth, int tType) {
+<<<<<<< HEAD
         if(!HasKey(zKey)) TranspositionTable[zKey%(ulong)TranspositionTable.Length] = new TTEntry(bestMove, eval, zKey, depth, tType);
+=======
+        if(!HasKey(zKey)) { 
+            TranspositionTable[zKey%(ulong)TranspositionTable.Length] = new TTEntry(bestMove, eval, zKey, depth, tType);
+        }
+        else if(this[zKey].ZKey != zKey && this[zKey].Depth <= depth) {
+            TranspositionTable[zKey%(ulong)TranspositionTable.Length] = new TTEntry(bestMove, eval, zKey, depth, tType);
+        }
+>>>>>>> d7c42fe39460fe026896e1b589dba2c0a380de59
     }
     
     // Returns true if the depth of the entry is greater than the current depth in search. Therefore we can use the evaluated score, or prune the branch

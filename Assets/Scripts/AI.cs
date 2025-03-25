@@ -1,19 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
 
 public class AI
 {
     Ply? bestPly;
 
-    private int difficultyDepth = 3; // Default depth for medium difficulty
+    private int difficultyDepth = 4; // Default depth for medium difficulty
 
     ZobristMap tTable;
     
     public AI() {
-        tTable = new ZobristMap(6);
+        tTable = new ZobristMap();
         // Debug.Log(Marshal.SizeOf<TTEntry>()*tTable.TranspositionTable.Length/1024/1024 + "mb");
     }
 
@@ -395,7 +394,7 @@ public class AI
         }
 
         Ply ttPly = new();
-        int ttType = ZobristMap.TUPPER;
+        int ttType = ZobristMap.TUPPER; // Fails low, meaning we checked every node without improving alpha
 
         foreach(Ply ply in plies) {
             b.PlayPly(ply, true);
@@ -409,12 +408,12 @@ public class AI
                 
                 if(score > alpha) {
                     alpha = score;
-                    ttType = ZobristMap.TEXACT;
+                    ttType = ZobristMap.TEXACT; // exact score, this is an actual score, improved alpha
                 }
             }
             b.UndoPly(ply);
             if (score >= beta) {
-                ttType = ZobristMap.TLOWER;
+                ttType = ZobristMap.TLOWER; // failed high, meaning alpha >= beta and we break out.
                 break;
             }
         }
@@ -538,7 +537,7 @@ public class AI
         });
         return plies;
     }
-    public void SetDifficulty(string difficulty)
+    public void setDifficulty(string difficulty)
     {
         switch (difficulty.ToLower())
         {

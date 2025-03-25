@@ -8,7 +8,7 @@ public class BoardManager : MonoBehaviour
     public Board board;
     public bool isWhiteTurn = true;
     public bool isWhiteAI = false;
-    public bool isBlackAI = false;
+    public bool isBlackAI = true;
     bool isCheckMate = false;
     bool isStaleMate = false;
     bool isGrabbing;
@@ -18,8 +18,8 @@ public class BoardManager : MonoBehaviour
     Stack<ChessPiece> taken = new Stack<ChessPiece>();
     Stack<ChessPiece> moved = new Stack<ChessPiece>();
 
-    AI blackAI = new AI();
-    AI whiteAI = new AI();
+    public AI blackAI = new AI();
+    public AI whiteAI = new AI();
     
     public static BoardManager instance;
     public event Action<Ply> PlayedPly;
@@ -47,6 +47,8 @@ public class BoardManager : MonoBehaviour
 
     void Update()
     {
+        isBlackAI = true;
+        isWhiteAI = true;
         if (isPromoting)
         {
             HandlePromotionInput();
@@ -59,6 +61,7 @@ public class BoardManager : MonoBehaviour
 
         if(board.WhiteHelper.Plies.Count==0) {
             if(board.WhiteHelper.CheckAttackBoard>0) {
+                Debug.Log(MagicBitboards.PrintBitBoard(board.WhiteHelper.CheckAttackBoard));
                 Debug.Log("White loses to checkmate");
                 isCheckMate = true;
             } else {
@@ -69,6 +72,7 @@ public class BoardManager : MonoBehaviour
         }
         if(board.BlackHelper.Plies.Count==0) {
             if(board.BlackHelper.CheckAttackBoard>0) {
+                Debug.Log(MagicBitboards.PrintBitBoard(board.BlackHelper.CheckAttackBoard));
                 Debug.Log("Black loses to checkmate");
                 isCheckMate = true;
             } else {
