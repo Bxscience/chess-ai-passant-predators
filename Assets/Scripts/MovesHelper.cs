@@ -35,6 +35,7 @@ public struct MovesHelper {
         Plies.Clear();
         Pinned = 0ul;
         CheckAttackBoard = 0ul;
+        KingFleeBoard = 0ul;
     }
 
     public void AddCheckAttack(Piece typeAttacking, int attackingPos, int kingPos, ulong allPieces) {
