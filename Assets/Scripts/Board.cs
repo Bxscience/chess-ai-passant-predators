@@ -30,8 +30,6 @@ public struct Board
     public sbyte passantTrack;
     public sbyte passantCaptured;
     public sbyte castleTracker;
-    public Dictionary<ulong, int> threefoldplies;
-    public bool isThreefold;
 
 
     public const ulong fileA = 0x0101010101010101;
@@ -76,10 +74,8 @@ public struct Board
     };
 
     public Board(string fen) {
-        isThreefold = false;
         WhiteHelper = new MovesHelper(Side.White);
         BlackHelper = new MovesHelper(Side.Black);
-        threefoldplies = new Dictionary<ulong, int>();
         allWhiteMovesPsuedolegal = 0;
         allBlackMovesPsuedolegal = 0;
         // castleTracker = 0b1111;
@@ -224,24 +220,7 @@ public struct Board
         }
         
         SetupMoves();
-        if(!isAI) return;
-        ulong zMap = ZobristMap.GetZKey(boards, castleTracker, passantTrack, ply.Side == Side.White);
-        if (ply.isIrreversible()) {
-            threefoldplies.Clear();
-            isThreefold = false;
-        }
-        if (threefoldplies.ContainsKey(zMap))
-        {
-            threefoldplies[zMap]++;
-            if (threefoldplies[zMap] >= 3)
-            {
-                isThreefold = true;
-            }
-        }
-        else
-        {
-            threefoldplies.Add(zMap, 1);
-        }
+        
     }
     
     // This function uses all pieces paralegal moves to determine checks, pins, etc.

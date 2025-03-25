@@ -10,7 +10,6 @@ public class AI
     private int difficultyDepth = 4; // Default depth for medium difficulty
 
     ZobristMap tTable;
-    
     public AI() {
         tTable = new ZobristMap();
         // Debug.Log(Marshal.SizeOf<TTEntry>()*tTable.TranspositionTable.Length/1024/1024 + "mb");
@@ -396,9 +395,22 @@ public class AI
         Ply ttPly = new();
         int ttType = ZobristMap.TUPPER; // Fails low, meaning we checked every node without improving alpha
 
-        foreach(Ply ply in plies) {
+        foreach (Ply ply in plies) {
+
             b.PlayPly(ply, true);
-            int score = -NegaMax(side == Side.White ? Side.Black : Side.White, depth-1, b , -beta, -alpha, false); //b -> newB
+            int score = -NegaMax(side == Side.White ? Side.Black : Side.White, depth - 1, b, -beta, -alpha, false); //b -> newB
+            ulong zMap = ZobristMap.GetZKey(b.boards, b.castleTracker, b.passantTrack, ply.Side == Side.White);
+            if (BoardManager.instance.threefoldplies.ContainsKey(zMap) && BoardManager.instance.threefoldplies[zMap] >= 2)
+            {
+                if (score < 0)
+                {
+                    score += 100;
+                }
+                else
+                {
+                    score -= 1000;
+                }
+            }
             if (score > max) { 
                 if (canSet) {
                     bestPly = ply; //ply -> newPly

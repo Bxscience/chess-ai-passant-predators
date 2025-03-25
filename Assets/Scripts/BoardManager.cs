@@ -9,6 +9,8 @@ public class BoardManager : MonoBehaviour
     public bool isWhiteTurn = true;
     public bool isWhiteAI = false;
     public bool isBlackAI = true;
+    public Dictionary<ulong, int> threefoldplies;
+    public bool isThreefold;
     bool isCheckMate = false;
     bool isStaleMate = false;
     bool isGrabbing;
@@ -38,6 +40,8 @@ public class BoardManager : MonoBehaviour
         instance = this;
         MagicBitboards.GenerateMagicNumbers();
         ZobristMap.FillZorbistKeys();
+        threefoldplies = new Dictionary<ulong, int>();
+        isThreefold = false;
         string fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
         board = new Board(fen);
         if(fen.Split(" ")[1][0] == 'w')
@@ -140,51 +144,62 @@ public class BoardManager : MonoBehaviour
             }
         }
     }
-    
-    // Plays the ply on the game objects
-    private void VisualizeMove(Ply newPly, ChessPiece selected = null, ChessPiece pressed = null) {
-        Debug.Log("Move: " + newPly.ToString());
-        if(selected == null) selected = FindPiece(newPly.Type, newPly.Start);
-        if(pressed == null) pressed = FindPiece(newPly.Captured, newPly.End);
 
-        if(newPly.Captured != Piece.None) {
+    // Plays the ply on the game objects
+    private void VisualizeMove(Ply newPly, ChessPiece selected = null, ChessPiece pressed = null)
+    {
+        Debug.Log("Move: " + newPly.ToString());
+        if (selected == null) selected = FindPiece(newPly.Type, newPly.Start);
+        if (pressed == null) pressed = FindPiece(newPly.Captured, newPly.End);
+
+        if (newPly.Captured != Piece.None)
+        {
             taken.Push(pressed);
-            pressed.transform.position -= Vector3.up*12;
+            pressed.transform.position -= Vector3.up * 12;
             pressed.idxBeforeDeath = pressed.idx;
             pressed.idx = new Vector2Int(-1, -1);
         }
-        if((newPly.Type == Piece.WPawn || selected.type == Piece.BPawn) && board.IsEnPassant(newPly.End)) {
+        if ((newPly.Type == Piece.WPawn || selected.type == Piece.BPawn) && board.IsEnPassant(newPly.End))
+        {
             newPly.Captured = isWhiteTurn ? Piece.BPawn : Piece.WPawn;
             taken.Push(enPassantable);
-            enPassantable.transform.position -= Vector3.up*12;
+            enPassantable.transform.position -= Vector3.up * 12;
         }
         enPassantable = null;
-        
-        if((newPly.Type == Piece.WPawn || newPly.Type == Piece.BPawn) && Vector2Int.Distance(newPly.End, newPly.Start) == 2) {
+
+        if ((newPly.Type == Piece.WPawn || newPly.Type == Piece.BPawn) && Vector2Int.Distance(newPly.End, newPly.Start) == 2)
+        {
             enPassantable = selected;
         }
-        
+
         // We be castling
-        if ((newPly.Type == Piece.WKing || newPly.Type == Piece.BKing) && Math.Abs(newPly.End.x - newPly.Start.x) == 2) {
-            if(newPly.End.x == 6) {
+        if ((newPly.Type == Piece.WKing || newPly.Type == Piece.BKing) && Math.Abs(newPly.End.x - newPly.Start.x) == 2)
+        {
+            if (newPly.End.x == 6)
+            {
                 ChessPiece rook = newPly.Side == Side.White ? FindPiece(Piece.WRook, new Vector2Int(7, 0)) : FindPiece(Piece.BRook, new Vector2Int(7, 7));
                 rook.idx.x = 5;
                 rook.transform.position = Board.IdxToPos(rook.idx);
             }
-            if(newPly.End.x == 2) {
+            if (newPly.End.x == 2)
+            {
                 ChessPiece rook = newPly.Side == Side.White ? FindPiece(Piece.WRook, new Vector2Int(0, 0)) : FindPiece(Piece.BRook, new Vector2Int(0, 7));
                 rook.idx.x = 3;
                 rook.transform.position = Board.IdxToPos(rook.idx);
             }
         }
 
-        if(
+        if (
             (newPly.Type == Piece.WPawn && newPly.End.y == 7)
             || (newPly.Type == Piece.BPawn && newPly.End.y == 0)
-        ) {
-            if(newPly.PromoteType != null) {
+        )
+        {
+            if (newPly.PromoteType != null)
+            {
                 selected.Promote((Piece)newPly.PromoteType);
-            } else {
+            }
+            else
+            {
                 selected.transform.position = Board.IdxToPos(newPly.End);
                 selected.idx = newPly.End;
                 pendingPromotionPly = newPly;
@@ -201,16 +216,38 @@ public class BoardManager : MonoBehaviour
         board.PlayPly(newPly);
         plies.Push(newPly);
         PlayedPly?.Invoke(newPly);
-        if(!Help()) {
+        if (!Help())
+        {
             // Debug.Log(MagicBitBoards.PrintBitBoard(board.boards     ))
         }
-        isWhiteTurn = !isWhiteTurn;
-        if (board.isThreefold)
-        {
-            Debug.Log("THREEFOLD");
-            isStaleMate = true;
+        
+
+            isWhiteTurn = !isWhiteTurn;
+            ulong zMap = ZobristMap.GetZKey(board.boards, board.castleTracker, board.passantTrack, newPly.Side == Side.White);
+            if (newPly.isIrreversible())
+            {
+                threefoldplies.Clear();
+                isThreefold = false;
+            }
+            if (threefoldplies.ContainsKey(zMap))
+            {
+                threefoldplies[zMap]++;
+                if (threefoldplies[zMap] >= 3)
+                {
+                    isThreefold = true;
+                }
+            }
+            else
+            {
+                threefoldplies.Add(zMap, 1);
+            }
+            if (isThreefold)
+            {
+                Debug.Log("THREEFOLD");
+                isStaleMate = true;
+            }
         }
-    }
+    
     
     public ChessPiece FindPiece(Piece type, Vector2Int idx) {
         if(type == Piece.None) return null;
