@@ -35,6 +35,7 @@ public struct MovesHelper {
         Plies.Clear();
         Pinned = 0ul;
         CheckAttackBoard = 0ul;
+        KingAttackBoard = 0ul;
         KingFleeBoard = 0ul;
     }
 
@@ -100,12 +101,21 @@ public struct MovesHelper {
     public ulong FindRookCheckAttack(int attackingPos, int kingPos, ulong allPieces) {
         ulong ray = 0;
         // If not equal, then it should be different rows?
-        int increment = ((kingPos / 8 != attackingPos / 8) ? 8 : 1) * Math.Sign(kingPos - attackingPos);
         ulong allPiecesNoAttacker = allPieces & ~(1ul<<attackingPos) & ~(1ul<<kingPos);
-        // Stop when you hit a piece or the edge
-        for (int i = attackingPos; (allPiecesNoAttacker & (1ul<<i)) == 0 && i%8 >= 0 && i%8 <= 7 && i/8 >= 0 && i/8<=7; i += increment) {
-            ray |= 1ul << i;
+        if(kingPos / 8 == attackingPos / 8) {
+            // Same row
+            int increment = Math.Sign(kingPos - attackingPos);
+            for (int i = attackingPos; (allPiecesNoAttacker & (1ul<<i)) == 0 && i%8 >= 0 && i%8 <= 7 && i/8 == kingPos/8; i += increment) {
+                ray |= 1ul << i;
+            }
+        } else {
+            // Diff row
+            int increment = 8 * Math.Sign(kingPos - attackingPos);
+            for (int i = attackingPos; (allPiecesNoAttacker & (1ul<<i)) == 0 && i%8 >= 0 && i%8 <= 7 && i/8 >= 0 && i/8<=7; i += increment) {
+                ray |= 1ul << i;
+            }
         }
+        // Stop when you hit a piece or the edge
         ray |= 1ul << kingPos;
         return ray;
     }
