@@ -245,6 +245,34 @@ public class AI
                 {
                     wscore += king;
                     wscore += (int)(mg_king_table[pos] * (1 - endgamefloat) + (endgamefloat) * eg_king_table[pos]);
+                    int startbound = 0, endbound = 0;
+                    if (pos / 8 == 8)
+                    {
+                        if((pos%8) == 8)
+                        {
+                            endbound = 8;
+                        }
+                        else
+                        {
+                            endbound = pos % 8 + 1;
+                        }
+                        if ((pos % 8) == 0)
+                        {
+                            startbound = 0;
+                        }
+                        else
+                        {
+                            startbound = pos % 8 - 1;
+                        }
+
+                        for (int g = startbound; g <= endbound; g++)
+                        {
+                            if ((1ul<<g & boards[(int)Piece.WPawn]) > 0) // boards[(int)Piece.WPawn]
+                            {
+                                wscore += (int)((1-endgamefloat)*20);
+                            }
+                        }
+                    }
                 }
 
                 curboard &= ~(1ul << pos);
@@ -314,6 +342,34 @@ public class AI
                 {
                     bscore += king;
                     bscore += (int)(mg_king_table[blackpos] * (1 - endgamefloat) + (endgamefloat) * eg_king_table[blackpos]);
+                    int startbound = 0, endbound = 0;
+                    if (pos / 8 == 0)
+                    {
+                        if ((pos % 8) == 8)
+                        {
+                            endbound = 8;
+                        }
+                        else
+                        {
+                            endbound = pos % 8 + 1;
+                        }
+                        if ((pos % 8) == 0)
+                        {
+                            startbound = 0;
+                        }
+                        else
+                        {
+                            startbound = pos % 8 - 1;
+                        }
+
+                        for (int g = startbound; g <= endbound; g++)
+                        {
+                            if ((1ul << g & boards[(int)Piece.BPawn]) > 0) // boards[(int)Piece.WPawn]
+                            {
+                                bscore += (int)((1 - endgamefloat) * 20);
+                            }
+                        }
+                    }
 
                 }
                 curboard &= ~(1ul << pos);
