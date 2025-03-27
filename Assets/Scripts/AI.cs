@@ -272,9 +272,16 @@ public class AI
                                 wscore += (int)((1-endgamefloat)*20);
                             }
                         }
+                        ulong tempblackpawns = boards[(int)Piece.BPawn];
+                        for (int d = 0; d < countPieces(boards[(int)Piece.BPawn]); d++)
+                        {
+                            int pawnPos = Board.GetLSBIndex(tempblackpawns);
+                            int dist = Mathf.Abs(pawnPos - pos) + Mathf.Abs(pawnPos / 8 - pos / 8);
+                            tempblackpawns &= ~(1ul << pawnPos);
+                            wscore += (int)(dist * endgamefloat)/100;
+                        }
                     }
                 }
-
                 curboard &= ~(1ul << pos);
             }
         }
@@ -364,10 +371,18 @@ public class AI
 
                         for (int g = startbound; g <= endbound; g++)
                         {
-                            if ((1ul << g & boards[(int)Piece.BPawn]) > 0) // boards[(int)Piece.WPawn]
+                            if ((1ul << g & boards[(int)Piece.BPawn]) > 0)
                             {
                                 bscore += (int)((1 - endgamefloat) * 20);
                             }
+                        }
+                        ulong tempwhitepawns = boards[(int)Piece.WPawn];
+                        for (int d = 0; d < countPieces(boards[(int)Piece.WPawn]); d++)
+                        {
+                            int pawnPos = Board.GetLSBIndex(tempwhitepawns);
+                            int dist = Mathf.Abs(pawnPos%8 - pos%8) + Mathf.Abs(pawnPos/8 - pos/8);
+                            tempwhitepawns &= ~(1ul << pawnPos);
+                            bscore += (int)(dist*endgamefloat)/100;
                         }
                     }
 
