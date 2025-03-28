@@ -137,10 +137,10 @@ public struct MovesHelper {
         ulong allPiecesNoAttacker = allPieces & ~(1ul<<attackingPos) & ~(1ul<<kingPos);
         // Further to the right
         if(kingPos%8 > attackingPos%8)
-            for (int i = attackingPos; (allPiecesNoAttacker & (1ul<<i)) == 0 && i%8 <= 7 && i%8 >= attackingPos%8 && i/8<=7; i += increment)
+            for (int i = attackingPos; (allPiecesNoAttacker & (1ul<<i)) == 0 && i%8 <= 7 && i%8 >= attackingPos%8 && i/8<=7 && i/8 >= 0; i += increment)
                 ray |= 1ul << i;
         else // Further left
-            for (int i = attackingPos; (allPiecesNoAttacker & (1ul<<i)) == 0 && i%8 >= 0 && i%8 <= attackingPos%8 && i/8 >= 0; i += increment)
+            for (int i = attackingPos; (allPiecesNoAttacker & (1ul<<i)) == 0 && i%8 >= 0 && i%8 <= attackingPos%8 && i/8 >= 0 && i/8 <= 7; i += increment)
                 ray |= 1ul << i;
         ray |= 1ul << kingPos;
         return ray;
