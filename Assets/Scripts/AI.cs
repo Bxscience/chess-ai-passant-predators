@@ -216,6 +216,7 @@ public class AI
                 {
                     wscore += rook;
                     wscore += (int)(mg_rook_table[pos] * (1 - endgamefloat) + (endgamefloat) * eg_rook_table[pos]);
+                    if(((Board.fileA<<(pos%8)) & (board.Pieces&~posbit)) == 0) wscore += 100;
                 }
                 else if (i == (int)Piece.WQueen)
                 {
@@ -239,7 +240,7 @@ public class AI
                     ulong pawnFile = Board.fileA << (pos%8);
                     ulong fileMask = pawnFile | Math.Max(0, Board.fileA<<((pos-1)%8)) | Math.Min(7, Board.fileA<<((pos+1)%8)); 
                     ulong finalMask = (ulong.MaxValue << (8* (pos/8+1))) & fileMask;
-                    if((board.boards[(int)Piece.BPawn] & finalMask) > 0) wscore += 10;
+                    if((board.boards[(int)Piece.BPawn] & finalMask) > 0) wscore += 50;
                 }
                 else if (i == (int)Piece.WKing)
                 {
@@ -316,7 +317,7 @@ public class AI
                 {
                     bscore += rook;
                     bscore += (int)(mg_rook_table[blackpos] * (1 - endgamefloat) + (endgamefloat) * eg_rook_table[blackpos]);
-
+                    if(((Board.fileA<<(pos%8)) & (board.Pieces&~posbit)) == 0) wscore += 10;
                 }
                 else if (i == (int)Piece.BQueen)
                 {
@@ -343,7 +344,7 @@ public class AI
                     ulong pawnFile = Board.fileA << (pos%8);
                     ulong fileMask = pawnFile | Math.Max(0, Board.fileA<<((pos-1)%8)) | Math.Min(7, Board.fileA<<((pos+1)%8)); 
                     ulong finalMask = ~(ulong.MaxValue << (8* (pos/8))) & fileMask;
-                    if((board.boards[(int)Piece.WPawn] & finalMask) > 0) wscore += 10;
+                    if((board.boards[(int)Piece.WPawn] & finalMask) > 0) bscore += 50;
                 }
                 else if (i == (int)Piece.BKing)
                 {
