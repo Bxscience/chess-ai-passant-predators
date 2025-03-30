@@ -38,8 +38,8 @@ public class SpawnPieces : MonoBehaviour
     
     public void Clear() {
         for(int i = 0; i <= 11; i++) {
-            foreach(ChessPiece p in pieces[i]) {
-                Destroy(p);
+            for(int j = 0; j < pieces[i].Count; j++) {
+                Destroy(pieces[i][j].gameObject);
             }
             pieces[i].Clear();
         }
