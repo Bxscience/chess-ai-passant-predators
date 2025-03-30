@@ -65,7 +65,8 @@ public class BoardManager : MonoBehaviour
         isGrabbing = false;
         isThreefold = false;
         isGameNotActive = true;
-        isThreefold = false;
+        isCheckMate = false;
+        isStaleMate = false;
         threefoldplies.Clear();
         isWhiteAI = false;
         string fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
