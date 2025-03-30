@@ -255,6 +255,7 @@ public class BoardManager : MonoBehaviour
             if (isThreefold)
             {
                 Debug.Log("THREEFOLD");
+                ui.gameOver("Threefold Repetition");
                 isStaleMate = true;
             }
         }
