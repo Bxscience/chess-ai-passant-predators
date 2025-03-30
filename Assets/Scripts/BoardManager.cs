@@ -13,6 +13,8 @@ public class BoardManager : MonoBehaviour
     public bool isThreefold;
     bool isCheckMate = false;
     bool isStaleMate = false;
+    bool isResigned = false;
+    public bool isGameNotActive = true;
     bool isGrabbing;
     ChessPiece currentlySelected;
     ChessPiece enPassantable;
@@ -22,6 +24,7 @@ public class BoardManager : MonoBehaviour
 
     public AI blackAI = new AI();
     public AI whiteAI = new AI();
+    public Ui ui;
     
     public static BoardManager instance;
     public event Action<Ply> PlayedPly;
@@ -57,7 +60,11 @@ public class BoardManager : MonoBehaviour
             return;
         }
 
-        if(isCheckMate||isStaleMate) {
+        if(isCheckMate||isStaleMate||isResigned||isGameNotActive) {
+            if (!isGameNotActive){
+                isGameNotActive = !isGameNotActive;
+                ui.gameOver();
+            }
             return;
         }
 
@@ -316,11 +323,15 @@ public class BoardManager : MonoBehaviour
         isPromoting = false;
     }
 
-    public string resign(Side resigningSide)
-{
-    string winner = resigningSide == Side.White ? "Black" : "White";
-    Debug.Log($"{resigningSide} resigns. {winner} wins!");
-    isCheckMate = true; 
-    return winner;
-}
+    public void resign(Side resigningSide)
+    {
+        string winner = resigningSide == Side.White ? "Black" : "White";
+        Debug.Log($"{resigningSide} resigns. {winner} wins!");
+        isResigned = true; 
+    }
+
+    public void resetBoard()
+    {
+
+    }
 }

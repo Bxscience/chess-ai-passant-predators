@@ -2,14 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
-
+using TMPro;
 public class Ui : MonoBehaviour
 {
     public GameObject startCanvasObject;
     public GameObject whiteOrBlack;
     public GameObject playingGameUi;
     public GameObject gameOverCanvas;
-    public GameObject textWinnerLoser;
+    public TMP_Text textWinnerLoser;
     public GameObject Camera; 
     public bool humanGame = false;
     private bool currentSideIsWhite = true;
@@ -19,7 +19,6 @@ void Start(){
     hide(whiteOrBlack);
     hide(gameOverCanvas);
     hide(playingGameUi);
-    hide(textWinnerLoser);
     
 }
 
@@ -36,14 +35,28 @@ void Update(){
     }
 }
 
+    public void closeButton(){
+        hide(gameOverCanvas);
+        show(playingGameUi);
+    }
 
+    public void gameOver(){
+        hide(playingGameUi);
+        show(gameOverCanvas);
+    }
+
+    public void menuButton(){
+        BoardManager.instance.resetBoard();
+        hide(gameOverCanvas);
+        show(startCanvasObject);
+    }
     public void resignButton()
     {
         Debug.Log("Resign button pressed");
         if (BoardManager.instance != null)
         {
             Side resigningSide = BoardManager.instance.isWhiteTurn ? Side.White : Side.Black;
-            gameOverReason = BoardManager.instance.resign(resigningSide);
+            BoardManager.instance.resign(resigningSide);
         }
     }
     public void sideChosenBlack()
@@ -170,6 +183,9 @@ void Update(){
     }
     public void show(GameObject gameObject){
         gameObject.SetActive(true);
+        if (gameObject == playingGameUi){
+            BoardManager.instance.isGameNotActive = false;
+        }
     }
 
     public void flipBoard(){
