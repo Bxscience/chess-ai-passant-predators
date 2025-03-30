@@ -56,15 +56,13 @@ public class BoardManager : MonoBehaviour
     {
         if (isPromoting)
         {
+            if(isWhiteTurn) ui.show(ui.promotionCanvasWhite);
+            else ui.show(ui.promotionCanvasBlack);
             HandlePromotionInput();
             return;
         }
 
         if(isCheckMate||isStaleMate||isResigned||isGameNotActive) {
-            if (!isGameNotActive){
-                isGameNotActive = !isGameNotActive;
-                ui.gameOver();
-            }
             return;
         }
 
@@ -74,9 +72,11 @@ public class BoardManager : MonoBehaviour
                 Debug.Log(MagicBitboards.PrintBitBoard(board.WhiteHelper.KingFleeBoard));
                 Debug.Log(MagicBitboards.PrintBitBoard(board.WhiteHelper.KingAttackBoard));
                 Debug.Log("White loses to checkmate");
+                ui.gameOver("White loses to checkmate");
                 isCheckMate = true;
             } else {
                 Debug.Log("Stalemate");
+                ui.gameOver("Stalemate");
                 isStaleMate = true;
             }
             return;
@@ -87,9 +87,11 @@ public class BoardManager : MonoBehaviour
                 Debug.Log(MagicBitboards.PrintBitBoard(board.BlackHelper.KingFleeBoard));
                 Debug.Log(MagicBitboards.PrintBitBoard(board.BlackHelper.KingAttackBoard));
                 Debug.Log("Black loses to checkmate");
+                ui.gameOver("Black loses to checkmate");
                 isCheckMate = true;
             } else {
                 Debug.Log("Stalemate");
+                ui.gameOver("Stalemate");
                 isStaleMate = true;
             }
             return;
@@ -299,15 +301,14 @@ public class BoardManager : MonoBehaviour
         }
         return true;
     }
-
     private void HandlePromotionInput() {
-        if (Input.GetKeyDown(KeyCode.Alpha1)) {
+        if (ui.promoteBishop==true) {
             pendingPromotionPly.PromoteType = isWhiteTurn ? Piece.WBishop : Piece.BBishop;
-        } else if (Input.GetKeyDown(KeyCode.Alpha2)) {
+        } else if (ui.promoteRook==true) {
             pendingPromotionPly.PromoteType = isWhiteTurn ? Piece.WRook : Piece.BRook;
-        } else if (Input.GetKeyDown(KeyCode.Alpha3)) {
+        } else if (ui.promoteKnight==true) {
             pendingPromotionPly.PromoteType = isWhiteTurn ? Piece.WKnight : Piece.BKnight;
-        } else if (Input.GetKeyDown(KeyCode.Alpha4)) {
+        } else if (ui.promoteQueen==true) {
             pendingPromotionPly.PromoteType = isWhiteTurn ? Piece.WQueen : Piece.BQueen;
         } else {
             return;
@@ -321,12 +322,16 @@ public class BoardManager : MonoBehaviour
         plies.Push(pendingPromotionPly);
         isWhiteTurn = !isWhiteTurn;
         isPromoting = false;
+        ui.hide(ui.promotionCanvasWhite);
+        ui.hide(ui.promotionCanvasBlack);
+        ui.resetPromotionValues();
     }
 
     public void resign(Side resigningSide)
     {
         string winner = resigningSide == Side.White ? "Black" : "White";
         Debug.Log($"{resigningSide} resigns. {winner} wins!");
+        ui.gameOver($"{resigningSide} resigns. {winner} wins!");
         isResigned = true; 
     }
 

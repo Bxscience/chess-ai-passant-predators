@@ -5,20 +5,19 @@ using UnityEngine;
 using TMPro;
 public class Ui : MonoBehaviour
 {
-    public GameObject startCanvasObject;
-    public GameObject whiteOrBlack;
-    public GameObject playingGameUi;
-    public GameObject gameOverCanvas;
+    public GameObject startCanvasObject, whiteOrBlack, playingGameUi, gameOverCanvas, promotionCanvasWhite, promotionCanvasBlack;
     public TMP_Text textWinnerLoser;
     public GameObject Camera; 
     public bool humanGame = false;
     private bool currentSideIsWhite = true;
-    public string gameOverReason = "";
+    public bool promoteQueen,promoteRook,promoteKnight,promoteBishop = false;
 void Start(){
     show(startCanvasObject);
     hide(whiteOrBlack);
     hide(gameOverCanvas);
     hide(playingGameUi);
+    hide(promotionCanvasBlack);
+    hide(promotionCanvasWhite);
     
 }
 
@@ -34,19 +33,24 @@ void Update(){
         }
     }
 }
-
     public void closeButton(){
         hide(gameOverCanvas);
         show(playingGameUi);
     }
-
-    public void gameOver(){
+    public void backToStart(){
+        hide(whiteOrBlack);
+        show(startCanvasObject);
+    }
+    public void gameOver(string overReason){
         hide(playingGameUi);
         show(gameOverCanvas);
+        BoardManager.instance.isGameNotActive = true;
+        textWinnerLoser.text = overReason;
     }
-
     public void menuButton(){
         BoardManager.instance.resetBoard();
+        BoardManager.instance.isGameNotActive = true;
+        hide(playingGameUi);
         hide(gameOverCanvas);
         show(startCanvasObject);
     }
@@ -73,7 +77,6 @@ void Update(){
         hide(whiteOrBlack);
         show(playingGameUi);
     }
-
     public void sideChosenWhite()
     {
         if (BoardManager.instance != null)
@@ -88,7 +91,6 @@ void Update(){
         hide(whiteOrBlack);
         show(playingGameUi);
     }
-
     public void aiVsAi(){
         if (BoardManager.instance != null)
         {
@@ -118,8 +120,6 @@ void Update(){
         hide(startCanvasObject);
         show(playingGameUi);
     }
-
-
     public void easy()
     {
         if (BoardManager.instance != null)
@@ -142,7 +142,6 @@ void Update(){
         hide(startCanvasObject);
         show(whiteOrBlack);
     }
-
     public void medium()
     {
         if (BoardManager.instance != null)
@@ -165,7 +164,6 @@ void Update(){
         hide(startCanvasObject);
         show(whiteOrBlack);
     }
-
     public void hard()
     {
         if (BoardManager.instance != null)
@@ -177,7 +175,6 @@ void Update(){
         hide(startCanvasObject);
         show(whiteOrBlack);
     }
-
     public void hide(GameObject gameObject){
         gameObject.SetActive(false);
     }
@@ -187,12 +184,34 @@ void Update(){
             BoardManager.instance.isGameNotActive = false;
         }
     }
-
     public void flipBoard(){
         startCanvasObject.transform.Rotate(0,0,180);
         whiteOrBlack.transform.Rotate(0,0,180);
         gameOverCanvas.transform.Rotate(0,0,180);
         playingGameUi.transform.Rotate(0, 0, 180);
+        promotionCanvasBlack.transform.Rotate(0,0,180);
+        promotionCanvasWhite.transform.Rotate(0,0,180);
         Camera.transform.Rotate(0, 0, 180);
     }
+
+    public void promoteToQueen(){
+        promoteQueen = true;
+    }
+    public void promoteToRook(){
+        promoteRook = true;
+    }
+    public void promoteToBishop(){
+        promoteBishop = true;
+    }
+    public void promoteToKnight(){
+        promoteKnight = true;
+    }
+    
+    public void resetPromotionValues(){
+        promoteBishop=false;
+        promoteQueen=false;
+        promoteRook=false;
+        promoteKnight=false;
+    }
+    
 }
