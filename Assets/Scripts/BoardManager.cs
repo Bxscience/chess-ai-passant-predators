@@ -55,7 +55,7 @@ public class BoardManager : MonoBehaviour
         else isWhiteTurn = false;
     }
 
-    void Reset()
+    public void Reset()
     {
         currentlySelected = null;
         enPassantable = null;
@@ -357,10 +357,5 @@ public class BoardManager : MonoBehaviour
         Debug.Log($"{resigningSide} resigns. {winner} wins!");
         ui.gameOver($"{resigningSide} resigns. {winner} wins!");
         isResigned = true; 
-    }
-
-    public void resetBoard()
-    {
-
     }
 }

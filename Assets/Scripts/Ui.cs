@@ -48,8 +48,9 @@ void Update(){
         textWinnerLoser.text = overReason;
     }
     public void menuButton(){
-        BoardManager.instance.resetBoard();
-        BoardManager.instance.isGameNotActive = true;
+        BoardManager.instance.Reset();
+        SpawnPieces.instance.Clear();
+        SpawnPieces.instance.Fill();
         hide(playingGameUi);
         hide(gameOverCanvas);
         show(startCanvasObject);

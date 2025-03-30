@@ -36,7 +36,7 @@ public class SpawnPieces : MonoBehaviour
         Fill();
     }
     
-    void Clear() {
+    public void Clear() {
         for(int i = 0; i <= 11; i++) {
             foreach(ChessPiece p in pieces[i]) {
                 Destroy(p);
@@ -45,7 +45,7 @@ public class SpawnPieces : MonoBehaviour
         }
     }
     
-    void Fill() {
+    public void Fill() {
         for(int i = 0; i <= 11; i++) {
             pieces[i] = new List<ChessPiece>();
             Piece type = (Piece)i;
