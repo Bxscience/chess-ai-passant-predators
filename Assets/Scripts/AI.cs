@@ -7,7 +7,7 @@ public class AI
 {
     Ply? bestPly;
 
-    private int difficultyDepth = 4;// Default depth for medium difficulty
+    private int difficultyDepth = 4;
 
     ZobristMap tTable;
     public AI() {
@@ -629,7 +629,7 @@ public class AI
         switch (difficulty.ToLower())
         {
             case "easy":
-                difficultyDepth = 2; // Lower depth for easier AI
+                difficultyDepth = 1; // Lower depth for easier AI
                 break;
             case "medium":
                 difficultyDepth = 3; // Default depth

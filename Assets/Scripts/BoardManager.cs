@@ -8,7 +8,7 @@ public class BoardManager : MonoBehaviour
     public Board board;
     public bool isWhiteTurn = true;
     public bool isWhiteAI = false;
-    public bool isBlackAI = true;
+    public bool isBlackAI = false;
     public Dictionary<ulong, int> threefoldplies;
     public bool isThreefold;
     bool isCheckMate = false;
@@ -51,8 +51,6 @@ public class BoardManager : MonoBehaviour
 
     void Update()
     {
-        isBlackAI = true;
-        isWhiteAI = true;
         if (isPromoting)
         {
             HandlePromotionInput();
@@ -318,10 +316,11 @@ public class BoardManager : MonoBehaviour
         isPromoting = false;
     }
 
-    public void resign(Side resigningSide)
+    public string resign(Side resigningSide)
 {
     string winner = resigningSide == Side.White ? "Black" : "White";
     Debug.Log($"{resigningSide} resigns. {winner} wins!");
     isCheckMate = true; 
+    return winner;
 }
 }

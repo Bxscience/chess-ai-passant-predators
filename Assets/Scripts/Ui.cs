@@ -5,16 +5,47 @@ using UnityEngine;
 
 public class Ui : MonoBehaviour
 {
+    public GameObject startCanvasObject;
+    public GameObject whiteOrBlack;
+    public GameObject playingGameUi;
+    public GameObject gameOverCanvas;
+    public GameObject textWinnerLoser;
+    public GameObject Camera; 
+    public bool humanGame = false;
+    private bool currentSideIsWhite = true;
+    public string gameOverReason = "";
+void Start(){
+    show(startCanvasObject);
+    hide(whiteOrBlack);
+    hide(gameOverCanvas);
+    hide(playingGameUi);
+    hide(textWinnerLoser);
+    
+}
+
+void Update(){
+    if (Input.GetKeyDown(KeyCode.F)){
+        flipBoard();
+    }
+    if(humanGame){
+    if (currentSideIsWhite != BoardManager.instance.isWhiteTurn)
+        {
+            currentSideIsWhite = BoardManager.instance.isWhiteTurn; // Update the current side
+            flipBoard(); // Flip the board
+        }
+    }
+}
+
+
     public void resignButton()
     {
         Debug.Log("Resign button pressed");
         if (BoardManager.instance != null)
         {
             Side resigningSide = BoardManager.instance.isWhiteTurn ? Side.White : Side.Black;
-            BoardManager.instance.resign(resigningSide);
+            gameOverReason = BoardManager.instance.resign(resigningSide);
         }
     }
-
     public void sideChosenBlack()
     {
         if (BoardManager.instance != null)
@@ -26,6 +57,8 @@ public class Ui : MonoBehaviour
         {
             Debug.LogError("BoardManager instance is null.");
         }
+        hide(whiteOrBlack);
+        show(playingGameUi);
     }
 
     public void sideChosenWhite()
@@ -39,7 +72,40 @@ public class Ui : MonoBehaviour
         {
             Debug.LogError("BoardManager instance is null.");
         }
+        hide(whiteOrBlack);
+        show(playingGameUi);
     }
+
+    public void aiVsAi(){
+        if (BoardManager.instance != null)
+        {
+            BoardManager.instance.isBlackAI = true;
+            BoardManager.instance.isWhiteAI = true;
+            Debug.Log("AI will control the Both sides.");
+        }
+        else
+        {
+            Debug.LogError("BoardManager instance is null.");
+        }
+        hide(whiteOrBlack);
+        show(playingGameUi);
+    }
+    public void humanHuman(){
+        if (BoardManager.instance != null)
+        {
+            humanGame = true;
+            BoardManager.instance.isBlackAI = false;
+            BoardManager.instance.isWhiteAI = false;
+            Debug.Log("Humans will control the Both sides.");
+        }
+        else
+        {
+            Debug.LogError("BoardManager instance is null.");
+        }
+        hide(startCanvasObject);
+        show(playingGameUi);
+    }
+
 
     public void easy()
     {
@@ -60,6 +126,8 @@ public class Ui : MonoBehaviour
         {
             Debug.LogError("BoardManager instance is null.");
         }
+        hide(startCanvasObject);
+        show(whiteOrBlack);
     }
 
     public void medium()
@@ -81,6 +149,8 @@ public class Ui : MonoBehaviour
         {
             Debug.LogError("BoardManager instance is null.");
         }
+        hide(startCanvasObject);
+        show(whiteOrBlack);
     }
 
     public void hard()
@@ -91,5 +161,22 @@ public class Ui : MonoBehaviour
             BoardManager.instance.blackAI.setDifficulty("hard");
             Debug.Log("AI difficulty set to Hard");
         }
+        hide(startCanvasObject);
+        show(whiteOrBlack);
+    }
+
+    public void hide(GameObject gameObject){
+        gameObject.SetActive(false);
+    }
+    public void show(GameObject gameObject){
+        gameObject.SetActive(true);
+    }
+
+    public void flipBoard(){
+        startCanvasObject.transform.Rotate(0,0,180);
+        whiteOrBlack.transform.Rotate(0,0,180);
+        gameOverCanvas.transform.Rotate(0,0,180);
+        playingGameUi.transform.Rotate(0, 0, 180);
+        Camera.transform.Rotate(0, 0, 180);
     }
 }
