@@ -33,6 +33,19 @@ public class SpawnPieces : MonoBehaviour
     {
         instance = this;
         GameObject.Instantiate(BoardPrefab, new Vector3(0,0,0), Quaternion.Euler(-90,0,0));
+        Fill();
+    }
+    
+    void Clear() {
+        for(int i = 0; i <= 11; i++) {
+            foreach(ChessPiece p in pieces[i]) {
+                Destroy(p);
+            }
+            pieces[i].Clear();
+        }
+    }
+    
+    void Fill() {
         for(int i = 0; i <= 11; i++) {
             pieces[i] = new List<ChessPiece>();
             Piece type = (Piece)i;
@@ -48,7 +61,7 @@ public class SpawnPieces : MonoBehaviour
             }
         }
     }
-    
+
     GameObject GOFromType(Piece type) => type switch
     {
         Piece.WPawn => WhitePawn,

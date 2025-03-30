@@ -45,6 +45,29 @@ public class BoardManager : MonoBehaviour
         ZobristMap.FillZorbistKeys();
         threefoldplies = new Dictionary<ulong, int>();
         isThreefold = false;
+        isCheckMate = false;
+        isStaleMate = false;
+        isResigned = false;
+        string fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+        board = new Board(fen);
+        if(fen.Split(" ")[1][0] == 'w')
+            isWhiteTurn = true;
+        else isWhiteTurn = false;
+    }
+
+    void Reset()
+    {
+        currentlySelected = null;
+        enPassantable = null;
+        taken.Clear();
+        moved.Clear();
+        plies.Clear();
+        isGrabbing = false;
+        isThreefold = false;
+        isGameNotActive = true;
+        isThreefold = false;
+        threefoldplies.Clear();
+        isWhiteAI = false;
         string fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
         board = new Board(fen);
         if(fen.Split(" ")[1][0] == 'w')
@@ -97,9 +120,9 @@ public class BoardManager : MonoBehaviour
             return;
         }
 
-        if(Input.GetKeyDown(KeyCode.Backspace)) {
-            UndoPly();
-        }
+        // if(Input.GetKeyDown(KeyCode.Backspace)) {
+        //     UndoPly();
+        // }
         
         if(isWhiteTurn) {
             if(isWhiteAI)
