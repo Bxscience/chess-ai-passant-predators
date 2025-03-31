@@ -26,11 +26,11 @@ void Update(){
         flipBoard();
     }
     if(humanGame){
-    if (currentSideIsWhite != BoardManager.instance.isWhiteTurn)
-        {
-            currentSideIsWhite = BoardManager.instance.isWhiteTurn; // Update the current side
-            flipBoard(); // Flip the board
-        }
+        if (currentSideIsWhite != BoardManager.instance.isWhiteTurn)
+            {
+                currentSideIsWhite = BoardManager.instance.isWhiteTurn; // Update the current side
+                flipBoard(); // Flip the board
+            }
     }
 }
     public void closeButton(){

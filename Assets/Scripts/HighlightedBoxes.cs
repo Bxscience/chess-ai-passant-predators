@@ -5,7 +5,7 @@ using UnityEngine;
 public class HighlightedBoxes : MonoBehaviour
 {
     [SerializeField] private GameObject highlightPrefab, lessHighlightPrefab;
-    private List<GameObject> currentHighlights = new List<GameObject>();
+    private static List<GameObject> currentHighlights = new List<GameObject>();
     void Start()
     {
         if (BoardManager.instance != null){BoardManager.instance.PlayedPly += OnPlayedPly;}
@@ -27,7 +27,7 @@ public class HighlightedBoxes : MonoBehaviour
         if (endHighlight != null){currentHighlights.Add(endHighlight);}
     }
 
-    private void ClearHighlights()
+    public static void ClearHighlights()
     {
         foreach (GameObject highlight in currentHighlights)
         {

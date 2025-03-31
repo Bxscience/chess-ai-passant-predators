@@ -74,6 +74,7 @@ public class BoardManager : MonoBehaviour
         if(fen.Split(" ")[1][0] == 'w')
             isWhiteTurn = true;
         else isWhiteTurn = false;
+        HighlightedBoxes.ClearHighlights();
     }
 
     void Update()
