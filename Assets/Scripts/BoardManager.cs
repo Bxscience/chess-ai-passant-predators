@@ -28,6 +28,7 @@ public class BoardManager : MonoBehaviour
     
     public static BoardManager instance;
     public event Action<Ply> PlayedPly;
+    public event Action<ulong> GrabbedPiece;
 
     public ChessPiece[] pieceBoard = new ChessPiece[64];
    
@@ -156,10 +157,12 @@ public class BoardManager : MonoBehaviour
                     currentlySelected = hit.collider.GetComponent<ChessPiece>();
                     currentlySelected.transform.position += Vector3.up*2;
                     isGrabbing = true;
+                    GrabbedPiece.Invoke(board.GetMoveLegal(currentlySelected));
                 } else {
                     ChessPiece pressed = hit.collider.GetComponent<ChessPiece>();
                     if(pressed.Equals(currentlySelected)) {
                         pressed.transform.position -= Vector3.up*2;
+                        GrabbedPiece.Invoke(0ul);
                         isGrabbing = false;
                         return;
                     }
@@ -167,6 +170,7 @@ public class BoardManager : MonoBehaviour
                         currentlySelected.transform.position -= Vector3.up*2;
                         currentlySelected = pressed;
                         currentlySelected.transform.position += Vector3.up*2;
+                        GrabbedPiece.Invoke(board.GetMoveLegal(currentlySelected));
                         return;
                     }
                     if((1ul<<(pressed.idx.x + (7-pressed.idx.y)*8) & board.GetMoveLegal(currentlySelected)) == 0)
