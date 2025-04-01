@@ -69,7 +69,11 @@ public class BoardManager : MonoBehaviour
         isCheckMate = false;
         isStaleMate = false;
         threefoldplies.Clear();
+        isGrabbing = false;
         isWhiteAI = false;
+        isBlackAI = false;
+        blackAI = new AI();
+        whiteAI = new AI();
         string fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
         board = new Board(fen);
         if(fen.Split(" ")[1][0] == 'w')

@@ -54,6 +54,7 @@ void Update(){
         hide(playingGameUi);
         hide(gameOverCanvas);
         show(startCanvasObject);
+        humanGame =false;
     }
     public void resignButton()
     {
