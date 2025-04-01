@@ -4437,6 +4437,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   highlightPrefab: {fileID: 387056351529908595, guid: 1d0cad7a225e646f38d0b4f4ad45eb3c, type: 3}
   lessHighlightPrefab: {fileID: 9077156114511209574, guid: 0e103a7fac4844b84925c2c2c0512264, type: 3}
+  movesHighlightPrefab: {fileID: 0}
 --- !u!1 &1421837964
 GameObject:
   m_ObjectHideFlags: 0

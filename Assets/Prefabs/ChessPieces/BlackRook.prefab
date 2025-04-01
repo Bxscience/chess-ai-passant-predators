@@ -64,7 +64,7 @@ PrefabInstance:
       addedObject: {fileID: 5061751007831267020}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 81b1cf9858fa31443b02f501d267c494, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 863805263669903851}
+      addedObject: {fileID: -3112269298758675515}
   m_SourcePrefab: {fileID: 100100000, guid: 81b1cf9858fa31443b02f501d267c494, type: 3}
 --- !u!1 &3283454688993143902 stripped
 GameObject:
@@ -116,7 +116,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.05029657, y: 0.055083364, z: 0.079706624}
   m_Center: {x: -0.00000015735625, y: 0.000018489362, z: 0.03923993}
---- !u!114 &863805263669903851
+--- !u!114 &-3112269298758675515
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -128,5 +128,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4212aa45da53c4982b33b85a24a5157d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  highlightPrefab: {fileID: 387056351529908595, guid: 1d0cad7a225e646f38d0b4f4ad45eb3c, type: 3}
-  lessHighlightPrefab: {fileID: 9077156114511209574, guid: 0e103a7fac4844b84925c2c2c0512264, type: 3}
+  highlightPrefab: {fileID: 9077156114511209574, guid: 0e103a7fac4844b84925c2c2c0512264, type: 3}
+  lessHighlightPrefab: {fileID: 387056351529908595, guid: 1d0cad7a225e646f38d0b4f4ad45eb3c, type: 3}
+  movesHighlightPrefab: {fileID: 8881770586845305400, guid: 4d2735ac1e50746dd8af0b1b7a2584fd, type: 3}

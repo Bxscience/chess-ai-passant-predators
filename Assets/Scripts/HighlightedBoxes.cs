@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class HighlightedBoxes : MonoBehaviour
 {
-    [SerializeField] private GameObject highlightPrefab, lessHighlightPrefab;
+    [SerializeField] private GameObject highlightPrefab, lessHighlightPrefab, movesHighlightPrefab;
     private static List<GameObject> currentHighlights = new List<GameObject>();
     void Start()
     {
@@ -37,7 +37,7 @@ public class HighlightedBoxes : MonoBehaviour
         ClearHighlights();
         while(attackBoard != 0) {
             int pos = Board.GetLSBIndex(attackBoard);
-            GameObject endHighlight = Instantiate(highlightPrefab, Board.IdxToPos(pos%8, 7-(pos/8)), Quaternion.identity);
+            GameObject endHighlight = Instantiate(movesHighlightPrefab, Board.IdxToPos(pos%8, 7-(pos/8)), Quaternion.identity);
             currentHighlights.Add(endHighlight);
             attackBoard ^= 1ul<<pos;
         }
