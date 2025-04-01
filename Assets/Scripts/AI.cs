@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.Build;
 using UnityEngine;
 
 public class AI
@@ -23,7 +24,7 @@ public class AI
       -9,  17,  19,  53,  37,  69,  18,   22,
      -13,   4,  16,  13,  28,  19,  21,   -8,
      -23,  -9,  12,  10,  19,  17,  25,  -16,
-     -29, -53, -12,  -3,  -1,  18, -14,  -19,
+     -29, -53, -12,  -3,  -1,  18, -14,  -19, 
     -105, -21, -58, -33, -17, -28, -19,  -23,
 }; static public int[] mg_king_table = {
     -65,  23,  16, -15, -56, -34,   2,  13,
@@ -152,16 +153,6 @@ public class AI
     mg_king_table
 };
 
-    int[][] eg_pesto_table =
-    {
-    eg_pawn_table,
-    eg_knight_table,
-    eg_bishop_table,
-    eg_rook_table,
-    eg_queen_table,
-    eg_king_table
-};
-
     const int queen = 900, knight = 300, bishop = 310, pawn = 100, rook = 500, king = 2000;  //4000+2000+1600+1240+1200+1800
     public int GetPieceScore(Piece type) => type switch
     {
@@ -211,6 +202,14 @@ public class AI
                 {
                     wscore += knight;
                     wscore += (int)(mg_knight_table[pos] * (1 - endgamefloat) + (endgamefloat) * eg_knight_table[pos]);
+                    if ((curboard & 1ul << 47) > 0)
+                    {
+                        wscore -= 10;
+                    }
+                    if ((curboard & 1ul << 40) > 0)
+                    {
+                        wscore -= 10;
+                    }
                 }
                 else if (i == (int)Piece.WRook)
                 {
@@ -282,6 +281,11 @@ public class AI
                             wscore += (int)(dist * endgamefloat)/100;
                         }
                     }
+                    sbyte wcastle = 0b1100;
+                    if ((board.castleTracker & wcastle) > 0)
+                    {
+                        wscore += 20;
+                    }
                 }
                 curboard &= ~(1ul << pos);
             }
@@ -311,7 +315,14 @@ public class AI
                 {
                     bscore += knight;
                     bscore += (int)(mg_knight_table[blackpos] * (1 - endgamefloat) + (endgamefloat) * eg_knight_table[blackpos]);
-
+                    if ((curboard & (1ul << 16)) > 0)
+                    {
+                        bscore -= 10;
+                    }
+                    if ((curboard & (1ul << 23)) > 0)
+                    {
+                        bscore -= 10;
+                    }
                 }
                 else if (i == (int)Piece.BRook)
                 {
@@ -369,6 +380,10 @@ public class AI
                         {
                             startbound = pos % 8 - 1;
                         }
+                        sbyte bcastle = 0b0011;
+                        if((board.castleTracker & bcastle) > 0){
+                            bscore += 20;
+                         }
 
                         for (int g = startbound; g <= endbound; g++)
                         {
