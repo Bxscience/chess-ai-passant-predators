@@ -4,15 +4,21 @@ using UnityEngine;
 
 public class HighlightedBoxes : MonoBehaviour
 {
-    [SerializeField] private GameObject highlightPrefab, lessHighlightPrefab;
+    [SerializeField] private GameObject highlightPrefab, lessHighlightPrefab, movesHighlightPrefab;
     private static List<GameObject> currentHighlights = new List<GameObject>();
     void Start()
     {
-        if (BoardManager.instance != null){BoardManager.instance.PlayedPly += OnPlayedPly;}
+        if (BoardManager.instance != null) {
+            BoardManager.instance.PlayedPly += OnPlayedPly;
+            BoardManager.instance.GrabbedPiece += AddHighightFromBoard;
+        }
     }
     void OnDestroy()
     {
-        if (BoardManager.instance != null){BoardManager.instance.PlayedPly -= OnPlayedPly;}
+        if (BoardManager.instance != null) {
+            BoardManager.instance.PlayedPly -= OnPlayedPly;
+            BoardManager.instance.GrabbedPiece -= AddHighightFromBoard;
+        }
     }
 
     public void OnPlayedPly(Ply newPly)
@@ -25,6 +31,16 @@ public class HighlightedBoxes : MonoBehaviour
 
         if (startHighlight != null){currentHighlights.Add(startHighlight);}
         if (endHighlight != null){currentHighlights.Add(endHighlight);}
+    }
+    
+    public void AddHighightFromBoard(ulong attackBoard) {
+        ClearHighlights();
+        while(attackBoard != 0) {
+            int pos = Board.GetLSBIndex(attackBoard);
+            GameObject endHighlight = Instantiate(movesHighlightPrefab, Board.IdxToPos(pos%8, 7-(pos/8)), Quaternion.identity);
+            currentHighlights.Add(endHighlight);
+            attackBoard ^= 1ul<<pos;
+        }
     }
 
     public static void ClearHighlights()
