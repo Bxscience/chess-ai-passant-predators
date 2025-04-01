@@ -69,9 +69,17 @@ public class BoardManager : MonoBehaviour
         isCheckMate = false;
         isStaleMate = false;
         threefoldplies.Clear();
-        isGrabbing = false;
         isWhiteAI = false;
         isBlackAI = false;
+        isPromoting = false;
+        PlayedPly = null;
+        GrabbedPiece = null;
+        pendingPromotionPly = default;
+        ui.resetPromotionValues();
+        ZobristMap.FillZorbistKeys();
+        pieceBoard = new ChessPiece[64];
+        SpawnPieces.instance.Clear();
+        SpawnPieces.instance.Fill();
         blackAI = new AI();
         whiteAI = new AI();
         string fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
