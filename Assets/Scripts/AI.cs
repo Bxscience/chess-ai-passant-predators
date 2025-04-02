@@ -246,23 +246,23 @@ public class AI
                     wscore += king;
                     wscore += (int)(mg_king_table[pos] * (1 - endgamefloat) + (endgamefloat) * eg_king_table[pos]);
                     int startbound = 0, endbound = 0;
-                    if (pos / 8 == 8)
+                    if (pos / 8 == 7)
                     {
-                        if((pos%8) == 8)
+                        if((pos%8) == 7)
                         {
-                            endbound = 8;
+                            endbound = pos-8;
                         }
                         else
                         {
-                            endbound = pos % 8 + 1;
+                            endbound = pos - 7;
                         }
                         if ((pos % 8) == 0)
                         {
-                            startbound = 0;
+                            startbound = pos-8;
                         }
                         else
                         {
-                            startbound = pos % 8 - 1;
+                            startbound = pos - 9 ;
                         }
 
                         for (int g = startbound; g <= endbound; g++)
@@ -360,25 +360,25 @@ public class AI
                 else if (i == (int)Piece.BKing)
                 {
                     bscore += king;
-                    bscore += (int)(mg_king_table[blackpos] * (1 - endgamefloat) + (endgamefloat) * eg_king_table[blackpos]);
+                    bscore += (int)(mg_king_table[blackpos] * (1 - endgamefloat*endgamefloat) + (endgamefloat*endgamefloat) * eg_king_table[blackpos]);
                     int startbound = 0, endbound = 0;
                     if (pos / 8 == 0)
                     {
-                        if ((pos % 8) == 8)
-                        {
-                            endbound = 8;
+                        if ((pos % 8) == 7)
+                        { 
+                            endbound = pos+8;
                         }
                         else
                         {
-                            endbound = pos % 8 + 1;
+                            endbound = pos + 7;
                         }
                         if ((pos % 8) == 0)
                         {
-                            startbound = 0;
+                            startbound = pos+8;
                         }
                         else
                         {
-                            startbound = pos % 8 - 1;
+                            startbound = pos + 9;
                         }
                         sbyte bcastle = 0b0011;
                         if((board.castleTracker & bcastle) > 0){
