@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Drawing;
+using Unity.VisualScripting;
 
 public enum Piece {
     WPawn = 0, WBishop = 1, WKnight = 2, WRook = 3, WQueen = 4, WKing = 5,
@@ -30,6 +31,8 @@ public struct Board
     public sbyte passantTrack;
     public sbyte passantCaptured;
     public sbyte castleTracker;
+    public bool whiteHasCastled;
+    public bool blackHasCastled;
 
 
     public const ulong fileA = 0x0101010101010101;
@@ -78,6 +81,8 @@ public struct Board
         BlackHelper = new MovesHelper(Side.Black);
         allWhiteMovesPsuedolegal = 0;
         allBlackMovesPsuedolegal = 0;
+        whiteHasCastled = false;
+        blackHasCastled = false;
         // castleTracker = 0b1111;
         castleTracker = 0b0000;
         //castleTracker = castleTracker & ~castleTrack.wQueen for example
@@ -153,11 +158,13 @@ public struct Board
                 // King side test
                 boards[(int)Piece.WRook] = boards[(int)Piece.WRook]  & ~0x8000000000000000ul;
                 boards[(int)Piece.WRook] |=  0x2000000000000000ul;
+                whiteHasCastled = true;
             }
             if (ply.End.x-ply.Start.x<=-2) {
                 // Queen side test
                 boards[(int)Piece.WRook] &= ~0x0100000000000000ul;
                 boards[(int)Piece.WRook] |= 0x0800000000000000ul;
+                whiteHasCastled = true;
             }
             castleTracker &= ~(int)(CastleTrack.wKing|CastleTrack.wQueen);
         }
@@ -168,11 +175,13 @@ public struct Board
                 // King side test
                 boards[(int)Piece.BRook] &= ~0x0000000000000080ul;
                 boards[(int)Piece.BRook] |=  0x0000000000000020ul;
+                blackHasCastled = true;
             }
             if (ply.End.x-ply.Start.x<=-2) {
                 // Queen side test
                 boards[(int)Piece.BRook] &= ~0x0000000000000001ul;
                 boards[(int)Piece.BRook] |= 0x0000000000000008ul;
+                blackHasCastled = true;
             }
             castleTracker &= ~(int)(CastleTrack.bKing|CastleTrack.bQueen);
         }

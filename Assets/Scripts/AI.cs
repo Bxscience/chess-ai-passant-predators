@@ -282,9 +282,9 @@ public class AI
                         }
                     }
                     sbyte wcastle = 0b1100;
-                    if ((board.castleTracker & wcastle) > 0)
+                    if ((board.castleTracker & wcastle) > 0 || board.whiteHasCastled==true)
                     {
-                        wscore += 20;
+                        wscore += 50;
                     }
                 }
                 curboard &= ~(1ul << pos);
@@ -381,8 +381,8 @@ public class AI
                             startbound = pos + 9;
                         }
                         sbyte bcastle = 0b0011;
-                        if((board.castleTracker & bcastle) > 0){
-                            bscore += 20;
+                        if((board.castleTracker & bcastle) > 0 || board.blackHasCastled==true){
+                            bscore += 50;
                          }
 
                         for (int g = startbound; g <= endbound; g++)
