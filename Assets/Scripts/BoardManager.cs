@@ -299,7 +299,9 @@ public class BoardManager : MonoBehaviour
                 ui.gameOver("Threefold Repetition");
                 isStaleMate = true;
             }
-        }
+        Debug.Log("White: " + MagicBitboards.PrintBitBoard(board.WhiteHelper.CheckAttackBoard));
+        Debug.Log("Black: " + MagicBitboards.PrintBitBoard(board.BlackHelper.CheckAttackBoard));
+    }
     
     
     public ChessPiece FindPiece(Piece type, Vector2Int idx) {

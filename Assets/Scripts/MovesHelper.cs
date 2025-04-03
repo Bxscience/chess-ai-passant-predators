@@ -190,24 +190,23 @@ public struct MovesHelper {
             const ulong bkSlide = 0x0000000000000060;
             const ulong wqSlide = 0x0C00000000000000;
             const ulong bqSlide = 0x000000000000000C;
-            if(NumCheckers>0 || ((castleTracker & (int)CastleTrack.wKing) > 0
-                && (wkSlide & enemyAttacking) > 0)
-                || NumCheckers>0
+            if((castleTracker & (int)CastleTrack.wKing) > 0
+                && ((wkSlide & enemyAttacking) > 0 || NumCheckers > 0)
             ) {
                 removeCastleFromKing |= 1ul<<62;
             }
-            if(NumCheckers>0 ||((castleTracker & (int)CastleTrack.wQueen) > 0
-                && (wqSlide & enemyAttacking) > 0)
+            if((castleTracker & (int)CastleTrack.wQueen) > 0
+                && ((wqSlide & enemyAttacking) > 0 || NumCheckers > 0)
             ) {
                 removeCastleFromKing |= 1ul<<58;
             }
-            if(NumCheckers>0 || ((castleTracker & (int)CastleTrack.bKing) > 0
-                && (bkSlide & enemyAttacking) > 0)
+            if((castleTracker & (int)CastleTrack.bKing) > 0
+                && ((bkSlide & enemyAttacking) > 0 || (NumCheckers > 0))
             ) {
                 removeCastleFromKing |= 1ul<<6;
             }
-            if(NumCheckers>0 || ((castleTracker & (int)CastleTrack.bQueen) > 0
-                && (bqSlide & enemyAttacking) > 0)
+            if((castleTracker & (int)CastleTrack.bQueen) > 0
+                && ((bqSlide & enemyAttacking) > 0 || NumCheckers > 0)
             ) {
                 removeCastleFromKing |= 1ul<<2;
             }

@@ -87,7 +87,7 @@ public struct Board
         castleTracker = 0b0000;
         //castleTracker = castleTracker & ~castleTrack.wQueen for example
         boards = new ulong[12];
-        passantTrack = 0;
+        passantTrack = 65;
         passantCaptured = 0;
         string[] fen_parts = fen.Split(" ");
         int idx = 0;
@@ -416,7 +416,7 @@ public struct Board
             {
                 // Handle en passant capture: restore the captured pawn to its original position
                 boards[(int)ply.Captured] |= 1ul << passantCaptured;
-                passantTrack = 0;
+                passantTrack = 65;
                 passantCaptured = 0;
             }
             else
