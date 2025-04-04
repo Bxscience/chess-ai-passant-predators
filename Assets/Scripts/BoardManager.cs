@@ -301,6 +301,7 @@ public class BoardManager : MonoBehaviour
             }
         Debug.Log("White: " + MagicBitboards.PrintBitBoard(board.WhiteHelper.CheckAttackBoard));
         Debug.Log("Black: " + MagicBitboards.PrintBitBoard(board.BlackHelper.CheckAttackBoard));
+        Debug.Log("PassantTrack: " + board.passantTrack);
     }
     
     

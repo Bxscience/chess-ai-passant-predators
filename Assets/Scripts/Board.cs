@@ -147,7 +147,7 @@ public struct Board
             }
         }
 
-        passantTrack = 0;
+        passantTrack = 65;
         passantCaptured = 0;
     
         //king move -> no more castle on that color
