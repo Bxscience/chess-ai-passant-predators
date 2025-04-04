@@ -70,11 +70,6 @@ void Update(){
         if (BoardManager.instance != null)
         {
             BoardManager.instance.isWhiteAI = true; // Set AI for white
-            Debug.Log("AI will control the white side.");
-        }
-        else
-        {
-            Debug.LogError("BoardManager instance is null.");
         }
         hide(whiteOrBlack);
         show(playingGameUi);
@@ -84,11 +79,6 @@ void Update(){
         if (BoardManager.instance != null)
         {
             BoardManager.instance.isBlackAI = true; // Set AI for black
-            Debug.Log("AI will control the black side.");
-        }
-        else
-        {
-            Debug.LogError("BoardManager instance is null.");
         }
         hide(whiteOrBlack);
         show(playingGameUi);
@@ -98,11 +88,6 @@ void Update(){
         {
             BoardManager.instance.isBlackAI = true;
             BoardManager.instance.isWhiteAI = true;
-            Debug.Log("AI will control the Both sides.");
-        }
-        else
-        {
-            Debug.LogError("BoardManager instance is null.");
         }
         hide(whiteOrBlack);
         show(playingGameUi);
@@ -113,70 +98,46 @@ void Update(){
             humanGame = true;
             BoardManager.instance.isBlackAI = false;
             BoardManager.instance.isWhiteAI = false;
-            Debug.Log("Humans will control the Both sides.");
-        }
-        else
-        {
-            Debug.LogError("BoardManager instance is null.");
         }
         hide(startCanvasObject);
         show(playingGameUi);
     }
-    public void easy()
+    public void shadman()
     {
-        if (BoardManager.instance != null)
-        {
-            if (BoardManager.instance.whiteAI != null && BoardManager.instance.blackAI != null)
-            {
-                BoardManager.instance.whiteAI.setDifficulty("easy");
-                BoardManager.instance.blackAI.setDifficulty("easy");
-                Debug.Log("AI difficulty set to Easy");
-            }
-            else
-            {
-                Debug.LogError("AI instances are null.");
-            }
-        }
-        else
-        {
-            Debug.LogError("BoardManager instance is null.");
-        }
+        BoardManager.instance.whiteAI.setDifficulty("shadman");
+        BoardManager.instance.blackAI.setDifficulty("shadman");
         hide(startCanvasObject);
         show(whiteOrBlack);
     }
-    public void medium()
+    public void dahik()
     {
-        if (BoardManager.instance != null)
-        {
-            if (BoardManager.instance.whiteAI != null && BoardManager.instance.blackAI != null)
-            {
-                BoardManager.instance.whiteAI.setDifficulty("medium");
-                BoardManager.instance.blackAI.setDifficulty("medium");
-                Debug.Log("AI difficulty set to Medium");
-            }
-            else
-            {
-                Debug.LogError("AI instances are null.");
-            }
-        }
-        else
-        {
-            Debug.LogError("BoardManager instance is null.");
-        }
+        BoardManager.instance.whiteAI.setDifficulty("dahik");
+        BoardManager.instance.blackAI.setDifficulty("dahik");
         hide(startCanvasObject);
         show(whiteOrBlack);
     }
-    public void hard()
+    public void dhruv()
     {
-        if (BoardManager.instance != null)
-        {
-            BoardManager.instance.whiteAI.setDifficulty("hard");
-            BoardManager.instance.blackAI.setDifficulty("hard");
-            Debug.Log("AI difficulty set to Hard");
-        }
+        BoardManager.instance.whiteAI.setDifficulty("dhruv");
+        BoardManager.instance.blackAI.setDifficulty("dhruv");
         hide(startCanvasObject);
         show(whiteOrBlack);
     }
+    public void elisha()
+    {
+        BoardManager.instance.whiteAI.setDifficulty("elisha");
+        BoardManager.instance.blackAI.setDifficulty("elisha");
+        hide(startCanvasObject);
+        show(whiteOrBlack);
+    }
+    public void rohan()
+    {
+        BoardManager.instance.whiteAI.setDifficulty("rohankrishna");
+        BoardManager.instance.blackAI.setDifficulty("rohankrishna");
+        hide(startCanvasObject);
+        show(whiteOrBlack);
+    }
+
     public void hide(GameObject gameObject){
         gameObject.SetActive(false);
     }

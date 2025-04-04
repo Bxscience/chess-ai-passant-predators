@@ -664,13 +664,19 @@ public class AI
     {
         switch (difficulty.ToLower())
         {
-            case "easy":
+            case "Shadman":
                 difficultyDepth = 1; // Lower depth for easier AI
                 break;
-            case "medium":
-                difficultyDepth = 3; // Default depth
+            case "Dahik":
+                difficultyDepth = 2; // Default depth
                 break;
-            case "hard":
+            case "Dhruv":
+                difficultyDepth = 3; // Higher depth for harder AI
+                break;
+            case "Elisha":
+                difficultyDepth = 4; // Default depth
+                break;
+            case "Rohan Krishna":
                 difficultyDepth = 5; // Higher depth for harder AI
                 break;
             default:
@@ -680,6 +686,5 @@ public class AI
         }
     }
 }
-
 
 

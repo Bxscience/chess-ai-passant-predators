@@ -38,7 +38,7 @@ public class BoardManager : MonoBehaviour
     //Standard Fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
     //Mate in 1 I think: "8/8/8/8/8/8/rr6/k1K5 w - - 0 1"
     //Black 2 rooks vs white king: "8/8/8/8/4K3/8/rr6/k7 w - - 0 1"
-    //using other fen seems to break the game
+    //Pawn Promotion for white check "8/7k/7p/5Pp1/P2R2P1/7P/5K2/8 w - 0 1" 
     void Start()
     {
         instance = this;
