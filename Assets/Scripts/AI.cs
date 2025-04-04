@@ -168,11 +168,22 @@ public class AI
     // Evaluate function uses piece scores to determine who has material and spatial advantages, amoung other things.
     public int evaluate(Side side, Board board)
     {
+        bool isStaleMate = false;
         ulong[] boards = board.boards;
         //ulong whiteDefended = board.allWhiteMovesPsuedolegal & board.WhitePieces;
         //ulong blackDefended = board.allBlackMovesPsuedolegal & board.BlackPieces;
         //ideally i want o have all fully legal moves but for now I am gonna do paralegal bc idk how exactly
+        //if (board.WhiteHelper.Plies.Count == 0 && board.WhiteHelper.CheckAttackBoard == 0)
+        if (board.WhiteHelper.Plies.Count == 0)
+        {
+            isStaleMate = true;
+        }
+        //if (board.BlackHelper.Plies.Count == 0 && board.BlackHelper.CheckAttackBoard == 0)
+        if (board.BlackHelper.Plies.Count == 0)
+        {
+            isStaleMate = true;
 
+        }
         int score = 0;
         int wscore = 0;
         int bscore = 0;
@@ -418,7 +429,17 @@ public class AI
         {
             score += forceKingToCornerEval(board, side, endgamescore);
         }
-
+        if (isStaleMate)
+        {
+            if (score > 0)
+            {
+                score -= (int)(score * 10);
+            }
+            if (score < 0)
+            {
+                score += (int)(score * 10);
+            }
+        }
 
         return score;
     }
