@@ -425,7 +425,7 @@ public class AI
         {
             score = bscore - wscore;
         }
-        if (endgamescore > 50)
+        if (endgamescore > 40)
         {
             score += forceKingToCornerEval(board, side, endgamescore);
         }
@@ -433,11 +433,11 @@ public class AI
         {
             if (score > 0)
             {
-                score -= (int)(score * 10);
+                score -= (int)(score*2);
             }
             if (score < 0)
             {
-                score += (int)(score * 10);
+                score += (int)(score*0.5f);
             }
         }
 
@@ -664,13 +664,13 @@ public class AI
     {
         switch (difficulty.ToLower())
         {
-            case "Shadman":
+            case "shadman":
                 difficultyDepth = 1; // Lower depth for easier AI
                 break;
             case "Dahik":
                 difficultyDepth = 2; // Default depth
                 break;
-            case "Dhruv":
+            case "dhruv":
                 difficultyDepth = 3; // Higher depth for harder AI
                 break;
             case "Elisha":
