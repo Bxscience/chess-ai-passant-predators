@@ -667,16 +667,16 @@ public class AI
             case "shadman":
                 difficultyDepth = 1; // Lower depth for easier AI
                 break;
-            case "Dahik":
+            case "dahik":
                 difficultyDepth = 2; // Default depth
                 break;
             case "dhruv":
                 difficultyDepth = 3; // Higher depth for harder AI
                 break;
-            case "Elisha":
+            case "elisha":
                 difficultyDepth = 4; // Default depth
                 break;
-            case "Rohan Krishna":
+            case "rohan krishna":
                 difficultyDepth = 5; // Higher depth for harder AI
                 break;
             default:
