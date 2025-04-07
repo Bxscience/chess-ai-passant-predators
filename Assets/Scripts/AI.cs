@@ -433,11 +433,11 @@ public class AI
         {
             if (score > 0)
             {
-                score -= (int)(score*2);
+                score -= (int)(score*0.5f + 100);
             }
             if (score < 0)
             {
-                score += (int)(score*0.5f);
+                score += (int)(score*0.5f + 100);
             }
         }
 
@@ -676,7 +676,7 @@ public class AI
             case "elisha":
                 difficultyDepth = 4; // Default depth
                 break;
-            case "rohan krishna":
+            case "rohan":
                 difficultyDepth = 5; // Higher depth for harder AI
                 break;
             default:
