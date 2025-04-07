@@ -437,7 +437,7 @@ public class AI
             }
             else if (score < 0)
             {
-                score += (int)(score*0.5f + 100);
+                score += (int)(Mathf.Abs(score)*0.5f + 100);
             }
         }
 
