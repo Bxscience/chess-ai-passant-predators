@@ -435,7 +435,7 @@ public class AI
             {
                 score -= (int)(score*0.5f + 100);
             }
-            if (score < 0)
+            else if (score < 0)
             {
                 score += (int)(score*0.5f + 100);
             }
