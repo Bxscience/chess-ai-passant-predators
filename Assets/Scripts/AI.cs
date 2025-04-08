@@ -9,7 +9,9 @@ public class AI
     Ply? bestPly;
 
     private int difficultyDepth = 4;
-
+    private int whiteDepth = 4;
+    private int blackDepth = 4;
+    
     ZobristMap tTable;
     public AI() {
         tTable = new ZobristMap();
@@ -463,6 +465,14 @@ public class AI
         int endgamescore = (11840 - materialCount(BoardManager.instance.board))/100;
         float endgamefloat = endgamescore / 118;
         endgamefloat *= endgamefloat * endgamefloat * endgamefloat;
+        if(side == Side.White)
+        {
+            difficultyDepth = whiteDepth;
+        }
+        else
+        {
+            difficultyDepth = blackDepth;
+        }
         NegaMax(side, (int)(difficultyDepth*(1-endgamefloat) + (difficultyDepth+6)*endgamefloat), BoardManager.instance.board, -10000, 10000);
         BoardManager.instance.board.SetupMoves();
 
@@ -665,23 +675,77 @@ public class AI
         switch (difficulty.ToLower())
         {
             case "shadman":
-                difficultyDepth = 1; // Lower depth for easier AI
+                whiteDepth = 1; // Lower depth for easier AI
+                blackDepth = 1;
                 break;
-            case "Dahik":
-                difficultyDepth = 2; // Default depth
+            case "dahik":
+                whiteDepth = 2;
+                blackDepth = 2; // Default depth
                 break;
             case "dhruv":
-                difficultyDepth = 3; // Higher depth for harder AI
+                whiteDepth = 3;
+                blackDepth = 3; // Higher depth for harder AI
                 break;
-            case "Elisha":
-                difficultyDepth = 4; // Default depth
+            case "elisha":
+                whiteDepth = 4;
+                blackDepth = 4; // Default depth
                 break;
-            case "Rohan Krishna":
-                difficultyDepth = 5; // Higher depth for harder AI
+            case "rohan krishna":
+                whiteDepth = 5;
+                blackDepth = 5; // Higher depth for harder AI
                 break;
             default:
                 Debug.LogWarning("Invalid difficulty level. Setting to medium.");
-                difficultyDepth = 3;
+                whiteDepth = 3;
+                blackDepth = 3;
+                break;
+        }
+    }
+    public void setDifficulty(string whiteDifficulty, string blackDifficulty)
+    {
+        switch (whiteDifficulty.ToLower())
+        {
+            case "shadman":
+                whiteDepth = 1; // Lower depth for easier AI
+                break;
+            case "dahik":
+                whiteDepth = 2;// Default depth
+                break;
+            case "dhruv":
+                whiteDepth = 3;// Higher depth for harder AI
+                break;
+            case "elisha":
+                whiteDepth = 4;// Default depth
+                break;
+            case "rohan krishna":
+                whiteDepth = 5;// Higher depth for harder AI
+                break;
+            default:
+                Debug.LogWarning("Invalid difficulty level. Setting to medium.");
+                whiteDepth = 3;
+                break;
+        }
+        switch (blackDifficulty.ToLower())
+        {
+            case "shadman":
+                // Lower depth for easier AI
+                blackDepth = 1;
+                break;
+            case "Dahik":
+                blackDepth = 2; // Default depth
+                break;
+            case "dhruv":
+                blackDepth = 3; // Higher depth for harder AI
+                break;
+            case "elisha":
+                blackDepth = 4; // Default depth
+                break;
+            case "rohan krishna":
+                blackDepth = 5; // Higher depth for harder AI
+                break;
+            default:
+                Debug.LogWarning("Invalid difficulty level. Setting to medium.");
+                blackDepth = 3;
                 break;
         }
     }
