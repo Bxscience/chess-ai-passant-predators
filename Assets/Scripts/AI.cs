@@ -731,7 +731,7 @@ public class AI
                 // Lower depth for easier AI
                 blackDepth = 1;
                 break;
-            case "Dahik":
+            case "dahik":
                 blackDepth = 2; // Default depth
                 break;
             case "dhruv":
