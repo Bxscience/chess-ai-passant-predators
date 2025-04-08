@@ -893,7 +893,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Human vs Human
+  m_text: AI vs AI
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 200aeb264340c40be8da8bff7bc3ff27, type: 2}
   m_sharedMaterial: {fileID: -2268887419017053652, guid: 200aeb264340c40be8da8bff7bc3ff27, type: 2}
@@ -5502,7 +5502,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: AI vs AI
+  m_text: Human vs Human
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 200aeb264340c40be8da8bff7bc3ff27, type: 2}
   m_sharedMaterial: {fileID: -2268887419017053652, guid: 200aeb264340c40be8da8bff7bc3ff27, type: 2}
