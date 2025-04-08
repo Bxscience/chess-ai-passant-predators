@@ -176,14 +176,12 @@ public class AI
         //ulong blackDefended = board.allBlackMovesPsuedolegal & board.BlackPieces;
         //ideally i want o have all fully legal moves but for now I am gonna do paralegal bc idk how exactly
         //if (board.WhiteHelper.Plies.Count == 0 && board.WhiteHelper.CheckAttackBoard == 0)
-        if (board.WhiteHelper.Plies.Count == 0)
-        {
-            isStaleMate = true;
-        }
+
         //if (board.BlackHelper.Plies.Count == 0 && board.BlackHelper.CheckAttackBoard == 0)
-        if (board.BlackHelper.Plies.Count == 0)
+        if (board.BlackHelper.Plies.Count == 0 || board.WhiteHelper.Plies.Count == 0)
         {
             isStaleMate = true;
+            Debug.Log("Stalemate!!!");
 
         }
         int score = 0;
@@ -433,14 +431,17 @@ public class AI
         }
         if (isStaleMate)
         {
+            score = -score;
+
             if (score > 0)
             {
-                score -= (int)(score*0.5f + 100);
+                //score -= (int)(score*0.5f + 100);
             }
             else if (score < 0)
             {
-                score += (int)(Mathf.Abs(score)*0.5f + 100);
+                //score += (int)(Mathf.Abs(score)*0.5f + 100);
             }
+            Debug.Log("Stalescore " + score);
         }
 
         return score;
@@ -572,7 +573,7 @@ public class AI
         int dist = fileDiff + rankDiff;
 
         eval -= dist;
-        return (eval * endGameWeight / 50);
+        return (eval * endGameWeight / 10);
     }
     public int materialCount(Board b)
     {
@@ -678,7 +679,7 @@ public class AI
             case "elisha":
                 difficultyDepth = 4;
                 break;
-            case "rohan krishna":
+            case "rohan":
                 difficultyDepth = 5;
                 break;
             default:

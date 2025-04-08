@@ -133,13 +133,18 @@ void Update(){
     }
     public void rohan()
     {
-        BoardManager.instance.whiteAI.setDifficulty("rohan");
+        BoardManager.instance.whiteAI.setDifficulty("rohan");   
         BoardManager.instance.blackAI.setDifficulty("rohan");
         hide(startCanvasObject);
         show(whiteOrBlack);
     }
     public void whiteDiff()
     {
+        if (BoardManager.instance != null)
+        {
+            BoardManager.instance.isBlackAI = true;
+            BoardManager.instance.isWhiteAI = true;
+        }
         hide(startCanvasObject);
         show(whiteDifficulty);
     }
@@ -190,7 +195,7 @@ void Update(){
     }
     public void rohan2()
     {
-        BoardManager.instance.whiteAI.setDifficulty("rohan");
+        BoardManager.instance.blackAI.setDifficulty("rohan");
         hide(blackDifficulty);
         show(playingGameUi);
     }
