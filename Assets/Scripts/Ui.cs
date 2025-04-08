@@ -5,7 +5,7 @@ using UnityEngine;
 using TMPro;
 public class Ui : MonoBehaviour
 {
-    public GameObject startCanvasObject, whiteOrBlack, playingGameUi, gameOverCanvas, promotionCanvasWhite, promotionCanvasBlack;
+    public GameObject startCanvasObject, whiteOrBlack, playingGameUi, gameOverCanvas, promotionCanvasWhite, promotionCanvasBlack, whiteDifficulty, blackDifficulty;
     public TMP_Text textWinnerLoser;
     public GameObject Camera; 
     public bool humanGame = false;
@@ -18,7 +18,8 @@ void Start(){
     hide(playingGameUi);
     hide(promotionCanvasBlack);
     hide(promotionCanvasWhite);
-    
+    hide(whiteDifficulty);
+    hide(blackDifficulty);
 }
 
 void Update(){
@@ -137,7 +138,62 @@ void Update(){
         hide(startCanvasObject);
         show(whiteOrBlack);
     }
-
+    public void whiteDiff()
+    {
+        hide(startCanvasObject);
+        show(whiteDifficulty);
+    }
+    public void shadman1() { BoardManager.instance.whiteAI.setDifficulty("shadman");
+        hide(whiteDifficulty);
+        show(blackDifficulty);
+    }
+    public void dahik1() { BoardManager.instance.whiteAI.setDifficulty("dahik");
+        hide(whiteDifficulty);
+        show(blackDifficulty);
+    }
+    public void dhruv1() { BoardManager.instance.whiteAI.setDifficulty("dhruv");
+        hide(whiteDifficulty);
+        show(blackDifficulty);
+    }
+    public void elisha1() { BoardManager.instance.whiteAI.setDifficulty("elisha");
+        hide(whiteDifficulty);
+        show(blackDifficulty);
+    }
+    public void rohan1() {
+        BoardManager.instance.whiteAI.setDifficulty("rohan");
+        hide(whiteDifficulty);
+        show(blackDifficulty);
+    }
+    public void shadman2()
+    {
+        BoardManager.instance.blackAI.setDifficulty("shadman");
+        hide(blackDifficulty);
+        show(playingGameUi);
+    }
+    public void dahik2()
+    {
+        BoardManager.instance.blackAI.setDifficulty("dahik");
+        hide(blackDifficulty);
+        show(playingGameUi);
+    }
+    public void dhruv2()
+    {
+        BoardManager.instance.blackAI.setDifficulty("dhruv");
+        hide(blackDifficulty);
+        show(playingGameUi);
+    }
+    public void elisha2()
+    {
+        BoardManager.instance.blackAI.setDifficulty("elisha");
+        hide(blackDifficulty);
+        show(playingGameUi);
+    }
+    public void rohan2()
+    {
+        BoardManager.instance.whiteAI.setDifficulty("rohan");
+        hide(blackDifficulty);
+        show(playingGameUi);
+    }
     public void hide(GameObject gameObject){
         gameObject.SetActive(false);
     }
