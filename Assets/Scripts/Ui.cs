@@ -132,8 +132,8 @@ void Update(){
     }
     public void rohan()
     {
-        BoardManager.instance.whiteAI.setDifficulty("rohankrishna");
-        BoardManager.instance.blackAI.setDifficulty("rohankrishna");
+        BoardManager.instance.whiteAI.setDifficulty("rohan");
+        BoardManager.instance.blackAI.setDifficulty("rohan");
         hide(startCanvasObject);
         show(whiteOrBlack);
     }

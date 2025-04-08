@@ -435,11 +435,11 @@ public class AI
         {
             if (score > 0)
             {
-                score -= (int)(score*2);
+                score -= (int)(score*0.5f + 100);
             }
-            if (score < 0)
+            else if (score < 0)
             {
-                score += (int)(score*0.5f);
+                score += (int)(Mathf.Abs(score)*0.5f + 100);
             }
         }
 
