@@ -229,18 +229,18 @@ public struct Board
             Promote(1ul<<end_idx, Side.Black, (Piece)ply.PromoteType);
         }
         ulong zMap = ZobristMap.GetZKey(boards, castleTracker, passantTrack, ply.Side == Side.White);
-        if (ply.isIrreversible())
+        //if (ply.isIrreversible())
         {
-            tempthreefoldplies.Clear();
+            //tempthreefoldplies.Clear();
             
         }
-        if (tempthreefoldplies.ContainsKey(zMap))
+        //if (tempthreefoldplies.ContainsKey(zMap))
         {
-            tempthreefoldplies[zMap]++;
+           // tempthreefoldplies[zMap]++;
         }
-        else
+       // else
         {
-            tempthreefoldplies.Add(zMap, 1);
+          //  tempthreefoldplies.Add(zMap, 1);
         }
         SetupMoves();
         
@@ -416,17 +416,17 @@ public struct Board
 
     public void UndoPly(Ply ply) {
         ulong zMap = ZobristMap.GetZKey(boards, castleTracker, passantTrack, ply.Side == Side.White);
-        if (tempthreefoldplies.ContainsKey(zMap))
+        //if (tempthreefoldplies.ContainsKey(zMap))
         {
-            Debug.Log("Contains it!!!");
-            if (tempthreefoldplies[zMap] > 1)
+           // Debug.Log("Contains it!!!");
+            //if (tempthreefoldplies[zMap] > 1)
             {
-                tempthreefoldplies[zMap] -= 1;
+               // tempthreefoldplies[zMap] -= 1;
             }
 
-            else if (tempthreefoldplies[zMap] == 1)
+            //else if (tempthreefoldplies[zMap] == 1)
             {
-                tempthreefoldplies.Remove(zMap);
+               // tempthreefoldplies.Remove(zMap);
             }
         }
         // the start coordinate, as an offset, starting from A1

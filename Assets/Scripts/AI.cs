@@ -526,16 +526,16 @@ public class AI
                     score -= (int)(score * 0.5f); 
                 }
             }
-            if (b.tempthreefoldplies.ContainsKey(zMap) && b.tempthreefoldplies[zMap] >= 2)
+            //if (b.tempthreefoldplies.ContainsKey(zMap) && b.tempthreefoldplies[zMap] >= 2)
             {
-                Debug.Log("Tempthreefold found " + side);
-                if (score < 0)
+                //Debug.Log("Tempthreefold found " + side);
+                //if (score < 0)
                 {
-                    score += (int)(score * 0.5f);
+                    //score += (int)(score * 0.5f);
                 }
-                else
+                //else
                 {
-                    score -= (int)(score * 0.5f);
+                    //score -= (int)(score * 0.5f);
                 }
             }
             if (score > max) { 
