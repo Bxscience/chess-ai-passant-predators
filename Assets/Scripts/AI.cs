@@ -178,12 +178,16 @@ public class AI
         //if (board.WhiteHelper.Plies.Count == 0 && board.WhiteHelper.CheckAttackBoard == 0)
 
         //if (board.BlackHelper.Plies.Count == 0 && board.BlackHelper.CheckAttackBoard == 0)
-        if (board.BlackHelper.Plies.Count == 0 || board.WhiteHelper.Plies.Count == 0)
+        if ((board.BlackHelper.Plies.Count == 0) && (board.BlackHelper.CheckAttackBoard <= 0) && (side == Side.Black))
         {
             isStaleMate = true;
-            Debug.Log("Stalemate!!!");
-
+            Debug.Log("Black Stalemate!!!");
         }
+        if((board.WhiteHelper.Plies.Count == 0) && (board.WhiteHelper.CheckAttackBoard <= 0) && (side == Side.White))
+        {
+            isStaleMate = true;
+            Debug.Log("White Stalemate!!!");
+        } 
         int score = 0;
         int wscore = 0;
         int bscore = 0;
@@ -441,7 +445,7 @@ public class AI
             {
                 //score += (int)(Mathf.Abs(score)*0.5f + 100);
             }
-            Debug.Log("Stalescore " + score);
+            Debug.Log("Stalescore " + score + " Side: " + side);
         }
 
         return score;
@@ -522,6 +526,18 @@ public class AI
                     score -= (int)(score * 0.5f); 
                 }
             }
+            if (b.tempthreefoldplies.ContainsKey(zMap) && b.tempthreefoldplies[zMap] >= 2)
+            {
+                Debug.Log("Tempthreefold found " + side);
+                if (score < 0)
+                {
+                    score += (int)(score * 0.5f);
+                }
+                else
+                {
+                    score -= (int)(score * 0.5f);
+                }
+            }
             if (score > max) { 
                 if (canSet) {
                     bestPly = ply; //ply -> newPly
@@ -572,7 +588,7 @@ public class AI
         int rankDiff = Math.Abs(oppKingToCenterRank - friendlyRank);
         int dist = fileDiff + rankDiff;
 
-        eval -= dist;
+        eval -= dist*2;
         return (eval * endGameWeight / 10);
     }
     public int materialCount(Board b)
@@ -590,7 +606,7 @@ public class AI
     }
     public int evaluateCaptures(Board b, Side side, int alpha, int beta)
     {
-            int eval = evaluate(side, b); //eval is stand_pat
+        int eval = evaluate(side, b); //eval is stand_pat
       
         int best_val = eval;
             if (eval >= beta)

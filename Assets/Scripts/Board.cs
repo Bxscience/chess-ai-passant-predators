@@ -33,7 +33,7 @@ public struct Board
     public sbyte castleTracker;
     public bool whiteHasCastled;
     public bool blackHasCastled;
-
+    public Dictionary<ulong, int> tempthreefoldplies;
 
     public const ulong fileA = 0x0101010101010101;
     public const ulong fileB = 0x0202020202020202;
@@ -79,6 +79,7 @@ public struct Board
     public Board(string fen) {
         WhiteHelper = new MovesHelper(Side.White);
         BlackHelper = new MovesHelper(Side.Black);
+        tempthreefoldplies = new Dictionary<ulong, int>();
         allWhiteMovesPsuedolegal = 0;
         allBlackMovesPsuedolegal = 0;
         whiteHasCastled = false;
@@ -227,7 +228,20 @@ public struct Board
         else if(ply.Type == Piece.BPawn && ( (1ul<<end_idx) & rank1) != 0) {
             Promote(1ul<<end_idx, Side.Black, (Piece)ply.PromoteType);
         }
-        
+        ulong zMap = ZobristMap.GetZKey(boards, castleTracker, passantTrack, ply.Side == Side.White);
+        if (ply.isIrreversible())
+        {
+            tempthreefoldplies.Clear();
+            
+        }
+        if (tempthreefoldplies.ContainsKey(zMap))
+        {
+            tempthreefoldplies[zMap]++;
+        }
+        else
+        {
+            tempthreefoldplies.Add(zMap, 1);
+        }
         SetupMoves();
         
     }
@@ -401,6 +415,20 @@ public struct Board
     }
 
     public void UndoPly(Ply ply) {
+        ulong zMap = ZobristMap.GetZKey(boards, castleTracker, passantTrack, ply.Side == Side.White);
+        if (tempthreefoldplies.ContainsKey(zMap))
+        {
+            Debug.Log("Contains it!!!");
+            if (tempthreefoldplies[zMap] > 1)
+            {
+                tempthreefoldplies[zMap] -= 1;
+            }
+
+            else if (tempthreefoldplies[zMap] == 1)
+            {
+                tempthreefoldplies.Remove(zMap);
+            }
+        }
         // the start coordinate, as an offset, starting from A1
         // If Start.y is 7, that should correlate with the 8th rank.   
         int start_idx = ply.Start.x + 8 * (7 - ply.Start.y);
@@ -408,6 +436,7 @@ public struct Board
         boards[(int)ply.Type] &= ~(1ul << end_idx);
         // Set the start position
         boards[(int)ply.Type] |= 1ul << start_idx;
+        
 
         // Handle captured pieces
         if (ply.Captured != Piece.None)
@@ -455,7 +484,7 @@ public struct Board
                     castleTracker |= (int)CastleTrack.bQueen;
                 }
             }
-
+            
             // Move the rook back to its original position
             boards[(int)(ply.Side == Side.White ? Piece.WRook : Piece.BRook)] &= ~(1ul << rookEndIdx); // Clear the rook's end position
             boards[(int)(ply.Side == Side.White ? Piece.WRook : Piece.BRook)] |= 1ul << rookStartIdx; // Set the rook's start position
